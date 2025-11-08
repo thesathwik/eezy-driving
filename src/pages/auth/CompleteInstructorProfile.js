@@ -89,12 +89,13 @@ const CompleteInstructorProfile = () => {
   // Pre-fill data from user signup
   useEffect(() => {
     if (user) {
+      console.log('User data from context:', user);
       setFormData(prev => ({
         ...prev,
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
+        firstName: user.firstName || user.name?.split(' ')[0] || '',
+        lastName: user.lastName || user.name?.split(' ')[1] || '',
         email: user.email || '',
-        phone: user.phone || ''
+        phone: user.phone || user.phoneNumber || ''
       }));
     }
   }, [user]);
@@ -1629,7 +1630,6 @@ const CompleteInstructorProfile = () => {
           readOnly
           disabled
         />
-        <span className="field-note">Email cannot be changed</span>
       </div>
 
       <div className="form-row">
