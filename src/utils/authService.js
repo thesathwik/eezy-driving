@@ -22,12 +22,15 @@ export const registerUser = async (userData) => {
     const data = await handleResponse(response);
 
     // Save session with token
-    if (data.success && data.token) {
+    // Backend returns: { success: true, data: { user: {...}, token: "..." } }
+    if (data.success && data.data) {
       const userSession = {
-        ...data.user,
-        token: data.token,
+        ...data.data.user,
+        token: data.data.token,
       };
       localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userSession));
+      console.log('Saved user session:', userSession);
+      return { success: true, user: data.data.user, token: data.data.token };
     }
 
     return data;
@@ -55,12 +58,15 @@ export const loginUser = async (email, password, userType) => {
     const data = await handleResponse(response);
 
     // Save session with token
-    if (data.success && data.token) {
+    // Backend returns: { success: true, data: { user: {...}, token: "..." } }
+    if (data.success && data.data) {
       const userSession = {
-        ...data.user,
-        token: data.token,
+        ...data.data.user,
+        token: data.data.token,
       };
       localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userSession));
+      console.log('Saved user session:', userSession);
+      return { success: true, user: data.data.user, token: data.data.token };
     }
 
     return data;
