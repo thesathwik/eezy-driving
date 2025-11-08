@@ -2575,3 +2575,32 @@
     margin-left: 52px;
   }
 }
+
+/* Validation Error Banner */
+.validation-error-banner {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-left: 4px solid #dc2626;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  color: #dc2626;
+}
+
+.validation-error-banner strong {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+.validation-error-banner ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.validation-error-banner li {
+  margin: 4px 0;
+  line-height: 1.5;
+}

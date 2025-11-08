@@ -102,13 +102,105 @@ const BookingFlowContent = () => {
   const processingFee = (subtotal - discount) * 0.03; // 3% processing fee
   const totalDue = subtotal - discount + processingFee;
 
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // Validate current step before proceeding
+  const validateStep = (step) => {
+    const errors = {};
+
+    switch (step) {
+      case 1:
+        // Step 1: Instructor confirmation - no validation needed
+        break;
+
+      case 2:
+        // Step 2: Package selection - already has a selection by default
+        if (!selectedPackage) {
+          errors.package = 'Please select a package';
+        }
+        if (selectedPackage === 'custom' && customHours < 1) {
+          errors.customHours = 'Please select at least 1 hour';
+        }
+        break;
+
+      case 3:
+        // Step 3: Book lessons - optional step (can skip)
+        // No required validation as users can book from dashboard later
+        break;
+
+      case 4:
+        // Step 4: Learner registration - all fields required
+        if (!learnerDetails.firstName?.trim()) {
+          errors.firstName = 'First name is required';
+        }
+        if (!learnerDetails.lastName?.trim()) {
+          errors.lastName = 'Last name is required';
+        }
+        if (!learnerDetails.email?.trim()) {
+          errors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(learnerDetails.email)) {
+          errors.email = 'Please enter a valid email';
+        }
+        if (!learnerDetails.phone?.trim()) {
+          errors.phone = 'Phone number is required';
+        }
+        if (!learnerDetails.pickupAddress?.trim()) {
+          errors.pickupAddress = 'Pickup address is required';
+        }
+        if (!learnerDetails.suburb) {
+          errors.suburb = 'Suburb is required';
+        }
+        if (!learnerDetails.dobDay || !learnerDetails.dobMonth || !learnerDetails.dobYear) {
+          errors.dob = 'Date of birth is required';
+        }
+        if (!learnerDetails.learnerType) {
+          errors.learnerType = 'Please select learner type';
+        }
+        if (!learnerDetails.password?.trim()) {
+          errors.password = 'Password is required';
+        } else if (learnerDetails.password.length < 6) {
+          errors.password = 'Password must be at least 6 characters';
+        }
+        if (learnerDetails.password !== learnerDetails.confirmPassword) {
+          errors.confirmPassword = 'Passwords do not match';
+        }
+        if (!learnerDetails.termsAccepted) {
+          errors.terms = 'You must accept the terms and conditions';
+        }
+        break;
+
+      case 5:
+        // Step 5: Payment - validated by Stripe form
+        break;
+
+      default:
+        break;
+    }
+
+    return errors;
+  };
+
   const handleContinue = () => {
+    // Validate current step
+    const errors = validateStep(currentStep);
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      // Scroll to top to show errors
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Clear errors and proceed
+    setValidationErrors({});
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
+    setValidationErrors({}); // Clear errors when going back
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
@@ -745,6 +837,18 @@ const BookingFlowContent = () => {
 
                 <h1>Learner Registration</h1>
                 <p className="step-subtitle">Create your account to continue with the booking.</p>
+
+                {/* Validation Errors */}
+                {Object.keys(validationErrors).length > 0 && (
+                  <div className="validation-error-banner">
+                    <strong>Please fix the following errors:</strong>
+                    <ul>
+                      {Object.values(validationErrors).map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Existing User Login Link */}
                 <div className="existing-user-section">
