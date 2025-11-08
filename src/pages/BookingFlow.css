@@ -2604,3 +2604,45 @@
   margin: 4px 0;
   line-height: 1.5;
 }
+
+/* Toggle Auth Link */
+.toggle-auth-link {
+  background: none;
+  border: none;
+  color: #ffc107;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.toggle-auth-link:hover {
+  color: #ffb300;
+}
+
+/* Forgot Password Link */
+.forgot-password-link {
+  text-align: right;
+  margin-top: 8px;
+}
+
+.forgot-password-link a {
+  color: #666;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+  color: #ffc107;
+  text-decoration: underline;
+}
+
+/* Login Form */
+.login-form {
+  background: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
