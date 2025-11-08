@@ -35,8 +35,9 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Please provide a phone number'],
-    trim: true
+    required: false, // Optional - can be added later in profile
+    trim: true,
+    default: ''
   },
 
   // User Type
