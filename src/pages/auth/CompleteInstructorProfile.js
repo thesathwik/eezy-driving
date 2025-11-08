@@ -88,29 +88,14 @@ const CompleteInstructorProfile = () => {
 
   // Pre-fill data from user signup
   useEffect(() => {
-    // Debug: Check what's in localStorage
-    const sessionData = localStorage.getItem('eazydriving_session');
-    console.log('Raw localStorage data:', sessionData);
-    if (sessionData) {
-      console.log('Parsed session data:', JSON.parse(sessionData));
-    }
-
     if (user) {
-      console.log('User data from context:', user);
-      console.log('User firstName:', user.firstName);
-      console.log('User lastName:', user.lastName);
-      console.log('User email:', user.email);
-      console.log('User phone:', user.phone);
-
       setFormData(prev => ({
         ...prev,
-        firstName: user.firstName || user.name?.split(' ')[0] || '',
-        lastName: user.lastName || user.name?.split(' ')[1] || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
         email: user.email || '',
-        phone: user.phone || user.phoneNumber || ''
+        phone: user.phone || ''
       }));
-    } else {
-      console.log('No user in context!');
     }
   }, [user]);
 

@@ -10,7 +10,6 @@ const InstructorSignup = () => {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
     agreeTerms: false
@@ -46,12 +45,6 @@ const InstructorSignup = () => {
       newErrors.email = 'Email is invalid';
     }
 
-    if (!formData.phone) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^[0-9]{10}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Phone number must be 10 digits';
-    }
-
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
@@ -85,19 +78,15 @@ const InstructorSignup = () => {
         password: formData.password,
         type: 'instructor',
         firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone
+        lastName: formData.lastName
       };
 
       const result = await signup(userData);
-      console.log('Signup result:', result);
 
       if (result.success) {
-        console.log('Signup successful, user data:', result.user);
         // Redirect to profile completion page
         navigate('/instructor/complete-profile');
       } else {
-        console.error('Signup failed:', result.error);
         if (result.field) {
           setErrors({ [result.field]: result.error });
         } else {
@@ -169,20 +158,6 @@ const InstructorSignup = () => {
                 className={errors.email ? 'error' : ''}
               />
               {errors.email && <span className="error-message">{errors.email}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="phone">Phone Number</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                placeholder="0412 345 678"
-                value={formData.phone}
-                onChange={handleChange}
-                className={errors.phone ? 'error' : ''}
-              />
-              {errors.phone && <span className="error-message">{errors.phone}</span>}
             </div>
 
             <div className="form-group">

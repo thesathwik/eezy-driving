@@ -10,7 +10,7 @@ exports.register = async (req, res, next) => {
     const { firstName, lastName, email, password, phone, role } = req.body;
 
     // Validation
-    if (!firstName || !lastName || !email || !password || !phone) {
+    if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields'
@@ -32,7 +32,7 @@ exports.register = async (req, res, next) => {
       lastName,
       email: email.toLowerCase(),
       password,
-      phone,
+      phone: phone || '', // Optional field
       role: role || 'learner'
     });
 

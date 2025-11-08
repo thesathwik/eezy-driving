@@ -29,7 +29,6 @@ export const registerUser = async (userData) => {
         token: data.data.token,
       };
       localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userSession));
-      console.log('Saved user session:', userSession);
       return { success: true, user: data.data.user, token: data.data.token };
     }
 
@@ -65,7 +64,6 @@ export const loginUser = async (email, password, userType) => {
         token: data.data.token,
       };
       localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userSession));
-      console.log('Saved user session:', userSession);
       return { success: true, user: data.data.user, token: data.data.token };
     }
 
