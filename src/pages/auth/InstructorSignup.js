@@ -90,11 +90,14 @@ const InstructorSignup = () => {
       };
 
       const result = await signup(userData);
+      console.log('Signup result:', result);
 
       if (result.success) {
+        console.log('Signup successful, user data:', result.user);
         // Redirect to profile completion page
         navigate('/instructor/complete-profile');
       } else {
+        console.error('Signup failed:', result.error);
         if (result.field) {
           setErrors({ [result.field]: result.error });
         } else {
