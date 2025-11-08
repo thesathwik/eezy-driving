@@ -1,0 +1,205 @@
+/* Instructor Card - EzLicence Style */
+.instructor-card-ez {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.instructor-card-ez:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Badges */
+.instructor-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  min-height: 24px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-top {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-demand {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Circular Photos */
+.instructor-photos {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.photo-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #f0f0f0;
+  background: #f5f5f5;
+}
+
+.photo-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.instructor-photo {
+  border-color: #3da5d9;
+}
+
+.car-photo {
+  border-color: #e0e0e0;
+}
+
+/* Instructor Name */
+.instructor-name {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+/* Rating */
+.instructor-rating-ez {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.rating-stars {
+  color: #ffc107;
+  font-size: 16px;
+}
+
+.rating-value {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.rating-dot {
+  color: #999;
+}
+
+.rating-count {
+  color: #666;
+}
+
+/* Completed Lessons */
+.completed-lessons {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+/* Price */
+.instructor-price-ez {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+/* Book Button */
+.btn-book-online {
+  background: #ffc107;
+  color: #1a1a1a;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.btn-book-online:hover {
+  background: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+/* Action Buttons */
+.instructor-actions-ez {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-action {
+  background: white;
+  color: #333;
+  border: 2px solid #e0e0e0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: block;
+}
+
+.btn-action:hover {
+  border-color: #3da5d9;
+  background: #f0f8ff;
+  color: #3da5d9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .instructor-card-ez {
+    padding: 20px;
+  }
+
+  .instructor-photos {
+    gap: 12px;
+  }
+
+  .photo-circle {
+    width: 75px;
+    height: 75px;
+  }
+
+  .instructor-name {
+    font-size: 18px;
+  }
+
+  .instructor-price-ez {
+    font-size: 20px;
+  }
+}

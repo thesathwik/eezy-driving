@@ -1,0 +1,382 @@
+/* Availability Modal Overlay */
+.availability-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.availability-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 1200px;
+  width: 100%;
+  padding: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Modal Header */
+.availability-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.availability-modal-header h2 {
+  font-size: 20px;
+  color: #1a1a1a;
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.btn-close:hover {
+  color: #1a1a1a;
+}
+
+/* Legend */
+.availability-legend {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.legend-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #d0d0d0;
+}
+
+.legend-circle.available {
+  background: white;
+}
+
+.legend-circle.unavailable {
+  background: #9e9e9e;
+  border-color: #9e9e9e;
+}
+
+/* Week Navigation */
+.week-navigation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px 0;
+}
+
+.btn-nav {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.btn-nav:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.btn-today {
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-today:hover {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.week-range {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-left: 8px;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  margin-bottom: 24px;
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 800px;
+}
+
+.calendar-table thead {
+  background: #f5f5f5;
+}
+
+.calendar-table th {
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.calendar-table th.time-column {
+  width: 80px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+}
+
+.calendar-table th.day-column {
+  background: #6b7280;
+  color: white;
+}
+
+.time-cell {
+  padding: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  width: 80px;
+}
+
+.slot-cell {
+  padding: 0;
+  height: 40px;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.slot-cell.available {
+  background: white;
+}
+
+.slot-cell.available:hover {
+  background: #e3f2fd;
+  border-color: #3da5d9;
+}
+
+.slot-cell.unavailable {
+  background: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.slot-cell.selected {
+  background: #3da5d9 !important;
+  border-color: #2980b9 !important;
+}
+
+.slot-cell.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Calendar Loading */
+.calendar-loading {
+  padding: 60px;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Footer Notes */
+.calendar-footer {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.calendar-footer p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Book Button */
+.btn-book-instructor {
+  width: 100%;
+  background: #ffc107;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.btn-book-instructor:hover:not(:disabled) {
+  background: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 193, 7, 0.4);
+}
+
+.btn-book-instructor:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .availability-modal {
+    padding: 10px;
+  }
+
+  .availability-content {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .availability-modal-header h2 {
+    font-size: 16px;
+  }
+
+  .availability-legend {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .week-navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .week-range {
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .calendar-grid {
+    overflow-x: scroll;
+  }
+
+  .calendar-table {
+    font-size: 12px;
+  }
+
+  .time-cell {
+    font-size: 11px;
+    padding: 6px 4px;
+  }
+
+  .calendar-table th {
+    font-size: 11px;
+    padding: 8px 4px;
+  }
+
+  .slot-cell {
+    height: 32px;
+  }
+
+  .btn-book-instructor {
+    font-size: 16px;
+    padding: 16px 20px;
+  }
+
+  .calendar-footer {
+    padding: 12px 16px;
+  }
+
+  .calendar-footer p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .availability-content {
+    padding: 16px;
+  }
+
+  .availability-modal-header h2 {
+    font-size: 14px;
+  }
+
+  .btn-close {
+    font-size: 20px;
+  }
+
+  .legend-item {
+    font-size: 13px;
+  }
+
+  .legend-circle {
+    width: 16px;
+    height: 16px;
+  }
+}

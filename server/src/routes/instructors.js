@@ -1,0 +1,27 @@
+const express = require('express');
+const router = express.Router();
+const {
+  createOrUpdateProfile,
+  getProfile,
+  getAllInstructors,
+  getInstructorById,
+  updateAvailability,
+  updatePricing,
+  toggleVisibility,
+  getStats
+} = require('../controllers/instructorController');
+const { protect, isInstructor } = require('../middleware/auth');
+
+// Public routes
+router.get('/', getAllInstructors);
+router.get('/:id', getInstructorById);
+
+// Protected routes (Instructor only)
+router.post('/profile', protect, isInstructor, createOrUpdateProfile);
+router.get('/profile/me', protect, isInstructor, getProfile);
+router.put('/availability', protect, isInstructor, updateAvailability);
+router.put('/pricing', protect, isInstructor, updatePricing);
+router.put('/visibility', protect, isInstructor, toggleVisibility);
+router.get('/stats/me', protect, isInstructor, getStats);
+
+module.exports = router;

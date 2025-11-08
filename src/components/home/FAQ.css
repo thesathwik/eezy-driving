@@ -1,0 +1,129 @@
+/* Minimal FAQ section */
+.faq {
+  background: #f5f5f7;
+  padding: 120px 0;
+}
+
+.faq .container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 56px;
+}
+
+.faq-container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item:first-child {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.faq-question {
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 32px 0;
+  text-align: left;
+  font-size: 21px;
+  font-weight: 600;
+  color: #1d1d1f;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.faq-question:hover {
+  color: #ffc107;
+}
+
+.faq-icon {
+  font-size: 24px;
+  color: #86868b;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  margin-left: 24px;
+  font-weight: 300;
+}
+
+.faq-item.active .faq-icon {
+  transform: rotate(45deg);
+  color: #ffc107;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+}
+
+.faq-answer p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: #6e6e73;
+  font-weight: 400;
+  margin: 0;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 500px;
+  padding-bottom: 32px;
+}
+
+/* Remove CTA for cleaner look */
+.faq-cta {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .faq .container {
+    padding: 0 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .faq {
+    padding: 80px 0;
+  }
+
+  .faq .container {
+    padding: 0 24px;
+  }
+
+  .faq-question {
+    font-size: 19px;
+    padding: 24px 0;
+  }
+
+  .faq-icon {
+    font-size: 20px;
+    margin-left: 16px;
+  }
+
+  .faq-answer p {
+    font-size: 16px;
+  }
+
+  .faq-item.active .faq-answer {
+    padding-bottom: 24px;
+  }
+}

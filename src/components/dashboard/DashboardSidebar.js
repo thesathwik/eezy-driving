@@ -1,0 +1,107 @@
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import './DashboardSidebar.css';
+
+const DashboardSidebar = () => {
+  const location = useLocation();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const isActive = (path) => location.pathname === path;
+
+  return (
+    <aside className="dashboard-sidebar">
+      <div className="sidebar-logo">
+        <Link to="/">
+          <h2>EAZYDRIVING</h2>
+        </Link>
+      </div>
+
+      <nav className="sidebar-nav">
+        <Link
+          to="/instructor/dashboard"
+          className={`nav-item ${isActive('/instructor/dashboard') ? 'active' : ''}`}
+        >
+          <span className="nav-icon">⊙</span>
+          <span className="nav-label">Dashboard</span>
+        </Link>
+
+        <Link
+          to="/instructor/calendar"
+          className={`nav-item ${isActive('/instructor/calendar') ? 'active' : ''}`}
+        >
+          <span className="nav-icon">□</span>
+          <span className="nav-label">Calendar</span>
+        </Link>
+
+        <Link
+          to="/instructor/learners"
+          className={`nav-item ${isActive('/instructor/learners') ? 'active' : ''}`}
+        >
+          <span className="nav-icon">⊕</span>
+          <span className="nav-label">Learners</span>
+        </Link>
+
+        <Link
+          to="/instructor/reports"
+          className={`nav-item ${isActive('/instructor/reports') ? 'active' : ''}`}
+        >
+          <span className="nav-icon">▥</span>
+          <span className="nav-label">Reports</span>
+        </Link>
+
+        <div className="nav-item-expandable">
+          <button
+            className={`nav-item ${settingsOpen ? 'active' : ''}`}
+            onClick={() => setSettingsOpen(!settingsOpen)}
+          >
+            <span className="nav-icon">⚙</span>
+            <span className="nav-label">Settings</span>
+            <span className={`nav-arrow ${settingsOpen ? 'open' : ''}`}>▼</span>
+          </button>
+          {settingsOpen && (
+            <div className="nav-submenu">
+              <Link to="/instructor/settings/profile" className="nav-subitem">
+                Profile
+              </Link>
+              <Link to="/instructor/settings/availability" className="nav-subitem">
+                Availability
+              </Link>
+              <Link to="/instructor/settings/notifications" className="nav-subitem">
+                Notifications
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <div className="sidebar-divider"></div>
+
+        <Link to="/feedback" className="nav-item">
+          <span className="nav-icon">✎</span>
+          <span className="nav-label">Give Feedback</span>
+        </Link>
+
+        <Link to="/support" className="nav-item">
+          <span className="nav-icon">?</span>
+          <span className="nav-label">Support</span>
+        </Link>
+
+        <Link to="/contact" className="nav-item">
+          <span className="nav-icon">☎</span>
+          <span className="nav-label">Contact</span>
+        </Link>
+      </nav>
+
+      <div className="sidebar-rewards">
+        <div className="rewards-card">
+          <div className="rewards-label">EazyRewards</div>
+          <div className="rewards-amount">Earn $500</div>
+          <Link to="/refer" className="rewards-link">
+            Refer instructors to EAZYDRIVING →
+          </Link>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+export default DashboardSidebar;

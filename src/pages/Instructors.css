@@ -1,0 +1,279 @@
+/* Minimal Instructors Page - Jony Ive inspired */
+.instructors-page-ez {
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding-top: 80px;
+}
+
+.container-ez {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 40px 80px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  font-size: 14px;
+  color: #86868b;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+}
+
+.breadcrumb-item {
+  color: #1d1d1f;
+  font-weight: 400;
+}
+
+.breadcrumb-separator {
+  color: #86868b;
+}
+
+/* Quick Filters */
+.quick-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-btn:hover {
+  border-color: #ffc107;
+  background: rgba(255, 193, 7, 0.04);
+}
+
+.filter-btn.active {
+  background: #ffc107;
+  color: #1d1d1f;
+  border-color: #ffc107;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+}
+
+.filters-right {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+}
+
+.btn-filters,
+.btn-sort {
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-filters:hover,
+.btn-sort:hover {
+  border-color: #ffc107;
+  background: rgba(255, 193, 7, 0.04);
+}
+
+/* Sort Dropdown */
+.sort-dropdown {
+  position: relative;
+}
+
+.sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 200px;
+  padding: 8px;
+  z-index: 100;
+  animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sort-menu button {
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: background 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+
+.sort-menu button:hover {
+  background: rgba(255, 193, 7, 0.06);
+}
+
+/* Results Heading */
+.results-heading {
+  margin-bottom: 40px;
+}
+
+.results-heading h1 {
+  font-size: 40px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.results-price {
+  font-size: 19px;
+  color: #86868b;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* Instructors Grid */
+.instructors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+/* No Results */
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 96px 32px;
+  background: #f5f5f7;
+  border-radius: 20px;
+}
+
+.no-results h3 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.no-results p {
+  color: #86868b;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .container-ez {
+    padding: 40px 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .instructors-page-ez {
+    padding-top: 60px;
+  }
+
+  .container-ez {
+    padding: 24px 24px;
+  }
+
+  .breadcrumb {
+    margin-bottom: 24px;
+  }
+
+  .quick-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .filter-btn {
+    justify-content: center;
+  }
+
+  .filters-right {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .btn-filters,
+  .btn-sort {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .results-heading {
+    margin-bottom: 32px;
+  }
+
+  .results-heading h1 {
+    font-size: 32px;
+  }
+
+  .results-price {
+    font-size: 17px;
+  }
+
+  .instructors-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .no-results {
+    padding: 64px 24px;
+  }
+
+  .no-results h3 {
+    font-size: 24px;
+  }
+
+  .no-results p {
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,2577 @@
+/* Booking Flow Container */
+.booking-flow {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 120px 0 40px 0; /* Added top padding to clear fixed navbar */
+}
+
+/* Progress Steps */
+.booking-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 48px;
+  padding: 0 20px;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+
+.progress-step.active .step-circle {
+  background: #ffc107;
+  color: #1a1a1a;
+}
+
+.progress-step.current .step-circle {
+  background: #ffc107;
+  color: #1a1a1a;
+  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+}
+
+.step-label {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  font-weight: 500;
+}
+
+.progress-step.active .step-label {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.progress-line {
+  width: 60px;
+  height: 2px;
+  background: #e0e0e0;
+  margin: 0 -10px;
+  margin-bottom: 30px;
+  transition: background 0.3s;
+}
+
+.progress-line.active {
+  background: #ffc107;
+}
+
+/* Booking Content */
+.booking-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.booking-step {
+  background: white;
+  border-radius: 12px;
+  padding: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 0 20px;
+}
+
+.booking-step h1 {
+  font-size: 32px;
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+}
+
+.step-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 32px 0;
+}
+
+/* Step 1: Instructor Card */
+.instructor-card-booking {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.instructor-header-booking {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.instructor-avatar-booking {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3da5d9 0%, #2980b9 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.instructor-info-booking h3 {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+}
+
+.rating-booking {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.location-booking {
+  font-size: 14px;
+  color: #999;
+  margin: 0;
+}
+
+.instructor-details-booking {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.instructor-details-booking p {
+  margin: 0;
+  font-size: 15px;
+  color: #666;
+}
+
+/* Step 2: Amount Selection */
+.booking-step.booking-main-content {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.booking-main-content > div:first-child {
+  background: white;
+  border-radius: 12px;
+  padding: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lesson-packages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.package-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.package-card:hover {
+  border-color: #3da5d9;
+}
+
+.package-card.selected {
+  border-color: #ffc107;
+  background: #fffbf0;
+}
+
+.package-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.radio-button {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #d0d0d0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.package-card.selected .radio-button {
+  border-color: #ffc107;
+}
+
+.radio-inner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.radio-inner.checked {
+  background: #ffc107;
+}
+
+.package-info {
+  flex: 1;
+}
+
+.package-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1a1a1a;
+}
+
+.package-info p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.discount-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.discount-badge.green {
+  background: #10b981;
+  color: white;
+}
+
+/* Custom Hours Selector */
+.custom-hours-selector {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.custom-hours-selector label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+
+.hours-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.hours-input:focus {
+  outline: none;
+  border-color: #3da5d9;
+}
+
+/* Lessons Info Box */
+.lessons-info-box {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.info-illustration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.instructor-illustration {
+  width: 140px;
+  height: 140px;
+  background: linear-gradient(135deg, #3da5d9 0%, #2980b9 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: white;
+  font-size: 60px;
+}
+
+.tip-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ffc107;
+  color: #1a1a1a;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.info-content h3 {
+  font-size: 20px;
+  margin: 0 0 20px 0;
+  color: #1a1a1a;
+}
+
+.lesson-recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.recommendation {
+  display: grid;
+  grid-template-columns: 80px 140px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.recommendation:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.recommendation strong {
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.recommendation .category {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.recommendation .description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.best-value-badge {
+  background: #10b981;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Order Summary Sidebar */
+.order-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.order-summary h2 {
+  font-size: 24px;
+  margin: 0 0 24px 0;
+  color: #1a1a1a;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-item:first-child {
+  padding-top: 0;
+}
+
+.summary-label {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.summary-item.discount .summary-value {
+  color: #10b981;
+}
+
+.discount-tag {
+  background: #10b981;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.summary-value.green {
+  color: #10b981;
+}
+
+.info-icon {
+  font-size: 14px;
+  color: #999;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0 0 0;
+  margin-top: 16px;
+  border-top: 2px solid #1a1a1a;
+}
+
+.total-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.total-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.payment-plan {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin: 16px 0 0 0;
+}
+
+/* Buttons */
+.btn-continue {
+  width: 100%;
+  background: #ffc107;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.btn-continue:hover {
+  background: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.btn-continue-summary {
+  width: 100%;
+  background: #ffc107;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+  margin-top: 24px;
+}
+
+.btn-continue-summary:hover {
+  background: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+/* Step 3: Book Your Lessons */
+.new-booking-section {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.booking-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.booking-section-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.btn-remove-booking {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.btn-remove-booking:hover {
+  text-decoration: underline;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+
+.booking-type-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.booking-type-tab {
+  background: white;
+  border: none;
+  border-right: 1px solid #e0e0e0;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.booking-type-tab:last-child {
+  border-right: none;
+}
+
+.booking-type-tab:hover {
+  background: #f9f9f9;
+}
+
+.booking-type-tab.active {
+  background: #e8f4f8;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.date-input,
+.date-select,
+.time-select {
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #666;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.date-input:focus,
+.date-select:focus,
+.time-select:focus {
+  outline: none;
+  border-color: #3da5d9;
+}
+
+.location-input-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.location-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #666;
+  transition: border-color 0.2s;
+}
+
+.location-input:focus {
+  outline: none;
+  border-color: #3da5d9;
+}
+
+.btn-edit-location {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-edit-location:hover {
+  border-color: #3da5d9;
+  color: #3da5d9;
+}
+
+/* Booking Actions */
+.booking-actions {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-skip-booking {
+  width: 100%;
+  background: transparent;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-skip-booking:hover {
+  border-color: #ffc107;
+  color: #1a1a1a;
+  background: rgba(255, 193, 7, 0.04);
+}
+
+.btn-add-booking {
+  width: 100%;
+  background: white;
+  color: #666;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  margin-top: 16px;
+}
+
+.btn-add-booking:hover {
+  border-color: #3da5d9;
+  color: #3da5d9;
+}
+
+/* Step 1: Modern Instructor Confirmation */
+.booking-step-modern {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  margin: 0 20px 40px 20px;
+}
+
+.step-header {
+  margin-bottom: 40px;
+}
+
+.step-header h1 {
+  font-size: 40px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.step-subtitle-modern {
+  font-size: 17px;
+  color: #86868b;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+.instructor-confirmation-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+}
+
+/* Left Column */
+.instructor-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.instructor-profile-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-header-section {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.profile-avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+  color: #1d1d1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.profile-name-row h2 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.verified-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.profile-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.star-icon {
+  color: #ffc107;
+  font-size: 18px;
+}
+
+.rating-score {
+  font-size: 19px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.005em;
+}
+
+.rating-count {
+  font-size: 15px;
+  color: #86868b;
+  letter-spacing: -0.005em;
+}
+
+.top-badge {
+  background: #ffc107;
+  color: #1d1d1f;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.profile-location {
+  font-size: 15px;
+  color: #86868b;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px;
+  background: #f5f5f7;
+  border-radius: 12px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #86868b;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.instructor-bio-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.instructor-bio-card h3 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 16px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.instructor-bio-card p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1d1d1f;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.instructor-specialties-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.instructor-specialties-card h3 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 20px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.specialties-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.specialty-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f5f5f7;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #1d1d1f;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.specialty-icon {
+  color: #ffc107;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Right Column */
+.instructor-details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.quick-info-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.quick-info-card h3 {
+  font-size: 19px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 24px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row.highlight {
+  background: rgba(255, 193, 7, 0.04);
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  margin: 8px 0;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #86868b;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-value {
+  font-size: 15px;
+  color: #1d1d1f;
+  font-weight: 600;
+  text-align: right;
+  letter-spacing: -0.005em;
+}
+
+.inline-icon {
+  font-size: 14px;
+  color: #ffc107;
+}
+
+.availability-badge {
+  background: #ffc107;
+  color: #1d1d1f;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.pricing-preview-card {
+  background: #f5f5f7;
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.pricing-preview-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #86868b;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.price-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.price-amount {
+  font-size: 52px;
+  font-weight: 700;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.price-unit {
+  font-size: 21px;
+  color: #86868b;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.price-note {
+  font-size: 14px;
+  color: #86868b;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.005em;
+}
+
+.pricing-preview-card .trust-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.btn-continue-modern {
+  width: 100%;
+  background: #ffc107;
+  color: #1d1d1f;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
+  margin-top: 24px;
+}
+
+.btn-continue-modern:hover {
+  background: #ffb300;
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-continue-modern:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
+}
+
+.trust-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #1d1d1f;
+  letter-spacing: -0.005em;
+}
+
+.trust-icon {
+  color: #10b981;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Step 1: Streamlined Confirmation */
+.booking-step-simple {
+  background: transparent;
+  padding: 40px 20px;
+}
+
+.confirmation-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.instructor-confirm-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Header Section */
+.instructor-header-compact {
+  display: flex;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 32px;
+}
+
+.avatar-compact {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+  color: #1d1d1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+}
+
+.instructor-info-compact {
+  flex: 1;
+}
+
+.name-badges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.name-badges h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.verified-icon-small {
+  color: #10b981;
+  font-size: 20px;
+}
+
+.rating-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.star-small {
+  color: #ffc107;
+  font-size: 16px;
+}
+
+.rating-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.005em;
+}
+
+.reviews-text {
+  font-size: 15px;
+  color: #86868b;
+  letter-spacing: -0.005em;
+}
+
+.location-text {
+  font-size: 15px;
+  color: #86868b;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+/* Details Grid */
+.details-grid-compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #f5f5f7;
+  border-radius: 12px;
+}
+
+.detail-item-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-item-compact.highlight-compact {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ffc107;
+}
+
+.detail-label-compact {
+  font-size: 13px;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.detail-value-compact {
+  font-size: 17px;
+  color: #1d1d1f;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+/* Pricing Section */
+.pricing-section-compact {
+  padding: 24px;
+  background: #f5f5f7;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.price-row-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.price-label-compact {
+  font-size: 17px;
+  color: #1d1d1f;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.price-value-compact {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.savings-text-compact {
+  font-size: 14px;
+  color: #86868b;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+/* Trust Badges */
+.trust-row-compact {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.trust-badge-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #1d1d1f;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.trust-check {
+  color: #10b981;
+  font-size: 16px;
+}
+
+/* CTA Button */
+.btn-continue-compact {
+  width: 100%;
+  background: #ffc107;
+  color: #1d1d1f;
+  border: none;
+  border-radius: 12px;
+  padding: 18px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
+}
+
+.btn-continue-compact:hover {
+  background: #ffb300;
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-continue-compact:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
+}
+
+/* Step 2: Package Selection - Streamlined */
+.package-selection-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.package-selection-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.package-header-section {
+  margin-bottom: 32px;
+}
+
+.package-header-section h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 8px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.package-subtitle {
+  font-size: 17px;
+  color: #86868b;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+/* Package Options */
+.package-options-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.package-option-compact {
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #ffffff;
+}
+
+.package-option-compact:hover {
+  border-color: #ffc107;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.15);
+}
+
+.package-option-compact.selected {
+  border-color: #ffc107;
+  background: rgba(255, 193, 7, 0.03);
+  box-shadow: 0 2px 12px rgba(255, 193, 7, 0.2);
+}
+
+.package-option-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.radio-check-compact {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: #1d1d1f;
+  font-size: 12px;
+}
+
+.package-option-compact.selected .radio-check-compact {
+  background: #ffc107;
+  border-color: #ffc107;
+}
+
+.package-option-details {
+  flex: 1;
+}
+
+.package-option-details h3 {
+  font-size: 19px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 4px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.package-option-details p {
+  font-size: 15px;
+  color: #86868b;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.package-pricing {
+  text-align: right;
+}
+
+.package-price {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.package-savings {
+  display: block;
+  font-size: 13px;
+  color: #10b981;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Custom Hours Input */
+.custom-hours-input-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.custom-hours-input-section label {
+  display: block;
+  font-size: 15px;
+  color: #1d1d1f;
+  margin-bottom: 12px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.custom-hours-input-section label strong {
+  color: #ffc107;
+  font-size: 19px;
+}
+
+.hours-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  outline: none;
+  -webkit-appearance: none;
+  margin: 16px 0;
+}
+
+.hours-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffc107;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+  transition: all 0.2s;
+}
+
+.hours-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.5);
+}
+
+.hours-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffc107;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+  transition: all 0.2s;
+  border: none;
+}
+
+.hours-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.5);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #86868b;
+  margin-top: -8px;
+  padding: 0 4px;
+}
+
+.custom-discount-info {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #10b981;
+  font-weight: 500;
+}
+
+.custom-discount-info svg {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Pricing Summary */
+.pricing-summary-compact {
+  padding: 24px;
+  background: #f5f5f7;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.summary-label-compact {
+  font-size: 15px;
+  color: #1d1d1f;
+  letter-spacing: -0.005em;
+}
+
+.summary-value-compact {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.005em;
+}
+
+.summary-value-compact.savings {
+  color: #10b981;
+}
+
+.summary-row.total-row {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.summary-label-total {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.005em;
+}
+
+.summary-value-total {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.payment-plan-compact {
+  font-size: 14px;
+  color: #86868b;
+  text-align: center;
+  margin: 12px 0 0 0;
+  letter-spacing: -0.005em;
+}
+
+/* Recommendations */
+.recommendations-compact {
+  margin-bottom: 32px;
+}
+
+.recommendations-compact h4 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.005em;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.recommendation-item-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: #f5f5f7;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.rec-hours {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
+}
+
+.rec-type {
+  font-size: 13px;
+  color: #86868b;
+  letter-spacing: -0.005em;
+}
+
+/* Back Button - Top Position */
+.btn-back-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  margin-bottom: 24px;
+}
+
+.btn-back-top:hover {
+  color: #1d1d1f;
+  background: rgba(255, 193, 7, 0.08);
+}
+
+.btn-back-top svg {
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .booking-step.booking-main-content {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary {
+    position: static;
+  }
+
+  .lessons-info-box {
+    grid-template-columns: 1fr;
+  }
+
+  .info-illustration {
+    display: none;
+  }
+
+  .instructor-confirmation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .instructor-details-column {
+    order: -1;
+  }
+
+  .specialties-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-flow {
+    padding: 100px 0 40px 0; /* Adjust for smaller navbar on mobile */
+  }
+
+  .booking-progress {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .progress-step {
+    min-width: 80px;
+  }
+
+  .step-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .step-label {
+    font-size: 12px;
+  }
+
+  .progress-line {
+    width: 40px;
+  }
+
+  .booking-step {
+    padding: 32px 24px;
+    margin: 0 16px;
+  }
+
+  .booking-step h1 {
+    font-size: 24px;
+  }
+
+  .booking-main-content > div:first-child {
+    padding: 32px 24px;
+  }
+
+  .order-summary {
+    padding: 24px;
+  }
+
+  .recommendation {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .best-value-badge {
+    width: fit-content;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-type-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-type-tab {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .booking-type-tab:last-child {
+    border-bottom: none;
+  }
+
+  .new-booking-section {
+    padding: 24px;
+  }
+
+  /* Step 1 Mobile Responsive */
+  .booking-step-modern {
+    margin: 0 16px 32px 16px;
+  }
+
+  .step-header h1 {
+    font-size: 32px;
+  }
+
+  .step-subtitle-modern {
+    font-size: 16px;
+  }
+
+  .profile-header-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    font-size: 36px;
+  }
+
+  .profile-name-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-name-row h2 {
+    font-size: 28px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .instructor-profile-card {
+    padding: 32px 24px;
+  }
+
+  .instructor-bio-card,
+  .instructor-specialties-card,
+  .quick-info-card {
+    padding: 24px;
+  }
+
+  .price-amount {
+    font-size: 44px;
+  }
+
+  .price-unit {
+    font-size: 19px;
+  }
+
+  /* Streamlined Confirmation - Mobile */
+  .booking-step-simple {
+    padding: 20px 16px;
+  }
+
+  .instructor-confirm-card {
+    padding: 24px 20px;
+  }
+
+  .instructor-header-compact {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .avatar-compact {
+    width: 72px;
+    height: 72px;
+    font-size: 32px;
+  }
+
+  .name-badges {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .name-badges h2 {
+    font-size: 24px;
+  }
+
+  .details-grid-compact {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 12px;
+  }
+
+  .price-value-compact {
+    font-size: 28px;
+  }
+
+  .trust-row-compact {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  /* Package Selection - Mobile */
+  .package-selection-card {
+    padding: 24px 20px;
+  }
+
+  .package-header-section h1 {
+    font-size: 28px;
+  }
+
+  .package-option-compact {
+    padding: 16px;
+  }
+
+  .package-option-header {
+    flex-wrap: wrap;
+  }
+
+  .package-pricing {
+    width: 100%;
+    text-align: left;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .package-price {
+    display: inline;
+    font-size: 21px;
+    margin-right: 8px;
+  }
+
+  .package-savings {
+    display: inline;
+  }
+
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .summary-value-total {
+    font-size: 24px;
+  }
+}
+
+/* Step 4: Learner Registration */
+.existing-user-section {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.existing-user-section p {
+  margin: 0;
+  font-size: 15px;
+  color: #1a1a1a;
+  letter-spacing: -0.005em;
+}
+
+.login-link {
+  color: #3da5d9;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.form-section {
+  padding-bottom: 32px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.section-heading {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.form-label-required::after {
+  content: " *";
+  color: #dc2626;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: white;
+  transition: border-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #3da5d9;
+}
+
+.form-input.with-icon {
+  padding-left: 40px;
+}
+
+.input-icon-left {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Radio Buttons */
+.radio-group {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+}
+
+.radio-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d0d0d0;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.radio-option input[type="radio"]:checked ~ .radio-custom {
+  border-color: #ffc107;
+}
+
+.radio-option input[type="radio"]:checked ~ .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffc107;
+}
+
+.radio-label {
+  font-size: 15px;
+  color: #1a1a1a;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+/* Date Inputs */
+.date-inputs {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 12px;
+}
+
+.date-select {
+  padding: 12px 14px;
+}
+
+/* Checkboxes */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-option input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-custom,
+.checkbox-custom-yellow {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d0d0d0;
+  border-radius: 4px;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s;
+  margin-top: 2px;
+}
+
+.checkbox-option input[type="checkbox"]:checked ~ .checkbox-custom {
+  border-color: #3da5d9;
+  background: #3da5d9;
+}
+
+.checkbox-option input[type="checkbox"]:checked ~ .checkbox-custom-yellow {
+  border-color: #ffc107;
+  background: #ffc107;
+}
+
+.checkbox-option input[type="checkbox"]:checked ~ .checkbox-custom::after,
+.checkbox-option input[type="checkbox"]:checked ~ .checkbox-custom-yellow::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+}
+
+.terms-link {
+  color: #3da5d9;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Responsive for Registration */
+@media (max-width: 768px) {
+  .date-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .existing-user-section {
+    padding: 14px 16px;
+  }
+
+  .section-heading {
+    font-size: 18px;
+  }
+}
+
+/* Step 5: Payment */
+.payment-banner {
+  background: #ffc107;
+  border-radius: 8px;
+  padding: 16px 24px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.payment-banner p {
+  margin: 0;
+  font-size: 15px;
+  color: #1a1a1a;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.payment-methods-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.payment-method-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  background: white;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.payment-method-card:hover {
+  border-color: #d0d0d0;
+}
+
+.payment-method-card.active {
+  border-color: #ffc107;
+  box-shadow: 0 2px 12px rgba(255, 193, 7, 0.15);
+}
+
+.payment-method-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+.payment-radio {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.payment-radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d0d0d0;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.payment-method-card.active .payment-radio-custom {
+  border-color: #ffc107;
+}
+
+.payment-method-card.active .payment-radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffc107;
+}
+
+.payment-method-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.payment-icon {
+  color: #ffc107;
+  font-size: 18px;
+}
+
+.payment-method-title span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.005em;
+}
+
+.card-brands {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.card-brand-logo {
+  height: 24px;
+  width: auto;
+}
+
+.payment-method-logo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.paypal-logo {
+  height: 28px;
+  width: auto;
+}
+
+.afterpay-logo,
+.klarna-logo,
+.gpay-logo {
+  height: 30px;
+  width: 120px;
+}
+
+/* Card Form */
+.card-form {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.payment-input {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+}
+
+.input-icon-left-payment {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.card-form .form-input.payment-input {
+  padding-left: 44px;
+}
+
+.card-details-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.save-payment-checkbox {
+  margin-top: 8px;
+}
+
+/* Billing Details */
+.billing-details-section {
+  padding: 24px 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.billing-details-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.billing-details-toggle:hover {
+  color: #666;
+}
+
+/* Payment Summary Sidebar */
+.payment-summary {
+  position: sticky;
+  top: 100px;
+}
+
+.summary-booking-info {
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.booking-info-text {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+  letter-spacing: -0.005em;
+}
+
+.btn-pay-now {
+  width: 100%;
+  background: #ffc107;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+  margin-top: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  letter-spacing: -0.005em;
+}
+
+.btn-pay-now:hover {
+  background: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.btn-pay-now:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.btn-pay-now:disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.payment-instruction {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-top: 12px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+/* Buy Now Pay Later Section */
+.bnpl-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.bnpl-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bnpl-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.info-icon-small {
+  font-size: 14px;
+  color: #999;
+}
+
+.bnpl-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.005em;
+}
+
+.bnpl-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bnpl-logo-small {
+  height: 24px;
+  width: auto;
+}
+
+/* Mobile Responsive for Payment */
+@media (max-width: 768px) {
+  .payment-banner {
+    padding: 14px 16px;
+  }
+
+  .payment-banner p {
+    font-size: 14px;
+  }
+
+  .payment-method-header {
+    flex-wrap: wrap;
+  }
+
+  .card-brands {
+    width: 100%;
+    margin-left: 52px;
+    margin-top: 8px;
+  }
+
+  .card-details-row {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-method-logo {
+    margin-left: 52px;
+  }
+}

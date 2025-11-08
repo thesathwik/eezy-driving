@@ -1,0 +1,28 @@
+.home-page {
+  min-height: 100vh;
+}
+
+.featured-instructors {
+  background-color: var(--white);
+}
+
+.instructors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .instructors-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .instructors-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}

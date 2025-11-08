@@ -1,0 +1,722 @@
+/* Profile Page */
+.profile-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* Yellow Header */
+.profile-header {
+  background: #ffc107;
+  padding: 20px 0 80px 0;
+  position: relative;
+}
+
+.btn-back-profile {
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: opacity 0.2s;
+}
+
+.btn-back-profile:hover {
+  opacity: 0.8;
+}
+
+/* Instructor Header Card */
+.instructor-header-card {
+  background: white;
+  margin-top: -60px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+}
+
+.instructor-photos {
+  display: flex;
+  gap: -20px;
+  position: relative;
+}
+
+.photo-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid white;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instructor-photo-circle {
+  z-index: 2;
+}
+
+.car-photo-circle {
+  margin-left: -30px;
+  z-index: 1;
+  background: white;
+}
+
+.instructor-avatar-profile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3da5d9 0%, #2980b9 100%);
+  color: white;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.car-icon-large {
+  font-size: 48px;
+  color: #999;
+}
+
+.instructor-title h1 {
+  font-size: 36px;
+  margin: 0 0 12px 0;
+  color: #1a1a1a;
+}
+
+.instructor-rating-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stars-row {
+  display: flex;
+  gap: 4px;
+}
+
+.star-filled {
+  color: #ffc107;
+  font-size: 18px;
+}
+
+.star-empty {
+  color: #e0e0e0;
+  font-size: 18px;
+}
+
+.rating-text {
+  font-size: 16px;
+  color: #666;
+}
+
+/* Profile Content Layout */
+.profile-content {
+  padding-bottom: 60px;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Main Content */
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.profile-section {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h2 {
+  font-size: 24px;
+  margin: 0 0 20px 0;
+  color: #1a1a1a;
+}
+
+.profile-section h3 {
+  font-size: 16px;
+  margin: 24px 0 12px 0;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* Bio Section */
+.bio-text {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  max-height: 120px;
+  overflow: hidden;
+}
+
+.bio-text.expanded {
+  max-height: none;
+}
+
+.bio-text p {
+  margin: 0 0 12px 0;
+}
+
+.btn-show-more {
+  background: none;
+  border: none;
+  color: #3da5d9;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-show-more:hover {
+  color: #2980b9;
+}
+
+/* Instructor Details */
+.instructor-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #666;
+  font-size: 15px;
+}
+
+.detail-icon {
+  font-size: 20px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+/* Languages */
+.languages-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.language-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.language-badge {
+  background: #6b7280;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Reviews Section */
+.reviews-section {
+  padding: 32px;
+}
+
+.review-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.review-info h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1a1a1a;
+}
+
+.review-date {
+  font-size: 13px;
+  color: #999;
+}
+
+.review-stars {
+  display: flex;
+  gap: 4px;
+}
+
+.review-comment {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.page-btn {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #666;
+}
+
+.page-btn.active {
+  background: #ffc107;
+  border-color: #ffc107;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.page-btn:hover:not(.active) {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+/* Sidebar */
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 100px;
+}
+
+/* Pricing Card */
+.pricing-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-section {
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.pricing-section:first-child {
+  padding-top: 0;
+}
+
+.pricing-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pricing-section h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #1a1a1a;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.price-row:last-child {
+  margin-bottom: 0;
+}
+
+.price-label {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.price-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.price-badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.price-badge.save {
+  background: #10b981;
+  color: white;
+}
+
+.info-icon-small {
+  font-size: 14px;
+  color: #999;
+}
+
+/* Buttons */
+.btn-book-now {
+  width: 100%;
+  background: #ffc107;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.btn-book-now:hover {
+  background: #ffb300;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.btn-check-availability {
+  width: 100%;
+  background: white;
+  color: #1a1a1a;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.btn-check-availability:hover {
+  border-color: #3da5d9;
+  color: #3da5d9;
+}
+
+/* Payment Methods */
+.payment-methods {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.payment-methods img {
+  width: 40px;
+  height: auto;
+}
+
+/* Payment Options Card */
+.payment-options-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-options-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+}
+
+.payment-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-logos img {
+  width: 40px;
+  height: auto;
+}
+
+.payment-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}
+
+/* Features Card */
+.features-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.feature-item:first-child {
+  padding-top: 0;
+}
+
+.feature-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.feature-icon {
+  font-size: 24px;
+  color: #3da5d9;
+  flex-shrink: 0;
+}
+
+.feature-text h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #1a1a1a;
+}
+
+.feature-text p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn-more-info {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #3da5d9;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0 0 0;
+  margin-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-more-info:hover {
+  color: #2980b9;
+}
+
+/* Vehicle Card */
+.vehicle-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.vehicle-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #1a1a1a;
+}
+
+.vehicle-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.vehicle-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vehicle-details h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #1a1a1a;
+}
+
+.vehicle-details p {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+/* Service Area Card */
+.service-area-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-service-area {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  text-align: left;
+}
+
+.btn-service-area:hover {
+  color: #3da5d9;
+}
+
+.service-area-map {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.service-area-map p {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0;
+}
+
+.service-note {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.service-area-map > div {
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    padding: 16px 0 60px 0;
+  }
+
+  .instructor-header-card {
+    margin-top: -40px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .instructor-photos {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .photo-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .instructor-avatar-profile {
+    font-size: 40px;
+  }
+
+  .car-icon-large {
+    font-size: 40px;
+  }
+
+  .instructor-title h1 {
+    font-size: 28px;
+  }
+
+  .instructor-rating-profile {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-section {
+    padding: 24px;
+  }
+
+  .pricing-card,
+  .payment-options-card,
+  .features-card,
+  .vehicle-card,
+  .service-area-card {
+    padding: 20px;
+  }
+}

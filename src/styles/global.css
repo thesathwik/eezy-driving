@@ -1,0 +1,222 @@
+@import './variables.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #1d1d1f;
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  line-height: 1.1;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 72px;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 56px;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 40px;
+  letter-spacing: -0.015em;
+}
+
+h4 {
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+
+a {
+  text-decoration: none;
+  color: #1d1d1f;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a:hover {
+  color: #ffc107;
+}
+
+button {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: -0.005em;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+input,
+select,
+textarea {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 80px;
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 0 80px;
+}
+
+.section {
+  padding: 120px 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 96px;
+}
+
+.section-title h2 {
+  margin-bottom: 16px;
+  font-size: 56px;
+  color: #1d1d1f;
+}
+
+.section-title p {
+  color: #86868b;
+  font-size: 21px;
+  max-width: 640px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+/* Utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: #ffc107;
+}
+
+.text-secondary {
+  color: #86868b;
+}
+
+.bg-primary {
+  background-color: #ffc107;
+}
+
+.bg-secondary {
+  background-color: #f5f5f7;
+}
+
+/* Spacing utilities */
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-4 { margin-top: 32px; }
+.mt-8 { margin-top: 64px; }
+
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-4 { margin-bottom: 32px; }
+.mb-8 { margin-bottom: 64px; }
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.grid {
+  display: grid;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .container,
+  .container-fluid {
+    padding: 0 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container,
+  .container-fluid {
+    padding: 0 24px;
+  }
+
+  h1 {
+    font-size: 44px;
+  }
+
+  h2 {
+    font-size: 40px;
+  }
+
+  h3 {
+    font-size: 32px;
+  }
+
+  h4 {
+    font-size: 24px;
+  }
+
+  .section {
+    padding: 80px 0;
+  }
+
+  .section-title {
+    margin-bottom: 56px;
+  }
+
+  .section-title h2 {
+    font-size: 40px;
+  }
+
+  .section-title p {
+    font-size: 19px;
+  }
+}

@@ -1,0 +1,107 @@
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.stat-card {
+  background: var(--white);
+  border: 2px solid var(--secondary-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-600) 0%, var(--accent-500) 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+.stat-card:hover {
+  border-color: var(--primary-300);
+  box-shadow: 0 4px 20px rgba(46, 139, 192, 0.1);
+  transform: translateY(-2px);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.stat-label {
+  font-size: var(--text-sm);
+  color: var(--secondary-600);
+  font-weight: 600;
+}
+
+.stat-icon {
+  font-size: var(--text-xl);
+  opacity: 0.6;
+}
+
+.stat-value {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--primary-900);
+  margin-bottom: var(--space-3);
+  line-height: 1.2;
+}
+
+.stat-footer {
+  font-size: var(--text-xs);
+  color: var(--secondary-600);
+  margin-top: var(--space-3);
+}
+
+.stat-link {
+  color: var(--accent-600);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-base);
+}
+
+.stat-link:hover {
+  color: var(--accent-700);
+  text-decoration: underline;
+}
+
+.stat-note {
+  font-size: var(--text-xs);
+  color: var(--secondary-500);
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .stat-value {
+    font-size: var(--text-3xl);
+  }
+}
