@@ -95,8 +95,11 @@ const InstructorSettings = () => {
 
       const data = await response.json();
 
+      console.log('Profile API Response:', data);
+
       if (data.success && data.data) {
         const profile = data.data;
+        console.log('Instructor Profile Data:', profile);
         setInstructorProfile(profile);
 
         // Populate form with profile data

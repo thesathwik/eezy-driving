@@ -505,23 +505,62 @@ const CompleteInstructorProfile = () => {
 
     setIsLoading(true);
     try {
-      // Prepare profile data
+      // Prepare profile data - transform flat form data to nested structure
       const profileData = {
         preferredFirstName: formData.preferredFirstName,
         gender: formData.gender,
         postcode: formData.postcode,
         bio: formData.bio,
         languages: formData.languages,
-        memberOfAssociation: formData.memberOfAssociation,
-        instructingSince: formData.instructingSince,
+        memberOfAssociation: formData.memberOfAssociation === 'yes',
+        instructingSince: {
+          month: formData.startMonth,
+          year: parseInt(formData.startYear)
+        },
         services: formData.services,
-        notifications: formData.notifications,
+        notifications: {
+          email: formData.emailNotifications,
+          sms: formData.smsNotifications
+        },
         marketplaceVisible: formData.marketplaceVisible,
-        vehicle: formData.vehicle,
-        serviceArea: formData.serviceArea,
+        vehicle: {
+          transmissionOffered: formData.transmissionOffered,
+          transmission: formData.vehicleTransmission,
+          registration: formData.vehicleRegistration,
+          make: formData.vehicleMake,
+          model: formData.vehicleModel,
+          year: parseInt(formData.vehicleYear),
+          ancapRating: formData.ancapRating,
+          hasDualControls: formData.hasDualControls === 'yes'
+        },
+        serviceArea: {
+          suburbs: formData.serviceSuburbs,
+          testLocations: formData.testLocations
+        },
         openingHours: formData.openingHours,
-        pricing: formData.pricing,
-        banking: formData.banking
+        pricing: {
+          marketplaceLessonRate: parseFloat(formData.pricing.marketplaceLessonRate),
+          privateLessonRate: parseFloat(formData.pricing.privateLessonRate),
+          marketplaceTestPackageRate: parseFloat(formData.pricing.marketplaceTestPackageRate),
+          privateTestPackageRate: parseFloat(formData.pricing.privateTestPackageRate)
+        },
+        banking: {
+          businessName: formData.banking.businessName,
+          abn: formData.banking.abn,
+          billingAddress: {
+            street: formData.banking.billingAddress,
+            suburb: formData.banking.suburb,
+            postcode: formData.banking.postcode,
+            state: formData.banking.state
+          },
+          registeredForGST: formData.banking.registeredForGST === 'yes',
+          payoutFrequency: formData.banking.payoutFrequency,
+          bankAccount: {
+            accountName: formData.banking.accountName,
+            bsb: formData.banking.bsb,
+            accountNumber: formData.banking.accountNumber
+          }
+        }
       };
 
       // Get auth token
