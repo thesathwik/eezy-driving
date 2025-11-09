@@ -505,12 +505,48 @@ const CompleteInstructorProfile = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Implement API call to save instructor profile
-      console.log('Profile data:', formData);
-      // For now, just navigate to dashboard
-      navigate('/');
+      // Prepare profile data
+      const profileData = {
+        preferredFirstName: formData.preferredFirstName,
+        gender: formData.gender,
+        postcode: formData.postcode,
+        bio: formData.bio,
+        languages: formData.languages,
+        memberOfAssociation: formData.memberOfAssociation,
+        instructingSince: formData.instructingSince,
+        services: formData.services,
+        notifications: formData.notifications,
+        marketplaceVisible: formData.marketplaceVisible,
+        vehicle: formData.vehicle,
+        serviceArea: formData.serviceArea,
+        openingHours: formData.openingHours,
+        pricing: formData.pricing,
+        banking: formData.banking
+      };
+
+      // Get auth token
+      const token = localStorage.getItem('eazydriving_session');
+      const session = token ? JSON.parse(token) : null;
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001/api'}/instructors/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.token}`
+        },
+        body: JSON.stringify(profileData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        navigate('/instructor/dashboard');
+      } else {
+        setErrors({ general: data.message || 'Failed to save profile' });
+      }
     } catch (error) {
-      setErrors({ general: error.message });
+      console.error('Profile save error:', error);
+      setErrors({ general: 'An error occurred while saving your profile' });
     } finally {
       setIsLoading(false);
     }

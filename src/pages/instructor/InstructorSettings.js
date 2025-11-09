@@ -89,7 +89,7 @@ const InstructorSettings = () => {
   const fetchInstructorProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API.instructors.list}/profile`, {
+      const response = await fetch(`${API.instructors.list}/profile/me`, {
         headers: getHeaders(true)
       });
 
@@ -165,7 +165,7 @@ const InstructorSettings = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const response = await fetch(`${API.instructors.list}/profile`, {
+      const response = await fetch(`${API.instructors.list}/profile/me`, {
         method: 'POST',
         headers: getHeaders(true),
         body: JSON.stringify(formData)
