@@ -56,10 +56,10 @@ const InstructorSettings = () => {
   };
 
   return (
-    <div className="dashboard-layout">
+    <div className="dashboard-page">
       <DashboardSidebar />
 
-      <div className="dashboard-content settings-page">
+      <div className="dashboard-main settings-page">
         {/* Breadcrumb */}
         <div className="breadcrumb">
           <span className="breadcrumb-icon">🏠</span>

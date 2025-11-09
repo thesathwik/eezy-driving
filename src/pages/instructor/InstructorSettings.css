@@ -1,8 +1,7 @@
 /* Settings Page Layout */
 .settings-page {
-  padding: 2rem 3rem;
+  /* Padding and max-width only - margin-left comes from .dashboard-main */
   max-width: 1400px;
-  margin: 0 auto;
 }
 
 /* Breadcrumb */
