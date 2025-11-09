@@ -14,6 +14,7 @@ import LearnerSignup from './pages/auth/LearnerSignup';
 import InstructorSignup from './pages/auth/InstructorSignup';
 import CompleteInstructorProfile from './pages/auth/CompleteInstructorProfile';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
+import InstructorSettings from './pages/instructor/InstructorSettings';
 import './styles/global.css';
 
 function AppContent() {
@@ -21,6 +22,7 @@ function AppContent() {
 
   // Hide Navigation and Footer for dashboard pages
   const isDashboard = location.pathname.startsWith('/instructor/dashboard') ||
+                      location.pathname.startsWith('/instructor/settings') ||
                       location.pathname.startsWith('/learner/dashboard');
 
   return (
@@ -39,6 +41,7 @@ function AppContent() {
           <Route path="/signup/instructor" element={<InstructorSignup />} />
           <Route path="/instructor/complete-profile" element={<CompleteInstructorProfile />} />
           <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
+          <Route path="/instructor/settings" element={<InstructorSettings />} />
           <Route path="/signup" element={<LearnerSignup />} />
           {/* Additional routes can be added here */}
         </Routes>
