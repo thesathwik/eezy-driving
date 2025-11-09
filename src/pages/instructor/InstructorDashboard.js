@@ -51,6 +51,18 @@ const InstructorDashboard = () => {
       setLoading(true);
       setError(null);
 
+      // First check if instructor profile exists
+      const profileCheck = await fetch(`${API.instructors.list}/profile/me`, {
+        headers: getHeaders(true)
+      });
+      const profileData = await profileCheck.json();
+
+      // If no instructor profile, redirect to complete profile
+      if (!profileData.success) {
+        navigate('/instructor/complete-profile');
+        return;
+      }
+
       // Fetch all three types of bookings in parallel
       const [upcomingRes, pendingRes, historyRes] = await Promise.all([
         fetch(`${API.bookings}/instructor/${instructorId}/upcoming`, {
@@ -68,15 +80,10 @@ const InstructorDashboard = () => {
       const pendingData = await pendingRes.json();
       const historyData = await historyRes.json();
 
-      if (upcomingData.success) {
-        setBookings(upcomingData.data || []);
-      }
-      if (pendingData.success) {
-        setPendingProposals(pendingData.data || []);
-      }
-      if (historyData.success) {
-        setHistory(historyData.data || []);
-      }
+      // Set data even if success is false (just empty arrays)
+      setBookings(upcomingData.success ? (upcomingData.data || []) : []);
+      setPendingProposals(pendingData.success ? (pendingData.data || []) : []);
+      setHistory(historyData.success ? (historyData.data || []) : []);
 
       setLoading(false);
     } catch (err) {
