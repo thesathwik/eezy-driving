@@ -60,14 +60,26 @@ const DashboardSidebar = () => {
           </button>
           {settingsOpen && (
             <div className="nav-submenu">
-              <Link to="/instructor/settings/profile" className="nav-subitem">
+              <Link to="/instructor/settings?tab=personal" className="nav-subitem">
+                Personal Details
+              </Link>
+              <Link to="/instructor/settings?tab=profile" className="nav-subitem">
                 Profile
               </Link>
-              <Link to="/instructor/settings/availability" className="nav-subitem">
-                Availability
+              <Link to="/instructor/settings?tab=vehicle" className="nav-subitem">
+                Vehicle
               </Link>
-              <Link to="/instructor/settings/notifications" className="nav-subitem">
-                Notifications
+              <Link to="/instructor/settings?tab=service-area" className="nav-subitem">
+                Service Area
+              </Link>
+              <Link to="/instructor/settings?tab=hours" className="nav-subitem">
+                Opening Hours
+              </Link>
+              <Link to="/instructor/settings?tab=pricing" className="nav-subitem">
+                Pricing
+              </Link>
+              <Link to="/instructor/settings?tab=banking" className="nav-subitem">
+                Banking
               </Link>
             </div>
           )}

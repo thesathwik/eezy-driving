@@ -84,7 +84,7 @@ const InstructorSignup = () => {
       const result = await signup(userData);
 
       if (result.success) {
-        // Redirect to profile completion page
+        // Redirect to profile completion (mandatory 7 steps)
         navigate('/instructor/complete-profile');
       } else {
         if (result.field) {
