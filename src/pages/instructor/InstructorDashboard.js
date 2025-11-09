@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import DashboardSidebar from '../../components/dashboard/DashboardSidebar';
 import DashboardStats from '../../components/dashboard/DashboardStats';
@@ -6,8 +7,11 @@ import BookingsSection from '../../components/dashboard/BookingsSection';
 import './Dashboard.css';
 
 const InstructorDashboard = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Mock data - will be replaced with actual data from backend
   const stats = {
@@ -55,6 +59,22 @@ const InstructorDashboard = () => {
     }
   ];
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <div className="dashboard-page">
       <DashboardSidebar />
@@ -67,14 +87,49 @@ const InstructorDashboard = () => {
               <span className="notification-icon">🔔</span>
               <span>Notifications</span>
             </button>
-            <div className="user-profile-dropdown">
-              <img
-                src="/api/placeholder/40/40"
-                alt={user?.firstName || 'User'}
-                className="user-avatar"
-              />
-              <span className="user-name">{user?.firstName || 'Sreenivas'}</span>
-              <span className="dropdown-arrow">▼</span>
+            <div className="user-profile-dropdown" ref={dropdownRef}>
+              <button
+                className="user-profile-button"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                <div className="user-avatar-circle">
+                  {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                <div className="user-info">
+                  <span className="user-name">{user?.firstName || 'User'}</span>
+                  <span className="user-role">INSTRUCTOR</span>
+                </div>
+              </button>
+              {showUserMenu && (
+                <div className="user-dropdown-menu">
+                  <div className="user-dropdown-header">
+                    <div className="user-avatar-large">
+                      {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div className="user-dropdown-info">
+                      <div className="user-dropdown-name">User</div>
+                      <div className="user-dropdown-role">INSTRUCTOR</div>
+                    </div>
+                  </div>
+                  <div className="user-dropdown-email">{user?.email || 'instructor@gmail.com'}</div>
+                  <div className="user-dropdown-divider"></div>
+                  <div className="user-dropdown-links">
+                    <button onClick={() => { navigate('/instructor/dashboard'); setShowUserMenu(false); }}>
+                      Dashboard
+                    </button>
+                    <button onClick={() => { navigate('/instructor/profile'); setShowUserMenu(false); }}>
+                      Profile
+                    </button>
+                    <button onClick={() => { navigate('/instructor/settings'); setShowUserMenu(false); }}>
+                      Settings
+                    </button>
+                  </div>
+                  <div className="user-dropdown-divider"></div>
+                  <button className="user-dropdown-logout" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
