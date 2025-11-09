@@ -405,3 +405,78 @@ exports.deleteBooking = async (req, res) => {
     });
   }
 };
+
+// @desc    Get all learners for instructor
+// @route   GET /api/bookings/instructor/:instructorId/learners
+// @access  Private (Instructor)
+exports.getInstructorLearners = async (req, res) => {
+  try {
+    const { instructorId } = req.params;
+
+    // Try to find instructor profile by user ID or instructor ID
+    let instructor = await Instructor.findOne({ user: instructorId });
+    if (!instructor) {
+      instructor = await Instructor.findById(instructorId);
+    }
+
+    const instructorIdToUse = instructor ? instructor._id : instructorId;
+
+    // Get all bookings for this instructor to find unique learners
+    const bookings = await Booking.find({
+      instructor: instructorIdToUse
+    })
+      .populate('learner', 'firstName lastName phone email')
+      .sort({ createdAt: -1 });
+
+    // Create a map of learners with their stats
+    const learnersMap = new Map();
+
+    bookings.forEach(booking => {
+      if (!booking.learner) return;
+
+      const learnerId = booking.learner._id.toString();
+
+      if (!learnersMap.has(learnerId)) {
+        learnersMap.set(learnerId, {
+          _id: booking.learner._id,
+          firstName: booking.learner.firstName,
+          lastName: booking.learner.lastName,
+          phone: booking.learner.phone,
+          email: booking.learner.email,
+          completedHours: 0,
+          upcomingBookings: 0,
+          totalBookings: 0
+        });
+      }
+
+      const learnerData = learnersMap.get(learnerId);
+      learnerData.totalBookings++;
+
+      // Count completed hours
+      if (booking.status === 'completed') {
+        learnerData.completedHours += booking.lesson.duration || 0;
+      }
+
+      // Count upcoming bookings
+      if (booking.status === 'confirmed' && new Date(booking.lesson.date) >= new Date()) {
+        learnerData.upcomingBookings++;
+      }
+    });
+
+    // Convert map to array
+    const learners = Array.from(learnersMap.values());
+
+    res.status(200).json({
+      success: true,
+      count: learners.length,
+      data: learners
+    });
+  } catch (error) {
+    console.error('Error fetching instructor learners:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching learners',
+      error: error.message
+    });
+  }
+};

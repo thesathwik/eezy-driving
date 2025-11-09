@@ -6,6 +6,7 @@ const {
   getUpcomingBookings,
   getPendingProposals,
   getBookingHistory,
+  getInstructorLearners,
   getBooking,
   createBooking,
   updateBookingStatus,
@@ -19,6 +20,7 @@ router.get('/instructor/:instructorId', protect, getInstructorBookings);
 router.get('/instructor/:instructorId/upcoming', protect, getUpcomingBookings);
 router.get('/instructor/:instructorId/pending', protect, getPendingProposals);
 router.get('/instructor/:instructorId/history', protect, getBookingHistory);
+router.get('/instructor/:instructorId/learners', protect, getInstructorLearners);
 
 // General booking routes
 router.get('/:id', protect, getBooking);

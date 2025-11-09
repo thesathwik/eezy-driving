@@ -1,0 +1,398 @@
+/* Learners Page - Jony Ive Minimal Design */
+
+.learners-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.learners-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.learners-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #FFC107;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Controls */
+.learners-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #FFC107;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sort-controls label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.sort-select {
+  padding: 0.625rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: #FFC107;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+/* Table */
+.learners-table-container {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+.learners-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.learners-table thead {
+  background: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.learners-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.learners-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s ease;
+}
+
+.learners-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.learners-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.learners-table td {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: #333;
+}
+
+/* Learner Cell */
+.learner-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.learner-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.learner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.learner-name {
+  font-weight: 600;
+  color: #000;
+}
+
+.learner-phone {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Guardian Info */
+.guardian-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.guardian-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.guardian-phone {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+/* Hours and Counts */
+.hours-completed,
+.upcoming-count {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+}
+
+/* Actions */
+.learner-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-learner-details,
+.btn-propose-booking {
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-learner-details {
+  background: #fff;
+  color: #000;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-learner-details:hover {
+  background: #f8f8f8;
+  border-color: #ccc;
+  transform: translateY(-1px);
+}
+
+.btn-propose-booking {
+  background: #fff;
+  color: #000;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-propose-booking:hover {
+  background: #f8f8f8;
+  border-color: #ccc;
+  transform: translateY(-1px);
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state p {
+  font-size: 0.9375rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #FFC107;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-state p {
+  margin-top: 1.5rem;
+  font-size: 0.9375rem;
+  color: #666;
+}
+
+/* Error State */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.error-state p {
+  font-size: 1rem;
+  color: #dc3545;
+  margin-bottom: 1.5rem;
+}
+
+.btn-retry {
+  padding: 0.75rem 2rem;
+  background: #FFC107;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-retry:hover {
+  background: #FFB300;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .learners-table-container {
+    overflow-x: auto;
+  }
+
+  .learners-table {
+    min-width: 900px;
+  }
+}
+
+@media (max-width: 768px) {
+  .learners-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .learners-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .learners-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .sort-controls {
+    justify-content: space-between;
+  }
+
+  .learner-actions {
+    flex-direction: column;
+  }
+
+  .btn-learner-details,
+  .btn-propose-booking {
+    width: 100%;
+  }
+}
