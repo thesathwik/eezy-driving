@@ -1,13 +1,12 @@
 .dashboard-page {
   display: flex;
   min-height: 100vh;
-  background: var(--secondary-50);
-  padding-top: 80px;
+  background: #fafafa;
 }
 
 .dashboard-main {
   flex: 1;
-  padding: var(--space-8);
+  padding: 2rem;
   margin-left: 250px;
 }
 
