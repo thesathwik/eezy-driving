@@ -2,62 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import DashboardSidebar from '../../components/dashboard/DashboardSidebar';
-import DashboardStats from '../../components/dashboard/DashboardStats';
-import BookingsSection from '../../components/dashboard/BookingsSection';
+import { API, getHeaders } from '../../config/api';
 import './Dashboard.css';
 
 const InstructorDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('upcoming');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState('upcoming');
+  const [bookings, setBookings] = useState([]);
+  const [pendingProposals, setPendingProposals] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
 
-  // Mock data - will be replaced with actual data from backend
-  const stats = {
-    earnings: 184.50,
-    nextPayout: '10 Nov',
-    cancellationRate: 0.0,
-    bookingHoursPerLearner: 3.08,
-    learnerRating: 5.0,
-    totalReviews: 45
-  };
-
-  const bookings = [
-    {
-      id: 8512077,
-      status: 'confirmed',
-      date: 'Sun, 02 Nov 2025',
-      time: '10:00 am - 12:00 pm',
-      duration: 2,
-      transmission: 'Auto',
-      location: '37 Angelica Ave, Algester 4300 QLD',
-      learner: {
-        name: 'Honey J.',
-        phone: '0478048564',
-        avatar: 'HJ'
-      }
-    },
-    {
-      id: 8514804,
-      status: 'confirmed',
-      date: 'Sun, 02 Nov 2025',
-      time: '12:30 pm - 1:30 pm',
-      duration: 1,
-      transmission: 'Auto',
-      location: '2 Bardelate Drive, Brookwater 4300 QLD',
-      learner: {
-        name: 'Henry K.',
-        phone: '0499238807',
-        avatar: 'HK'
-      },
-      guardian: {
-        name: 'Catherine K.',
-        phone: '0499238807',
-        avatar: 'CK'
-      }
-    }
-  ];
+  // Get instructor ID from user
+  const instructorId = user?.instructorProfile?._id || user?._id;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -70,9 +31,203 @@ const InstructorDashboard = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (instructorId) {
+      fetchBookings();
+    }
+  }, [instructorId]);
+
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch all three types of bookings in parallel
+      const [upcomingRes, pendingRes, historyRes] = await Promise.all([
+        fetch(`${API.bookings}/instructor/${instructorId}/upcoming`, {
+          headers: getHeaders(true)
+        }),
+        fetch(`${API.bookings}/instructor/${instructorId}/pending`, {
+          headers: getHeaders(true)
+        }),
+        fetch(`${API.bookings}/instructor/${instructorId}/history?limit=10`, {
+          headers: getHeaders(true)
+        })
+      ]);
+
+      const upcomingData = await upcomingRes.json();
+      const pendingData = await pendingRes.json();
+      const historyData = await historyRes.json();
+
+      if (upcomingData.success) {
+        setBookings(upcomingData.data || []);
+      }
+      if (pendingData.success) {
+        setPendingProposals(pendingData.data || []);
+      }
+      if (historyData.success) {
+        setHistory(historyData.data || []);
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      setError('Failed to load bookings. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmBooking = async (bookingId) => {
+    try {
+      const response = await fetch(`${API.bookings}/${bookingId}/confirm`, {
+        method: 'PUT',
+        headers: getHeaders(true)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Refresh bookings
+        fetchBookings();
+      } else {
+        alert(data.message || 'Failed to confirm booking');
+      }
+    } catch (err) {
+      console.error('Error confirming booking:', err);
+      alert('Failed to confirm booking. Please try again.');
+    }
+  };
+
+  const handleRejectBooking = async (bookingId) => {
+    const reason = prompt('Please provide a reason for rejection (optional):');
+
+    try {
+      const response = await fetch(`${API.bookings}/${bookingId}/reject`, {
+        method: 'PUT',
+        headers: getHeaders(true),
+        body: JSON.stringify({ reason })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Refresh bookings
+        fetchBookings();
+      } else {
+        alert(data.message || 'Failed to reject booking');
+      }
+    } catch (err) {
+      console.error('Error rejecting booking:', err);
+      alert('Failed to reject booking. Please try again.');
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-AU', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const formatTime = (time) => {
+    return time;
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      confirmed: '#4CAF50',
+      pending: '#FFC107',
+      completed: '#2196F3',
+      cancelled: '#F44336',
+      'no-show': '#9E9E9E'
+    };
+    return colors[status] || '#666';
+  };
+
+  const renderBookingCard = (booking, showActions = false) => {
+    const learner = booking.learner || {};
+
+    return (
+      <div key={booking._id} className="booking-card">
+        <div className="booking-header">
+          <div className="booking-learner">
+            <div className="learner-avatar">
+              {learner.firstName?.charAt(0)}{learner.lastName?.charAt(0)}
+            </div>
+            <div className="learner-info">
+              <div className="learner-name">
+                {learner.firstName} {learner.lastName?.charAt(0)}.
+              </div>
+              <div className="learner-phone">{learner.phone}</div>
+            </div>
+          </div>
+          <div
+            className="booking-status"
+            style={{ backgroundColor: getStatusColor(booking.status) }}
+          >
+            {booking.status}
+          </div>
+        </div>
+
+        <div className="booking-details">
+          <div className="booking-time">
+            <span className="detail-icon">📅</span>
+            <span>{formatDate(booking.lesson.date)}</span>
+          </div>
+          <div className="booking-time">
+            <span className="detail-icon">🕐</span>
+            <span>
+              {formatTime(booking.lesson.startTime)} - {formatTime(booking.lesson.endTime)}
+            </span>
+          </div>
+          <div className="booking-duration">
+            <span className="detail-icon">⏱</span>
+            <span>{booking.lesson.duration}h lesson</span>
+          </div>
+        </div>
+
+        {booking.lesson.pickupLocation && (
+          <div className="booking-location">
+            <span className="detail-icon">📍</span>
+            <span className="location-text">
+              {booking.lesson.pickupLocation.address}
+            </span>
+          </div>
+        )}
+
+        {booking.lesson.notes && (
+          <div className="booking-notes">
+            <span className="detail-icon">📝</span>
+            <span>{booking.lesson.notes}</span>
+          </div>
+        )}
+
+        {showActions && booking.status === 'pending' && (
+          <div className="booking-actions">
+            <button
+              className="btn-confirm"
+              onClick={() => handleConfirmBooking(booking._id)}
+            >
+              Confirm
+            </button>
+            <button
+              className="btn-reject"
+              onClick={() => handleRejectBooking(booking._id)}
+            >
+              Decline
+            </button>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -83,10 +238,6 @@ const InstructorDashboard = () => {
         <div className="dashboard-header">
           <h1>Dashboard</h1>
           <div className="dashboard-header-actions">
-            <button className="notifications-btn">
-              <span className="notification-icon">🔔</span>
-              <span>Notifications</span>
-            </button>
             <div className="user-profile-dropdown" ref={dropdownRef}>
               <button
                 className="user-profile-button"
@@ -134,42 +285,94 @@ const InstructorDashboard = () => {
           </div>
         </div>
 
-        {/* Bookings Header */}
-        <div className="bookings-header">
-          <h2>Bookings</h2>
-          <div className="bookings-actions">
-            <button className="btn-secondary">
-              <span className="btn-icon">👤</span>
-              Invite Learner
-            </button>
-            <button className="btn-primary">
-              <span className="btn-icon">🚗</span>
-              Propose Booking
-            </button>
-          </div>
+        {/* Tab Navigation */}
+        <div className="dashboard-tabs">
+          <button
+            className={`dashboard-tab ${activeTab === 'upcoming' ? 'active' : ''}`}
+            onClick={() => setActiveTab('upcoming')}
+          >
+            Upcoming Bookings
+            {bookings.length > 0 && (
+              <span className="tab-count">{bookings.length}</span>
+            )}
+          </button>
+          <button
+            className={`dashboard-tab ${activeTab === 'pending' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pending')}
+          >
+            Pending Proposals
+            {pendingProposals.length > 0 && (
+              <span className="tab-count">{pendingProposals.length}</span>
+            )}
+          </button>
+          <button
+            className={`dashboard-tab ${activeTab === 'history' ? 'active' : ''}`}
+            onClick={() => setActiveTab('history')}
+          >
+            History
+          </button>
         </div>
 
-        {/* Pricing Alert Banner */}
-        <div className="dashboard-alerts">
-          <div className="alert-banner alert-pricing">
-            <div className="alert-icon">⚠️</div>
-            <div className="alert-content">
-              <strong>Is your price aligned with the market?</strong>
-              <p>Instructors with market aligned pricing get better visibility and attract more learners. Consider <a href="/pricing">Review your rate.</a></p>
+        {/* Content */}
+        <div className="dashboard-content">
+          {loading ? (
+            <div className="loading-state">
+              <div className="loading-spinner"></div>
+              <p>Loading bookings...</p>
             </div>
-            <button className="alert-close">×</button>
-          </div>
+          ) : error ? (
+            <div className="error-state">
+              <p>{error}</p>
+              <button className="btn-retry" onClick={fetchBookings}>
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'upcoming' && (
+                <div className="bookings-grid">
+                  {bookings.length === 0 ? (
+                    <div className="empty-state">
+                      <div className="empty-icon">📅</div>
+                      <h3>No upcoming bookings</h3>
+                      <p>Your confirmed bookings will appear here</p>
+                    </div>
+                  ) : (
+                    bookings.map(booking => renderBookingCard(booking))
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'pending' && (
+                <div className="bookings-grid">
+                  {pendingProposals.length === 0 ? (
+                    <div className="empty-state">
+                      <div className="empty-icon">⏳</div>
+                      <h3>No pending proposals</h3>
+                      <p>New booking requests will appear here</p>
+                    </div>
+                  ) : (
+                    pendingProposals.map(booking => renderBookingCard(booking, true))
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'history' && (
+                <div className="bookings-grid">
+                  {history.length === 0 ? (
+                    <div className="empty-state">
+                      <div className="empty-icon">📚</div>
+                      <h3>No booking history</h3>
+                      <p>Completed and cancelled bookings will appear here</p>
+                    </div>
+                  ) : (
+                    history.map(booking => renderBookingCard(booking))
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
-
-        {/* Stats Cards */}
-        <DashboardStats stats={stats} />
-
-        {/* Bookings Section */}
-        <BookingsSection
-          bookings={bookings}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
       </div>
     </div>
   );

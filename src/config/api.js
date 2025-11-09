@@ -73,13 +73,7 @@ export const API = {
   },
 
   // Booking endpoints
-  bookings: {
-    list: `${API_BASE_URL}/bookings`,
-    byId: (id) => `${API_BASE_URL}/bookings/${id}`,
-    create: `${API_BASE_URL}/bookings`,
-    update: (id) => `${API_BASE_URL}/bookings/${id}`,
-    cancel: (id) => `${API_BASE_URL}/bookings/${id}/cancel`,
-  },
+  bookings: `${API_BASE_URL}/bookings`,
 
   // Review endpoints
   reviews: {
