@@ -63,13 +63,22 @@ const Navigation = () => {
                       <div className="dropdown-email">{user?.email}</div>
                     </div>
                     <div className="user-dropdown-links">
-                      <Link to="/dashboard" onClick={() => setShowUserMenu(false)}>
+                      <Link
+                        to={isInstructor ? "/instructor/dashboard" : "/learner/dashboard"}
+                        onClick={() => setShowUserMenu(false)}
+                      >
                         Dashboard
                       </Link>
-                      <Link to="/profile" onClick={() => setShowUserMenu(false)}>
+                      <Link
+                        to={isInstructor ? "/instructor/profile" : "/learner/profile"}
+                        onClick={() => setShowUserMenu(false)}
+                      >
                         Profile
                       </Link>
-                      <Link to="/settings" onClick={() => setShowUserMenu(false)}>
+                      <Link
+                        to={isInstructor ? "/instructor/settings" : "/learner/settings"}
+                        onClick={() => setShowUserMenu(false)}
+                      >
                         Settings
                       </Link>
                     </div>
