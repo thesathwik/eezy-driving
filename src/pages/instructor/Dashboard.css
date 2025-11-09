@@ -335,10 +335,10 @@
   color: #333;
 }
 
-.detail-icon {
-  font-size: 1.125rem;
-  width: 20px;
-  text-align: center;
+.detail-label {
+  font-weight: 600;
+  color: #666;
+  min-width: 80px;
 }
 
 .booking-location {
@@ -422,12 +422,6 @@
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.5;
 }
 
 .empty-state h3 {

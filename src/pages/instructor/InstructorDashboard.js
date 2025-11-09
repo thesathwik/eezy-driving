@@ -188,24 +188,24 @@ const InstructorDashboard = () => {
 
         <div className="booking-details">
           <div className="booking-time">
-            <span className="detail-icon">📅</span>
+            <span className="detail-label">Date:</span>
             <span>{formatDate(booking.lesson.date)}</span>
           </div>
           <div className="booking-time">
-            <span className="detail-icon">🕐</span>
+            <span className="detail-label">Time:</span>
             <span>
               {formatTime(booking.lesson.startTime)} - {formatTime(booking.lesson.endTime)}
             </span>
           </div>
           <div className="booking-duration">
-            <span className="detail-icon">⏱</span>
+            <span className="detail-label">Duration:</span>
             <span>{booking.lesson.duration}h lesson</span>
           </div>
         </div>
 
         {booking.lesson.pickupLocation && (
           <div className="booking-location">
-            <span className="detail-icon">📍</span>
+            <span className="detail-label">Location:</span>
             <span className="location-text">
               {booking.lesson.pickupLocation.address}
             </span>
@@ -214,7 +214,7 @@ const InstructorDashboard = () => {
 
         {booking.lesson.notes && (
           <div className="booking-notes">
-            <span className="detail-icon">📝</span>
+            <span className="detail-label">Notes:</span>
             <span>{booking.lesson.notes}</span>
           </div>
         )}
@@ -342,7 +342,6 @@ const InstructorDashboard = () => {
                 <div className="bookings-grid">
                   {bookings.length === 0 ? (
                     <div className="empty-state">
-                      <div className="empty-icon">📅</div>
                       <h3>No upcoming bookings</h3>
                       <p>Your confirmed bookings will appear here</p>
                     </div>
@@ -356,7 +355,6 @@ const InstructorDashboard = () => {
                 <div className="bookings-grid">
                   {pendingProposals.length === 0 ? (
                     <div className="empty-state">
-                      <div className="empty-icon">⏳</div>
                       <h3>No pending proposals</h3>
                       <p>New booking requests will appear here</p>
                     </div>
@@ -370,7 +368,6 @@ const InstructorDashboard = () => {
                 <div className="bookings-grid">
                   {history.length === 0 ? (
                     <div className="empty-state">
-                      <div className="empty-icon">📚</div>
                       <h3>No booking history</h3>
                       <p>Completed and cancelled bookings will appear here</p>
                     </div>
