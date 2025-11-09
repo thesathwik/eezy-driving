@@ -7,7 +7,7 @@ import './Dashboard.css';
 
 const InstructorDashboard = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [activeTab, setActiveTab] = useState('upcoming');
   const [bookings, setBookings] = useState([]);
@@ -20,6 +20,21 @@ const InstructorDashboard = () => {
   // Get instructor ID from user
   // Try both _id and id properties for compatibility
   const instructorId = user?._id || user?.id;
+
+  // Wait for auth to load before doing anything
+  if (authLoading) {
+    return (
+      <div className="dashboard-page">
+        <DashboardSidebar />
+        <div className="dashboard-main">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
