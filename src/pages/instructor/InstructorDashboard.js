@@ -18,7 +18,9 @@ const InstructorDashboard = () => {
   const dropdownRef = useRef(null);
 
   // Get instructor ID from user
-  const instructorId = user?.instructorProfile?._id || user?._id;
+  // For now, use the user's _id as the instructor ID
+  // Later we'll need to fetch the instructor profile properly
+  const instructorId = user?._id;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,8 +34,15 @@ const InstructorDashboard = () => {
   }, []);
 
   useEffect(() => {
+    console.log('User:', user);
+    console.log('Instructor ID:', instructorId);
+
     if (instructorId) {
       fetchBookings();
+    } else {
+      console.error('No instructor ID found');
+      setError('Unable to load dashboard. Please try logging in again.');
+      setLoading(false);
     }
   }, [instructorId]);
 

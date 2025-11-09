@@ -10,8 +10,17 @@ exports.getInstructorBookings = async (req, res) => {
     const { instructorId } = req.params;
     const { status, startDate, endDate } = req.query;
 
+    // Try to find instructor profile by user ID or instructor ID
+    let instructor = await Instructor.findOne({ user: instructorId });
+    if (!instructor) {
+      instructor = await Instructor.findById(instructorId);
+    }
+
+    // If still no instructor found, try using the ID directly (for backwards compatibility)
+    const instructorIdToUse = instructor ? instructor._id : instructorId;
+
     // Build query
-    let query = { instructor: instructorId };
+    let query = { instructor: instructorIdToUse };
 
     // Filter by status if provided
     if (status) {
@@ -56,8 +65,16 @@ exports.getUpcomingBookings = async (req, res) => {
     const { instructorId } = req.params;
     const now = new Date();
 
+    // Try to find instructor profile by user ID or instructor ID
+    let instructor = await Instructor.findOne({ user: instructorId });
+    if (!instructor) {
+      instructor = await Instructor.findById(instructorId);
+    }
+
+    const instructorIdToUse = instructor ? instructor._id : instructorId;
+
     const bookings = await Booking.find({
-      instructor: instructorId,
+      instructor: instructorIdToUse,
       status: { $in: ['confirmed', 'pending'] },
       'lesson.date': { $gte: now }
     })
@@ -87,8 +104,16 @@ exports.getPendingProposals = async (req, res) => {
   try {
     const { instructorId } = req.params;
 
+    // Try to find instructor profile by user ID or instructor ID
+    let instructor = await Instructor.findOne({ user: instructorId });
+    if (!instructor) {
+      instructor = await Instructor.findById(instructorId);
+    }
+
+    const instructorIdToUse = instructor ? instructor._id : instructorId;
+
     const bookings = await Booking.find({
-      instructor: instructorId,
+      instructor: instructorIdToUse,
       status: 'pending',
       'lesson.date': { $gte: new Date() }
     })
@@ -118,8 +143,16 @@ exports.getBookingHistory = async (req, res) => {
     const { instructorId } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
+    // Try to find instructor profile by user ID or instructor ID
+    let instructor = await Instructor.findOne({ user: instructorId });
+    if (!instructor) {
+      instructor = await Instructor.findById(instructorId);
+    }
+
+    const instructorIdToUse = instructor ? instructor._id : instructorId;
+
     const bookings = await Booking.find({
-      instructor: instructorId,
+      instructor: instructorIdToUse,
       status: { $in: ['completed', 'cancelled', 'no-show'] }
     })
       .populate('learner', 'firstName lastName phone email')
@@ -128,7 +161,7 @@ exports.getBookingHistory = async (req, res) => {
       .skip((page - 1) * limit);
 
     const count = await Booking.countDocuments({
-      instructor: instructorId,
+      instructor: instructorIdToUse,
       status: { $in: ['completed', 'cancelled', 'no-show'] }
     });
 
