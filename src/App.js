@@ -14,6 +14,7 @@ import LearnerSignup from './pages/auth/LearnerSignup';
 import InstructorSignup from './pages/auth/InstructorSignup';
 import CompleteInstructorProfile from './pages/auth/CompleteInstructorProfile';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
+import InstructorCalendar from './pages/instructor/InstructorCalendar';
 import InstructorLearners from './pages/instructor/InstructorLearners';
 import InstructorSettings from './pages/instructor/InstructorSettings';
 import './styles/global.css';
@@ -23,6 +24,7 @@ function AppContent() {
 
   // Hide Navigation and Footer for dashboard pages
   const isDashboard = location.pathname.startsWith('/instructor/dashboard') ||
+                      location.pathname.startsWith('/instructor/calendar') ||
                       location.pathname.startsWith('/instructor/learners') ||
                       location.pathname.startsWith('/instructor/settings') ||
                       location.pathname.startsWith('/learner/dashboard');
@@ -43,6 +45,7 @@ function AppContent() {
           <Route path="/signup/instructor" element={<InstructorSignup />} />
           <Route path="/instructor/complete-profile" element={<CompleteInstructorProfile />} />
           <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
+          <Route path="/instructor/calendar" element={<InstructorCalendar />} />
           <Route path="/instructor/learners" element={<InstructorLearners />} />
           <Route path="/instructor/settings" element={<InstructorSettings />} />
           <Route path="/signup" element={<LearnerSignup />} />
