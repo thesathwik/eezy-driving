@@ -18,9 +18,8 @@ const InstructorDashboard = () => {
   const dropdownRef = useRef(null);
 
   // Get instructor ID from user
-  // For now, use the user's _id as the instructor ID
-  // Later we'll need to fetch the instructor profile properly
-  const instructorId = user?._id;
+  // Try both _id and id properties for compatibility
+  const instructorId = user?._id || user?.id;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -57,9 +56,13 @@ const InstructorDashboard = () => {
       });
       const profileData = await profileCheck.json();
 
+      console.log('Profile check response:', profileData);
+
       // If no instructor profile, redirect to complete profile
-      if (!profileData.success) {
-        navigate('/instructor/complete-profile');
+      if (!profileData.success || !profileData.data) {
+        console.log('No instructor profile found, redirecting to complete profile');
+        setLoading(false);
+        navigate('/instructor/complete-profile', { replace: true });
         return;
       }
 
@@ -79,6 +82,8 @@ const InstructorDashboard = () => {
       const upcomingData = await upcomingRes.json();
       const pendingData = await pendingRes.json();
       const historyData = await historyRes.json();
+
+      console.log('Bookings data:', { upcomingData, pendingData, historyData });
 
       // Set data even if success is false (just empty arrays)
       setBookings(upcomingData.success ? (upcomingData.data || []) : []);
