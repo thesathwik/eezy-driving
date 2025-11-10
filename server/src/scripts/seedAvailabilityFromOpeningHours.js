@@ -95,7 +95,8 @@ const seedAvailabilityFromOpeningHours = async () => {
         await Availability.create({
           instructorId: instructor._id,
           date: date,
-          timeSlots: timeSlots
+          timeSlots: timeSlots,
+          enabled: true
         });
 
         console.log(`  Created availability for ${date.toISOString().split('T')[0]} with ${timeSlots.length} slots`);
