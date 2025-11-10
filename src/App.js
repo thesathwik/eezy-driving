@@ -16,6 +16,7 @@ import CompleteInstructorProfile from './pages/auth/CompleteInstructorProfile';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import InstructorCalendar from './pages/instructor/InstructorCalendar';
 import InstructorLearners from './pages/instructor/InstructorLearners';
+import InstructorReports from './pages/instructor/InstructorReports';
 import InstructorSettings from './pages/instructor/InstructorSettings';
 import './styles/global.css';
 
@@ -26,6 +27,7 @@ function AppContent() {
   const isDashboard = location.pathname.startsWith('/instructor/dashboard') ||
                       location.pathname.startsWith('/instructor/calendar') ||
                       location.pathname.startsWith('/instructor/learners') ||
+                      location.pathname.startsWith('/instructor/reports') ||
                       location.pathname.startsWith('/instructor/settings') ||
                       location.pathname.startsWith('/learner/dashboard');
 
@@ -47,6 +49,7 @@ function AppContent() {
           <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
           <Route path="/instructor/calendar" element={<InstructorCalendar />} />
           <Route path="/instructor/learners" element={<InstructorLearners />} />
+          <Route path="/instructor/reports" element={<InstructorReports />} />
           <Route path="/instructor/settings" element={<InstructorSettings />} />
           <Route path="/signup" element={<LearnerSignup />} />
           {/* Additional routes can be added here */}

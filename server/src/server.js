@@ -40,6 +40,7 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/availability', require('./routes/availability'));
 app.use('/api/payment', require('./routes/payment'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // Health check route
 app.get('/health', (req, res) => {
