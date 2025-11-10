@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const Instructor = require('../models/Instructor');
+const Review = require('../models/Review');
 const moment = require('moment');
 
 // @desc    Get instructor analytics
@@ -96,8 +97,11 @@ exports.getInstructorAnalytics = async (req, res) => {
       ? totalHoursEstablished / establishedLearners.length
       : 0;
 
-    // Learner rating (placeholder - would come from reviews)
-    const learnerRating = 5.0;
+    // Learner rating (from actual reviews)
+    const reviews = await Review.find({ instructor: instructorIdToUse });
+    const learnerRating = reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
 
     // Monthly earnings for chart (last 12 months)
     const monthlyEarnings = [];
@@ -136,11 +140,20 @@ exports.getInstructorAnalytics = async (req, res) => {
     const uniqueLearners = learnersMap.size;
     const upcomingHours = upcomingBookings.reduce((sum, b) => sum + (b.lesson.duration || 0), 0);
     const completedHours = totalBookingHours;
-    const testPackages = 0; // Placeholder
-    const searchesInArea = 32100; // Placeholder
 
-    // Credits held by learners (placeholder)
-    const creditsHeld = 591.00;
+    // Test packages - count bookings with testPackage flag
+    const testPackages = bookings.filter(b => b.testPackage === true).length;
+
+    // Searches in area - count from actual search logs (would need a SearchLog model)
+    // For now, this will be 0 until we implement search tracking
+    const searchesInArea = 0;
+
+    // Credits held by learners - sum of prepaid packages/credits
+    // This would come from a Learner credits/balance field
+    // For now, calculate based on confirmed future bookings value
+    const creditsHeld = calculateEarnings(
+      bookings.filter(b => b.status === 'confirmed' && b.paymentStatus === 'paid')
+    );
 
     res.status(200).json({
       success: true,
