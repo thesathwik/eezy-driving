@@ -1,22 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   FaArrowLeft, FaStar, FaCar, FaCheckCircle, FaIdCard, FaClock,
   FaCalendarAlt, FaUserFriends, FaCalendarCheck, FaUserClock, FaInfoCircle,
   FaChevronDown, FaChevronUp
 } from 'react-icons/fa';
-import { getInstructorById } from '../data/instructors';
+import { getHeaders } from '../config/api';
 import ServiceAreaMap from '../components/maps/ServiceAreaMap';
 import './InstructorProfile.css';
 
 const InstructorProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const instructor = getInstructorById(id);
 
+  const [instructor, setInstructor] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showFullBio, setShowFullBio] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showServiceArea, setShowServiceArea] = useState(false);
+
+  useEffect(() => {
+    const fetchInstructor = async () => {
+      try {
+        setLoading(true);
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+        const response = await fetch(`${API_URL}/instructors/${id}`, {
+          headers: getHeaders(false)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const transformedInstructor = {
+            ...data.data,
+            id: data.data._id,
+            name: `${data.data.user?.firstName} ${data.data.user?.lastName}`.trim(),
+            pricePerHour: data.data.pricing?.marketplaceLessonRate || 80,
+            rating: data.data.stats?.averageRating || 0,
+            reviewCount: data.data.stats?.totalReviews || 0,
+            completedLessons: data.data.stats?.totalLessons || 0,
+            location: data.data.serviceArea?.suburbs?.[0] || 'Unknown',
+            transmission: data.data.vehicle?.transmission || 'Auto',
+            vehicle: `${data.data.vehicle?.year || ''} ${data.data.vehicle?.make || ''} ${data.data.vehicle?.model || ''}`.trim(),
+            bio: data.data.profileInfo?.bio || '',
+            experience: data.data.profileInfo?.yearsExperience || 0,
+            languages: data.data.profileInfo?.languagesSpoken || [],
+            specialties: data.data.profileInfo?.specialties || [],
+            gender: data.data.profileInfo?.gender || 'Male'
+          };
+          setInstructor(transformedInstructor);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching instructor:', err);
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchInstructor();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="profile-page">
+        <div className="container">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading instructor profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!instructor) {
     return (
