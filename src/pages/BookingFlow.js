@@ -87,7 +87,12 @@ const BookingFlowContent = () => {
             name: `${data.data.user?.firstName} ${data.data.user?.lastName}`.trim(),
             pricePerHour: data.data.pricing?.marketplaceLessonRate || 80,
             rating: data.data.stats?.averageRating || 0,
-            reviewCount: data.data.stats?.totalReviews || 0
+            reviewCount: data.data.stats?.totalReviews || 0,
+            location: data.data.serviceArea?.suburbs?.[0] || 'Unknown',
+            transmission: data.data.vehicle?.transmission || 'Auto',
+            vehicle: `${data.data.vehicle?.year || ''} ${data.data.vehicle?.make || ''} ${data.data.vehicle?.model || ''}`.trim() || 'Vehicle',
+            experience: data.data.profileInfo?.yearsExperience || 0,
+            avatar: `${data.data.user?.firstName?.[0] || ''}${data.data.user?.lastName?.[0] || ''}`.toUpperCase() || 'IN'
           };
           setInstructor(transformedInstructor);
         }
