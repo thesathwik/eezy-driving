@@ -553,22 +553,73 @@ const InstructorSettings = () => {
           {activeTab === 'hours' && (
             <div className="settings-section">
               <div className="section-content">
-                {Object.entries(formData.openingHours || {}).map(([day, hours]) => (
-                  <div key={day} className="hours-row">
-                    <label className="day-label">{day.charAt(0).toUpperCase() + day.slice(1)}</label>
-                    <div className="hours-display">
-                      {hours && hours.length > 0 ? (
-                        hours.map((slot, index) => (
-                          <span key={index} className="time-slot">
-                            {slot.start} - {slot.end}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="empty-text">Closed</span>
-                      )}
+                <p className="section-description">Set your weekly availability schedule</p>
+
+                {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+                  const dayHours = formData.openingHours?.[day] || [];
+
+                  return (
+                    <div key={day} className="hours-row">
+                      <label className="day-label">{day.charAt(0).toUpperCase() + day.slice(1)}</label>
+                      <div className="hours-inputs">
+                        {dayHours.length > 0 ? (
+                          dayHours.map((slot, index) => (
+                            <div key={index} className="time-slot-input">
+                              <input
+                                type="time"
+                                value={slot.startTime || ''}
+                                onChange={(e) => {
+                                  const newHours = { ...formData.openingHours };
+                                  if (!newHours[day]) newHours[day] = [];
+                                  newHours[day][index] = { ...newHours[day][index], startTime: e.target.value };
+                                  setFormData({ ...formData, openingHours: newHours });
+                                }}
+                                className="time-input"
+                              />
+                              <span className="time-separator">-</span>
+                              <input
+                                type="time"
+                                value={slot.endTime || ''}
+                                onChange={(e) => {
+                                  const newHours = { ...formData.openingHours };
+                                  if (!newHours[day]) newHours[day] = [];
+                                  newHours[day][index] = { ...newHours[day][index], endTime: e.target.value };
+                                  setFormData({ ...formData, openingHours: newHours });
+                                }}
+                                className="time-input"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newHours = { ...formData.openingHours };
+                                  newHours[day] = newHours[day].filter((_, i) => i !== index);
+                                  setFormData({ ...formData, openingHours: newHours });
+                                }}
+                                className="btn-remove-slot"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <span className="empty-text">Closed</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newHours = { ...formData.openingHours };
+                            if (!newHours[day]) newHours[day] = [];
+                            newHours[day].push({ startTime: '09:00', endTime: '17:00' });
+                            setFormData({ ...formData, openingHours: newHours });
+                          }}
+                          className="btn-add-slot"
+                        >
+                          + Add hours
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 <div className="form-actions">
                   <button className="btn-save" onClick={handleSave} disabled={saving}>
