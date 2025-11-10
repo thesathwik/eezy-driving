@@ -442,9 +442,6 @@ const BookingFlowContent = () => {
     return availableSlots;
   };
 
-  const availableDates = getAvailableDates();
-  const availableTimeSlots = getAvailableTimeSlots();
-
   if (loading) {
     return (
       <div className="booking-flow">
@@ -467,6 +464,9 @@ const BookingFlowContent = () => {
       </div>
     );
   }
+
+  const availableDates = getAvailableDates();
+  const availableTimeSlots = getAvailableTimeSlots();
 
   return (
     <div className="booking-flow">
