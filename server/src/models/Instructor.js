@@ -301,7 +301,7 @@ const instructorSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['pending', 'active', 'suspended', 'inactive'],
-    default: 'pending'
+    default: 'active'
   }
 }, {
   timestamps: true,

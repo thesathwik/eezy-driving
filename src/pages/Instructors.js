@@ -6,7 +6,7 @@ import {
 } from 'react-icons/fa';
 import InstructorCard from '../components/instructors/InstructorCard';
 import FilterModal from '../components/instructors/FilterModal';
-import { instructors, filterInstructors } from '../data/instructors';
+import { getHeaders } from '../config/api';
 import './Instructors.css';
 
 const Instructors = () => {
@@ -21,12 +21,21 @@ const Instructors = () => {
     testCentre: '',
     testDate: ''
   });
-  const [filteredInstructors, setFilteredInstructors] = useState(instructors);
+  const [instructors, setInstructors] = useState([]);
+  const [filteredInstructors, setFilteredInstructors] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [quickFilter, setQuickFilter] = useState('');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch instructors from API
+  useEffect(() => {
+    fetchInstructors();
+  }, []);
+
+  // Apply filters when location state changes
   useEffect(() => {
     if (location.state) {
       const newFilters = {
@@ -39,32 +48,116 @@ const Instructors = () => {
     }
   }, [location.state]);
 
+  const fetchInstructors = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+      const response = await fetch(`${API_URL}/instructors`, {
+        headers: getHeaders(false)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setInstructors(data.data);
+        setFilteredInstructors(data.data);
+      } else {
+        setError(data.message || 'Failed to load instructors');
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching instructors:', err);
+      setError('Failed to load instructors. Please try again.');
+      setLoading(false);
+    }
+  };
+
   const applyFilters = (filterData, sort = sortBy, quick = quickFilter) => {
-    let filtered = filterInstructors(filterData);
+    let filtered = [...instructors];
+
+    // Location filter (suburb)
+    if (filterData.location && filterData.location.trim() !== '') {
+      const searchLocation = filterData.location.toLowerCase();
+      filtered = filtered.filter(instructor => {
+        const suburbs = instructor.serviceArea?.suburbs || [];
+        return suburbs.some(suburb =>
+          suburb.toLowerCase().includes(searchLocation)
+        );
+      });
+    }
+
+    // Transmission filter
+    if (filterData.transmission && filterData.transmission !== 'both') {
+      const searchTransmission = filterData.transmission.toLowerCase();
+      filtered = filtered.filter(instructor => {
+        const offered = instructor.vehicle?.transmissionOffered || [];
+        return offered.includes(searchTransmission) || offered.includes('both');
+      });
+    }
+
+    // Gender filter
+    if (filterData.gender && filterData.gender.length > 0) {
+      filtered = filtered.filter(instructor =>
+        filterData.gender.includes(instructor.profileInfo?.gender)
+      );
+    }
+
+    // Languages filter
+    if (filterData.languages && filterData.languages.length > 0) {
+      filtered = filtered.filter(instructor => {
+        const instructorLanguages = instructor.profileInfo?.languagesSpoken || [];
+        return filterData.languages.some(lang => instructorLanguages.includes(lang));
+      });
+    }
+
+    // Availability day filter
+    if (filterData.availabilityDay && filterData.availabilityDay.length > 0) {
+      filtered = filtered.filter(instructor => {
+        const availableDays = Object.keys(instructor.openingHours || {})
+          .filter(day => instructor.openingHours[day]?.isOpen);
+
+        return filterData.availabilityDay.some(day => {
+          if (day === 'weekday') {
+            return ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].some(d => availableDays.includes(d));
+          } else if (day === 'weekend') {
+            return ['saturday', 'sunday'].some(d => availableDays.includes(d));
+          }
+          return availableDays.includes(day.toLowerCase());
+        });
+      });
+    }
 
     // Apply quick filters
     if (quick === 'rating') {
-      filtered = filtered.filter(i => i.rating >= 4.8);
-    } else if (quick === 'available') {
-      filtered = filtered.sort((a, b) => a.nextAvailableDate - b.nextAvailableDate);
+      filtered = filtered.filter(i => (i.stats?.averageRating || 0) >= 4.8);
     } else if (quick === 'price') {
-      filtered = filtered.sort((a, b) => a.pricePerHour - b.pricePerHour);
-    } else if (quick === 'soon') {
-      const fourDaysFromNow = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000);
-      filtered = filtered.filter(i => i.nextAvailableDate <= fourDaysFromNow);
+      filtered = filtered.sort((a, b) =>
+        (a.pricing?.marketplaceLessonRate || 0) - (b.pricing?.marketplaceLessonRate || 0)
+      );
     } else if (quick === 'female') {
-      filtered = filtered.filter(i => i.gender === 'Female');
+      filtered = filtered.filter(i => i.profileInfo?.gender === 'Female');
     }
 
     // Apply sorting
     if (sort === 'rating') {
-      filtered = filtered.sort((a, b) => b.rating - a.rating);
+      filtered = filtered.sort((a, b) =>
+        (b.stats?.averageRating || 0) - (a.stats?.averageRating || 0)
+      );
     } else if (sort === 'price-low') {
-      filtered = filtered.sort((a, b) => a.pricePerHour - b.pricePerHour);
+      filtered = filtered.sort((a, b) =>
+        (a.pricing?.marketplaceLessonRate || 0) - (b.pricing?.marketplaceLessonRate || 0)
+      );
     } else if (sort === 'price-high') {
-      filtered = filtered.sort((a, b) => b.pricePerHour - a.pricePerHour);
+      filtered = filtered.sort((a, b) =>
+        (b.pricing?.marketplaceLessonRate || 0) - (a.pricing?.marketplaceLessonRate || 0)
+      );
     } else if (sort === 'experience') {
-      filtered = filtered.sort((a, b) => b.experience - a.experience);
+      filtered = filtered.sort((a, b) =>
+        (b.profileInfo?.yearsExperience || 0) - (a.profileInfo?.yearsExperience || 0)
+      );
     }
 
     setFilteredInstructors(filtered);
@@ -88,23 +181,48 @@ const Instructors = () => {
   };
 
   const minPrice = filteredInstructors.length > 0
-    ? Math.min(...filteredInstructors.map(i => i.pricePerHour))
+    ? Math.min(...filteredInstructors.map(i => i.pricing?.marketplaceLessonRate || 0))
     : 0;
 
   // Count instructors for quick filters
   const getQuickFilterCount = (filterType) => {
-    let filtered = filterInstructors(filters);
+    let filtered = [...instructors];
 
     if (filterType === 'rating') {
-      return filtered.filter(i => i.rating >= 4.8).length;
-    } else if (filterType === 'soon') {
-      const fourDaysFromNow = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000);
-      return filtered.filter(i => i.nextAvailableDate <= fourDaysFromNow).length;
+      return filtered.filter(i => (i.stats?.averageRating || 0) >= 4.8).length;
     } else if (filterType === 'female') {
-      return filtered.filter(i => i.gender === 'Female').length;
+      return filtered.filter(i => i.profileInfo?.gender === 'Female').length;
     }
     return filtered.length;
   };
+
+  if (loading) {
+    return (
+      <div className="instructors-page-ez">
+        <div className="container-ez">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading instructors...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="instructors-page-ez">
+        <div className="container-ez">
+          <div className="error-state">
+            <p>{error}</p>
+            <button className="btn-retry" onClick={fetchInstructors}>
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="instructors-page-ez">
@@ -181,7 +299,7 @@ const Instructors = () => {
             {filteredInstructors.length} {filters.transmission === 'automatic' ? 'Auto' : filters.transmission === 'manual' ? 'Manual' : ''} Instructors
             {filters.location && ` in ${filters.location}`}
           </h1>
-          {filteredInstructors.length > 0 && (
+          {filteredInstructors.length > 0 && minPrice > 0 && (
             <p className="results-price">from ${minPrice.toFixed(2)}/hr</p>
           )}
         </div>
@@ -190,7 +308,7 @@ const Instructors = () => {
         <div className="instructors-grid">
           {filteredInstructors.length > 0 ? (
             filteredInstructors.map(instructor => (
-              <InstructorCard key={instructor.id} instructor={instructor} />
+              <InstructorCard key={instructor._id} instructor={instructor} />
             ))
           ) : (
             <div className="no-results">
