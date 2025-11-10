@@ -43,7 +43,7 @@ const seedAvailabilityFromOpeningHours = async () => {
 
         // Check if availability already exists for this date
         const existing = await Availability.findOne({
-          instructor: instructor._id,
+          instructorId: instructor._id,
           date: date
         });
 
@@ -93,7 +93,7 @@ const seedAvailabilityFromOpeningHours = async () => {
 
         // Create availability record
         await Availability.create({
-          instructor: instructor._id,
+          instructorId: instructor._id,
           date: date,
           timeSlots: timeSlots
         });
