@@ -4,7 +4,7 @@ import { FaCheck, FaInfoCircle, FaChevronDown, FaChevronUp, FaStar, FaCheckCircl
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import StripePaymentForm from '../components/payment/StripePaymentForm';
-import { getInstructorById } from '../data/instructors';
+import { getHeaders } from '../config/api';
 import './BookingFlow.css';
 
 // Initialize Stripe
@@ -14,7 +14,9 @@ const BookingFlowContent = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const instructor = getInstructorById(id);
+
+  const [instructor, setInstructor] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState('10hours');
@@ -64,6 +66,43 @@ const BookingFlowContent = () => {
     expiry: '',
     cvc: ''
   });
+
+  // Fetch instructor data
+  useEffect(() => {
+    const fetchInstructor = async () => {
+      try {
+        setLoading(true);
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+        const response = await fetch(`${API_URL}/instructors/${id}`, {
+          headers: getHeaders(false)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Transform API data to match component expectations
+          const transformedInstructor = {
+            ...data.data,
+            id: data.data._id,
+            name: `${data.data.user?.firstName} ${data.data.user?.lastName}`.trim(),
+            pricePerHour: data.data.pricing?.marketplaceLessonRate || 80,
+            rating: data.data.stats?.averageRating || 0,
+            reviewCount: data.data.stats?.totalReviews || 0
+          };
+          setInstructor(transformedInstructor);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching instructor:', err);
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchInstructor();
+    }
+  }, [id]);
 
   const steps = [
     { number: 1, label: 'Instructor' },
@@ -405,6 +444,19 @@ const BookingFlowContent = () => {
 
   const availableDates = getAvailableDates();
   const availableTimeSlots = getAvailableTimeSlots();
+
+  if (loading) {
+    return (
+      <div className="booking-flow">
+        <div className="container">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading instructor details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!instructor) {
     return (

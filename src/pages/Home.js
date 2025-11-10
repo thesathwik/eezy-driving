@@ -1,34 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Hero from '../components/home/Hero';
 import HowItWorks from '../components/home/HowItWorks';
 import Testimonials from '../components/home/Testimonials';
 import FAQ from '../components/home/FAQ';
 import InstructorCard from '../components/instructors/InstructorCard';
-import { instructors } from '../data/instructors';
+import { getHeaders } from '../config/api';
 import './Home.css';
 
 const Home = () => {
-  // Show top 3 featured instructors
-  const featuredInstructors = instructors.filter(i => i.topRated).slice(0, 3);
+  const [featuredInstructors, setFeaturedInstructors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedInstructors();
+  }, []);
+
+  const fetchFeaturedInstructors = async () => {
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+      const response = await fetch(`${API_URL}/instructors?limit=3`, {
+        headers: getHeaders(false)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFeaturedInstructors(data.data.slice(0, 3));
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching featured instructors:', err);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="home-page">
       <Hero />
       <HowItWorks />
 
-      <section className="featured-instructors section">
-        <div className="container">
-          <div className="section-title">
-            <h2>Top Rated Instructors</h2>
-            <p>Meet our highly-rated professional instructors</p>
+      {featuredInstructors.length > 0 && (
+        <section className="featured-instructors section">
+          <div className="container">
+            <div className="section-title">
+              <h2>Top Rated Instructors</h2>
+              <p>Meet our highly-rated professional instructors</p>
+            </div>
+            <div className="instructors-grid">
+              {featuredInstructors.map(instructor => (
+                <InstructorCard key={instructor._id} instructor={instructor} />
+              ))}
+            </div>
           </div>
-          <div className="instructors-grid">
-            {featuredInstructors.map(instructor => (
-              <InstructorCard key={instructor.id} instructor={instructor} />
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <Testimonials />
       <FAQ />
