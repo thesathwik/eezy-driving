@@ -17,6 +17,7 @@ const BookingFlowContent = () => {
 
   const [instructor, setInstructor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [availabilityData, setAvailabilityData] = useState([]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState('10hours');
@@ -108,6 +109,37 @@ const BookingFlowContent = () => {
       fetchInstructor();
     }
   }, [id]);
+
+  // Fetch availability data
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!instructor) return;
+
+      try {
+        const today = new Date();
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + 60); // Fetch 60 days of availability
+
+        const startDateStr = today.toISOString().split('T')[0];
+        const endDateStr = endDate.toISOString().split('T')[0];
+
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+        const response = await fetch(
+          `${API_URL}/availability/instructor/${instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Availability data for booking:', data);
+          setAvailabilityData(data.data || []);
+        }
+      } catch (err) {
+        console.error('Error fetching availability for booking:', err);
+      }
+    };
+
+    fetchAvailability();
+  }, [instructor]);
 
   const steps = [
     { number: 1, label: 'Instructor' },
@@ -390,61 +422,42 @@ const BookingFlowContent = () => {
     return availDate.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' });
   };
 
-  // Generate available dates based on instructor availability
+  // Generate available dates based on instructor availability from API
   const getAvailableDates = () => {
-    if (!instructor) return [];
+    if (!availabilityData || availabilityData.length === 0) return [];
 
-    const dates = [];
-    const today = new Date();
-    const startDate = instructor.nextAvailableDate || today;
-
-    // Generate next 30 days of availability
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-
-      const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      const isWeekday = !isWeekend;
-
-      // Check if instructor is available on this day
-      const hasWeekdayAvailability = instructor.availabilityDays?.includes('weekday') && isWeekday;
-      const hasWeekendAvailability = instructor.availabilityDays?.includes('weekend') && isWeekend;
-
-      if (hasWeekdayAvailability || hasWeekendAvailability) {
-        dates.push(date.toISOString().split('T')[0]);
-      }
-    }
+    // Extract dates from availability data that have at least one available slot
+    const dates = availabilityData
+      .filter(avail => {
+        // Check if there's at least one available time slot
+        return avail.timeSlots && avail.timeSlots.some(slot => slot.available === true);
+      })
+      .map(avail => {
+        // Convert date to YYYY-MM-DD format
+        const date = new Date(avail.date);
+        return date.toISOString().split('T')[0];
+      })
+      .sort(); // Sort dates chronologically
 
     return dates;
   };
 
-  // Generate available time slots based on instructor availability
-  const getAvailableTimeSlots = () => {
-    if (!instructor) return [];
+  // Generate available time slots for a specific date based on instructor availability
+  const getAvailableTimeSlotsForDate = (dateString) => {
+    if (!availabilityData || availabilityData.length === 0 || !dateString) return [];
 
-    const amSlots = [
-      '5:00 AM', '6:00 AM', '7:00 AM', '8:00 AM',
-      '9:00 AM', '10:00 AM', '11:00 AM'
-    ];
+    // Find the availability record for the selected date
+    const dateAvailability = availabilityData.find(avail => {
+      const availDate = new Date(avail.date).toISOString().split('T')[0];
+      return availDate === dateString;
+    });
 
-    const pmSlots = [
-      '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM',
-      '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM',
-      '8:00 PM', '9:00 PM'
-    ];
+    if (!dateAvailability) return [];
 
-    let availableSlots = [];
-
-    if (instructor.availabilityTimes?.includes('AM')) {
-      availableSlots = [...availableSlots, ...amSlots];
-    }
-
-    if (instructor.availabilityTimes?.includes('PM')) {
-      availableSlots = [...availableSlots, ...pmSlots];
-    }
-
-    return availableSlots;
+    // Return only the time slots that are available
+    return dateAvailability.timeSlots
+      .filter(slot => slot.available === true)
+      .map(slot => slot.time);
   };
 
   if (loading) {
@@ -471,7 +484,6 @@ const BookingFlowContent = () => {
   }
 
   const availableDates = getAvailableDates();
-  const availableTimeSlots = getAvailableTimeSlots();
 
   return (
     <div className="booking-flow">
@@ -820,9 +832,10 @@ const BookingFlowContent = () => {
                             value={booking.selectedTime}
                             onChange={(e) => handleBookingChange(booking.id, 'selectedTime', e.target.value)}
                             className="time-select"
+                            disabled={!booking.selectedDate}
                           >
                             <option value="">Select a time</option>
-                            {availableTimeSlots.map((time) => (
+                            {getAvailableTimeSlotsForDate(booking.selectedDate).map((time) => (
                               <option key={time} value={time}>
                                 {time}
                               </option>
