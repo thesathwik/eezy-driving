@@ -77,13 +77,17 @@ const InstructorAvailability = () => {
         const startDateStr = currentWeekStart.toISOString().split('T')[0];
         const endDateStr = weekEnd.toISOString().split('T')[0];
 
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/availability/instructor/${instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`
-        );
+        const apiUrl = `${process.env.REACT_APP_API_URL}/availability/instructor/${instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`;
+        console.log('Fetching availability from:', apiUrl);
+
+        const response = await fetch(apiUrl);
 
         if (response.ok) {
           const data = await response.json();
+          console.log('Availability data received:', data);
           setAvailabilityData(data.data || []);
+        } else {
+          console.error('Failed to fetch availability:', response.status, response.statusText);
         }
       } catch (err) {
         console.error('Error fetching availability:', err);
