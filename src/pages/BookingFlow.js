@@ -442,9 +442,29 @@ const BookingFlowContent = () => {
     return dates;
   };
 
-  // Generate available time slots for a specific date based on instructor availability
-  const getAvailableTimeSlotsForDate = (dateString) => {
+  // Helper function to parse time string to minutes since midnight
+  const parseTimeToMinutes = (timeStr) => {
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) return 0;
+
+    let hours = parseInt(match[1]);
+    const minutes = parseInt(match[2]);
+    const period = match[3].toUpperCase();
+
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  };
+
+  // Generate available time slots for a specific date based on instructor availability and booking duration
+  const getAvailableTimeSlotsForDate = (dateString, bookingType) => {
     if (!availabilityData || availabilityData.length === 0 || !dateString) return [];
+
+    // Determine lesson duration based on booking type
+    let durationHours = 1;
+    if (bookingType === '2hour') durationHours = 2;
+    if (bookingType === 'test') durationHours = 2.5;
 
     // Find the availability record for the selected date
     const dateAvailability = availabilityData.find(avail => {
@@ -454,10 +474,42 @@ const BookingFlowContent = () => {
 
     if (!dateAvailability) return [];
 
-    // Return only the time slots that are available
-    return dateAvailability.timeSlots
+    // Get all available slots
+    const allSlots = dateAvailability.timeSlots
       .filter(slot => slot.available === true)
-      .map(slot => slot.time);
+      .map(slot => ({ time: slot.time, minutes: parseTimeToMinutes(slot.time) }))
+      .sort((a, b) => a.minutes - b.minutes);
+
+    // Filter slots that have enough consecutive availability
+    const validSlots = [];
+    const durationMinutes = durationHours * 60;
+
+    for (let i = 0; i < allSlots.length; i++) {
+      const startSlot = allSlots[i];
+      const endTimeNeeded = startSlot.minutes + durationMinutes;
+
+      // Check if we have consecutive available slots to cover the duration
+      let hasEnoughTime = true;
+      let currentTime = startSlot.minutes;
+
+      while (currentTime < endTimeNeeded) {
+        const nextHour = currentTime + 60;
+        const hasSlot = allSlots.some(s => s.minutes === currentTime);
+
+        if (!hasSlot) {
+          hasEnoughTime = false;
+          break;
+        }
+
+        currentTime = nextHour;
+      }
+
+      if (hasEnoughTime) {
+        validSlots.push(startSlot.time);
+      }
+    }
+
+    return validSlots;
   };
 
   if (loading) {
@@ -835,7 +887,7 @@ const BookingFlowContent = () => {
                             disabled={!booking.selectedDate}
                           >
                             <option value="">Select a time</option>
-                            {getAvailableTimeSlotsForDate(booking.selectedDate).map((time) => (
+                            {getAvailableTimeSlotsForDate(booking.selectedDate, booking.bookingType).map((time) => (
                               <option key={time} value={time}>
                                 {time}
                               </option>
