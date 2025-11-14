@@ -383,10 +383,52 @@ const BookingFlowContent = () => {
     setPaymentProcessing(true);
 
     try {
-      // Save booking to database
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+      let authToken = null;
+
+      // Step 1: Register the learner if not already logged in
+      if (!showLogin) {
+        // This is a new registration
+        console.log('Registering new learner...');
+        const registerResponse = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: learnerDetails.firstName,
+            lastName: learnerDetails.lastName,
+            email: learnerDetails.email,
+            password: learnerDetails.password,
+            phone: learnerDetails.phone,
+            role: 'learner'
+          })
+        });
+
+        const registerData = await registerResponse.json();
+
+        if (!registerResponse.ok) {
+          throw new Error(registerData.message || 'Failed to create account');
+        }
+
+        authToken = registerData.data.token;
+        console.log('Learner registered successfully');
+
+        // Store token in localStorage for future sessions
+        localStorage.setItem('authToken', authToken);
+        localStorage.setItem('userRole', 'learner');
+      } else {
+        // User logged in - get token from localStorage
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+          throw new Error('Authentication required. Please log in again.');
+        }
+      }
+
+      // Step 2: Create booking with auth token
+      console.log('Creating booking...');
       const bookingData = {
         instructorId: id,
-        learnerId: learnerDetails.email, // Will be replaced with actual learner ID after auth
         packageDetails: {
           hours: packageDetails.hours,
           totalAmount: totalDue,
@@ -417,10 +459,11 @@ const BookingFlowContent = () => {
         }
       };
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/bookings`, {
+      const response = await fetch(`${API_URL}/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify(bookingData)
       });
