@@ -899,17 +899,23 @@ const BookingFlowContent = () => {
 
                     {/* Pickup Location */}
                     <div className="form-group">
-                      <label>Lesson Pick Up Location</label>
-                      <div className="location-input-group">
-                        <input
-                          type="text"
-                          value={booking.pickupLocation}
-                          onChange={(e) => handleBookingChange(booking.id, 'pickupLocation', e.target.value)}
-                          className="location-input"
-                          placeholder="123 Placeholder Street, Sydney NSW 2000"
-                        />
-                        <button className="btn-edit-location">Edit</button>
-                      </div>
+                      <label>Pick Up Suburb</label>
+                      <select
+                        value={booking.pickupLocation}
+                        onChange={(e) => handleBookingChange(booking.id, 'pickupLocation', e.target.value)}
+                        className="form-select"
+                      >
+                        <option value="">Select a suburb</option>
+                        {instructor.serviceArea?.suburbs?.map((suburb) => (
+                          <option key={suburb} value={suburb}>
+                            {suburb}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="field-hint">
+                        {instructor.name} services the suburbs listed above.
+                        If your location is not listed, please contact the instructor.
+                      </p>
                     </div>
                   </div>
                 ))}
