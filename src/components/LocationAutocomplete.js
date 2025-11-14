@@ -97,11 +97,11 @@ const LocationAutocomplete = ({ suburb, value, onChange, placeholder, className 
   };
 
   const handleBlur = () => {
-    // Delay to allow click on dropdown item
+    // Delay to allow mousedown on dropdown item to fire first
     setTimeout(() => {
       setShowDropdown(false);
       setSelectedIndex(-1);
-    }, 200);
+    }, 150);
   };
 
   return (
@@ -142,7 +142,10 @@ const LocationAutocomplete = ({ suburb, value, onChange, placeholder, className 
           {predictions.map((prediction, index) => (
             <div
               key={prediction.place_id}
-              onClick={() => handleSelect(prediction)}
+              onMouseDown={(e) => {
+                e.preventDefault(); // Prevent blur from firing
+                handleSelect(prediction);
+              }}
               style={{
                 padding: '12px 16px',
                 cursor: 'pointer',
