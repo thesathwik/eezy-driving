@@ -307,6 +307,20 @@ const BookingFlowContent = () => {
       return;
     }
 
+    // Auto-populate learner pickup details from first booking when moving to step 4
+    if (currentStep === 3 && bookings.length > 0) {
+      const firstBooking = bookings[0];
+
+      // Only populate if learner details are empty and booking has pickup info
+      if (!learnerDetails.pickupAddress && firstBooking.pickupAddress) {
+        setLearnerDetails(prev => ({
+          ...prev,
+          pickupAddress: firstBooking.pickupAddress,
+          suburb: firstBooking.pickupSuburb || ''
+        }));
+      }
+    }
+
     // Clear errors and proceed
     setValidationErrors({});
     if (currentStep < 5) {
