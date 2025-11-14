@@ -3,7 +3,9 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { FaCheck, FaInfoCircle, FaChevronDown, FaChevronUp, FaStar, FaCheckCircle, FaClock, FaArrowLeft, FaEnvelope, FaLock, FaCreditCard } from 'react-icons/fa';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import { LoadScript } from '@react-google-maps/api';
 import StripePaymentForm from '../components/payment/StripePaymentForm';
+import LocationAutocomplete from '../components/LocationAutocomplete';
 import { getHeaders } from '../config/api';
 import './BookingFlow.css';
 
@@ -942,18 +944,20 @@ const BookingFlowContent = () => {
                       </p>
                     </div>
 
-                    {/* Street Address */}
+                    {/* Street Address with Autocomplete */}
                     <div className="form-group">
                       <label>Street Address</label>
-                      <input
-                        type="text"
+                      <LocationAutocomplete
+                        suburb={booking.pickupSuburb}
                         value={booking.pickupAddress}
-                        onChange={(e) => handleBookingChange(booking.id, 'pickupAddress', e.target.value)}
-                        placeholder="e.g., 123 Main Street"
+                        onChange={(address) => handleBookingChange(booking.id, 'pickupAddress', address)}
+                        placeholder={booking.pickupSuburb ? `Start typing address in ${booking.pickupSuburb}...` : "Select a suburb first"}
                         className="form-input"
                       />
                       <p className="field-hint">
-                        Enter your full street address within the selected suburb.
+                        {booking.pickupSuburb
+                          ? `Start typing your address and select from suggestions in ${booking.pickupSuburb}.`
+                          : 'Please select a suburb first to enable address autocomplete.'}
                       </p>
                     </div>
                   </div>
@@ -1630,9 +1634,14 @@ const BookingFlowContent = () => {
 // Wrap with Stripe Elements provider
 const BookingFlow = () => {
   return (
-    <Elements stripe={stripePromise}>
-      <BookingFlowContent />
-    </Elements>
+    <LoadScript
+      googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+      libraries={['places']}
+    >
+      <Elements stripe={stripePromise}>
+        <BookingFlowContent />
+      </Elements>
+    </LoadScript>
   );
 };
 
