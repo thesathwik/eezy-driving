@@ -311,6 +311,8 @@ const BookingFlowContent = () => {
     if (currentStep === 3 && bookings.length > 0) {
       const firstBooking = bookings[0];
 
+      console.log('First booking data:', firstBooking);
+
       // Only populate if learner details are empty and booking has pickup info
       if (!learnerDetails.pickupAddress && firstBooking.pickupAddress) {
         // Parse the full address to extract components
@@ -320,6 +322,9 @@ const BookingFlowContent = () => {
         // Extract suburb and state from the address
         let extractedSuburb = firstBooking.pickupSuburb || '';
         let extractedState = 'VIC'; // Default to VIC
+
+        console.log('Full address:', fullAddress);
+        console.log('pickupSuburb from booking:', firstBooking.pickupSuburb);
 
         // Try to parse state from address (e.g., "VIC", "NSW", "QLD")
         const stateMatch = fullAddress.match(/\b(VIC|NSW|QLD|SA|WA|TAS|NT|ACT)\b/i);
@@ -331,6 +336,7 @@ const BookingFlowContent = () => {
         if (!extractedSuburb) {
           // Split by comma and get the second part (suburb + state)
           const parts = fullAddress.split(',').map(p => p.trim());
+          console.log('Address parts:', parts);
           if (parts.length >= 2) {
             // Second part is usually "Suburb STATE"
             const suburbStatePart = parts[1];
@@ -338,6 +344,9 @@ const BookingFlowContent = () => {
             extractedSuburb = suburbStatePart.replace(/\b(VIC|NSW|QLD|SA|WA|TAS|NT|ACT)\b/i, '').trim();
           }
         }
+
+        console.log('Extracted suburb:', extractedSuburb);
+        console.log('Extracted state:', extractedState);
 
         setLearnerDetails(prev => ({
           ...prev,
