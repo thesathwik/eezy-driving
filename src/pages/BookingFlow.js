@@ -31,7 +31,8 @@ const BookingFlowContent = () => {
     bookingType: '1hour',
     selectedDate: '',
     selectedTime: '',
-    pickupLocation: ''
+    pickupSuburb: '',
+    pickupAddress: ''
   }]);
 
   // Step 4: Learner Registration state
@@ -207,7 +208,25 @@ const BookingFlowContent = () => {
 
       case 3:
         // Step 3: Book lessons - optional step (can skip)
-        // No required validation as users can book from dashboard later
+        // But if user has entered booking details, validate they're complete
+        const filledBookings = bookings.filter(b =>
+          b.selectedDate || b.selectedTime || b.pickupSuburb || b.pickupAddress
+        );
+
+        filledBookings.forEach((booking, index) => {
+          if (!booking.selectedDate) {
+            errors[`booking${booking.id}_date`] = `Booking ${index + 1}: Please select a date`;
+          }
+          if (!booking.selectedTime) {
+            errors[`booking${booking.id}_time`] = `Booking ${index + 1}: Please select a time`;
+          }
+          if (!booking.pickupSuburb) {
+            errors[`booking${booking.id}_suburb`] = `Booking ${index + 1}: Please select a suburb`;
+          }
+          if (!booking.pickupAddress?.trim()) {
+            errors[`booking${booking.id}_address`] = `Booking ${index + 1}: Please enter a street address`;
+          }
+        });
         break;
 
       case 4:
@@ -313,7 +332,8 @@ const BookingFlowContent = () => {
       bookingType: '1hour',
       selectedDate: '',
       selectedTime: '',
-      pickupLocation: ''
+      pickupSuburb: '',
+      pickupAddress: ''
     };
     setBookings([...bookings, newBooking]);
   };
@@ -357,7 +377,12 @@ const BookingFlowContent = () => {
           discount: discount,
           processingFee: processingFee
         },
-        bookings: bookings.filter(b => b.selectedDate && b.selectedTime),
+        bookings: bookings
+          .filter(b => b.selectedDate && b.selectedTime)
+          .map(b => ({
+            ...b,
+            pickupLocation: `${b.pickupAddress}, ${b.pickupSuburb}`
+          })),
         paymentIntent: {
           id: paymentIntent.id,
           status: paymentIntent.status,
@@ -901,8 +926,8 @@ const BookingFlowContent = () => {
                     <div className="form-group">
                       <label>Pick Up Suburb</label>
                       <select
-                        value={booking.pickupLocation}
-                        onChange={(e) => handleBookingChange(booking.id, 'pickupLocation', e.target.value)}
+                        value={booking.pickupSuburb}
+                        onChange={(e) => handleBookingChange(booking.id, 'pickupSuburb', e.target.value)}
                         className="form-select"
                       >
                         <option value="">Select a suburb</option>
@@ -914,7 +939,21 @@ const BookingFlowContent = () => {
                       </select>
                       <p className="field-hint">
                         {instructor.name} services the suburbs listed above.
-                        If your location is not listed, please contact the instructor.
+                      </p>
+                    </div>
+
+                    {/* Street Address */}
+                    <div className="form-group">
+                      <label>Street Address</label>
+                      <input
+                        type="text"
+                        value={booking.pickupAddress}
+                        onChange={(e) => handleBookingChange(booking.id, 'pickupAddress', e.target.value)}
+                        placeholder="e.g., 123 Main Street"
+                        className="form-input"
+                      />
+                      <p className="field-hint">
+                        Enter your full street address within the selected suburb.
                       </p>
                     </div>
                   </div>
