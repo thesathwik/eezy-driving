@@ -383,7 +383,7 @@ const BookingFlowContent = () => {
           .filter(b => b.selectedDate && b.selectedTime)
           .map(b => ({
             ...b,
-            pickupLocation: `${b.pickupAddress}, ${b.pickupSuburb}`
+            pickupLocation: b.pickupAddress // Full address from Google Places
           })),
         paymentIntent: {
           id: paymentIntent.id,

@@ -52,11 +52,10 @@ const LocationAutocomplete = ({ suburb, value, onChange, placeholder, className 
   }, [value, suburb]);
 
   const handleSelect = (prediction) => {
-    // Extract just the street address (number + street name)
-    const parts = prediction.description.split(',');
-    const streetAddress = parts[0].trim();
+    // Use the full formatted address from Google
+    const fullAddress = prediction.description;
 
-    onChange(streetAddress);
+    onChange(fullAddress);
     setPredictions([]);
     setShowDropdown(false);
     setSelectedIndex(-1);
