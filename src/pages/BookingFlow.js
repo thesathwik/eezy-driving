@@ -313,10 +313,37 @@ const BookingFlowContent = () => {
 
       // Only populate if learner details are empty and booking has pickup info
       if (!learnerDetails.pickupAddress && firstBooking.pickupAddress) {
+        // Parse the full address to extract components
+        // Format: "2 Fairfield Square, Morwell VIC, Australia"
+        const fullAddress = firstBooking.pickupAddress;
+
+        // Extract suburb and state from the address
+        let extractedSuburb = firstBooking.pickupSuburb || '';
+        let extractedState = 'VIC'; // Default to VIC
+
+        // Try to parse state from address (e.g., "VIC", "NSW", "QLD")
+        const stateMatch = fullAddress.match(/\b(VIC|NSW|QLD|SA|WA|TAS|NT|ACT)\b/i);
+        if (stateMatch) {
+          extractedState = stateMatch[1].toUpperCase();
+        }
+
+        // If suburb wasn't selected from dropdown, try to extract from address
+        if (!extractedSuburb) {
+          // Split by comma and get the second part (suburb + state)
+          const parts = fullAddress.split(',').map(p => p.trim());
+          if (parts.length >= 2) {
+            // Second part is usually "Suburb STATE"
+            const suburbStatePart = parts[1];
+            // Remove state abbreviation to get suburb
+            extractedSuburb = suburbStatePart.replace(/\b(VIC|NSW|QLD|SA|WA|TAS|NT|ACT)\b/i, '').trim();
+          }
+        }
+
         setLearnerDetails(prev => ({
           ...prev,
-          pickupAddress: firstBooking.pickupAddress,
-          suburb: firstBooking.pickupSuburb || ''
+          pickupAddress: fullAddress,
+          suburb: extractedSuburb,
+          state: extractedState
         }));
       }
     }
