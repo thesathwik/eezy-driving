@@ -102,6 +102,7 @@ const bookingSchema = new mongoose.Schema({
       enum: ['credit-card', 'debit-card', 'bank-transfer', 'cash']
     },
     transactionId: String,
+    paymentIntentId: String, // Stripe PaymentIntent ID for tracking
     paidAt: Date,
     refundedAt: Date,
     refundAmount: Number,

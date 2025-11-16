@@ -1,5 +1,10 @@
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const Booking = require('../models/Booking');
+const Learner = require('../models/Learner');
+const Instructor = require('../models/Instructor');
+const User = require('../models/User');
+const { sendBookingConfirmation } = require('../services/emailService');
 
 // Create Payment Intent
 exports.createPaymentIntent = async (req, res) => {
@@ -152,49 +157,102 @@ exports.handleWebhook = async (req, res) => {
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
-      console.log('PaymentIntent was successful!', paymentIntent.id);
+      console.log('✅ PaymentIntent was successful!', paymentIntent.id);
       console.log('Payment metadata:', paymentIntent.metadata);
 
-      // The metadata contains booking information
-      // In a production app, you would:
-      // 1. Find the booking by paymentIntentId
-      // 2. Update booking status to 'confirmed'
-      // 3. Send confirmation email to learner and instructor
+      try {
+        // Find the booking by paymentIntentId
+        const booking = await Booking.findOne({
+          'payment.paymentIntentId': paymentIntent.id
+        }).populate({
+          path: 'learner',
+          populate: { path: 'user' }
+        }).populate({
+          path: 'instructor',
+          populate: { path: 'user' }
+        });
 
-      // Example database update (uncomment when Booking model exists):
-      /*
-      const Booking = require('../models/Booking');
-      await Booking.findOneAndUpdate(
-        { 'paymentIntent.id': paymentIntent.id },
-        {
-          status: 'confirmed',
-          'paymentIntent.status': 'succeeded',
-          confirmedAt: new Date()
+        if (booking) {
+          // Update booking status
+          booking.status = 'confirmed';
+          booking.payment.status = 'paid';
+          booking.payment.paidAt = new Date();
+          booking.payment.transactionId = paymentIntent.id;
+          await booking.save();
+
+          console.log('✅ Booking updated to confirmed:', booking._id);
+
+          // Prepare email data
+          const emailData = {
+            learner: {
+              firstName: booking.learner.user.firstName,
+              lastName: booking.learner.user.lastName,
+              email: booking.learner.user.email,
+              phone: booking.learner.user.phone
+            },
+            instructor: {
+              firstName: booking.instructor.user.firstName,
+              lastName: booking.instructor.user.lastName,
+              email: booking.instructor.user.email
+            },
+            lesson: {
+              date: booking.lesson.date,
+              startTime: booking.lesson.startTime,
+              endTime: booking.lesson.endTime,
+              duration: booking.lesson.duration,
+              pickupLocation: booking.lesson.pickupLocation,
+              dropoffLocation: booking.lesson.dropoffLocation,
+              notes: booking.lesson.notes
+            },
+            pricing: {
+              totalAmount: booking.pricing.totalAmount,
+              instructorPayout: booking.pricing.instructorPayout
+            }
+          };
+
+          // Send confirmation emails
+          await sendBookingConfirmation(emailData);
+          console.log('✅ Confirmation emails sent successfully');
+        } else {
+          console.warn('⚠️  No booking found for paymentIntentId:', paymentIntent.id);
         }
-      );
-      */
+      } catch (error) {
+        console.error('❌ Error processing payment success:', error);
+        // Don't fail the webhook - log and continue
+      }
       break;
 
     case 'payment_intent.payment_failed':
       const failedPayment = event.data.object;
-      console.log('PaymentIntent failed:', failedPayment.id);
+      console.log('❌ PaymentIntent failed:', failedPayment.id);
       console.log('Failure reason:', failedPayment.last_payment_error?.message);
 
-      // Update booking status to 'payment_failed'
-      // Send notification to learner
+      try {
+        // Find and update the booking
+        const failedBooking = await Booking.findOneAndUpdate(
+          { 'payment.paymentIntentId': failedPayment.id },
+          {
+            status: 'cancelled',
+            payment: {
+              status: 'failed',
+              paymentIntentId: failedPayment.id
+            },
+            cancellation: {
+              cancelledBy: 'admin',
+              cancelledAt: new Date(),
+              reason: `Payment failed: ${failedPayment.last_payment_error?.message || 'Unknown error'}`
+            }
+          }
+        );
 
-      // Example database update (uncomment when Booking model exists):
-      /*
-      const Booking = require('../models/Booking');
-      await Booking.findOneAndUpdate(
-        { 'paymentIntent.id': failedPayment.id },
-        {
-          status: 'payment_failed',
-          'paymentIntent.status': 'failed',
-          failureReason: failedPayment.last_payment_error?.message
+        if (failedBooking) {
+          console.log('✅ Booking marked as cancelled due to payment failure:', failedBooking._id);
+        } else {
+          console.warn('⚠️  No booking found for failed paymentIntentId:', failedPayment.id);
         }
-      );
-      */
+      } catch (error) {
+        console.error('❌ Error processing payment failure:', error);
+      }
       break;
 
     case 'charge.refunded':
