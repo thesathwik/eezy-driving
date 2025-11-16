@@ -89,13 +89,24 @@ const Instructors = () => {
 
     // Location filter (suburb)
     if (filterData.location && filterData.location.trim() !== '') {
-      const searchLocation = filterData.location.toLowerCase();
+      const searchLocation = filterData.location.toLowerCase().trim();
+      console.log('=== FILTERING BY LOCATION ===');
+      console.log('Search location:', searchLocation);
+
       filtered = filtered.filter(instructor => {
         const suburbs = instructor.serviceArea?.suburbs || [];
-        return suburbs.some(suburb =>
-          suburb.toLowerCase().includes(searchLocation)
-        );
+        const matchFound = suburbs.some(suburb => {
+          const suburbLower = suburb.toLowerCase().trim();
+          const matches = suburbLower.includes(searchLocation) || searchLocation.includes(suburbLower);
+          console.log(`  Checking: "${suburbLower}" vs "${searchLocation}" = ${matches}`);
+          return matches;
+        });
+
+        console.log(`  Instructor: ${instructor.user?.firstName} ${instructor.user?.lastName} - Match: ${matchFound}`);
+        return matchFound;
       });
+
+      console.log('Filtered count:', filtered.length);
     }
 
     // Transmission filter
