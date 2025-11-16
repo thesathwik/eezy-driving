@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
-            <h3 className="footer-logo">EAZYDRIVING</h3>
+            <h3 className="footer-logo">EEZYDRIVING</h3>
             <p className="footer-description">
               Your trusted platform for connecting with professional driving instructors.
               Learn to drive with confidence.
@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2024 EAZYDRIVING. All rights reserved.</p>
+          <p>&copy; 2024 EEZYDRIVING. All rights reserved.</p>
           <p>Making learning to drive easy, one lesson at a time.</p>
         </div>
       </div>

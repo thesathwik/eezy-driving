@@ -106,7 +106,7 @@ const InstructorSignup = () => {
         <div className="auth-card">
           <div className="auth-header">
             <h1>Join as an Instructor</h1>
-            <p>Grow your driving school business with EAZYDRIVING</p>
+            <p>Grow your driving school business with EEZYDRIVING</p>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
@@ -229,7 +229,7 @@ const InstructorSignup = () => {
         </div>
 
         <div className="auth-info auth-info-instructor">
-          <h2>Join EAZYDRIVING Today</h2>
+          <h2>Join EEZYDRIVING Today</h2>
           <ul className="info-list">
             <li>
               <div className="info-icon">✓</div>

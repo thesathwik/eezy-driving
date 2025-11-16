@@ -30,7 +30,7 @@ const Navigation = () => {
       <div className="container">
         <div className="nav-wrapper">
           <Link to="/" className="nav-logo">
-            <span className="logo-text">EAZYDRIVING</span>
+            <span className="logo-text">EEZYDRIVING</span>
           </Link>
 
           <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>

@@ -1,4 +1,4 @@
-# EAZY Driving School Platform
+# EEZY Driving School Platform
 
 A full-stack web application for connecting learner drivers with driving instructors.
 

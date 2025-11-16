@@ -11,7 +11,7 @@ const Testimonials = () => {
       role: 'Passed on First Attempt',
       initials: 'SJ',
       rating: 5,
-      text: 'EAZYDRIVING made finding the perfect instructor so simple! My instructor was patient, professional, and helped me pass my test on the first try. The booking system was incredibly easy to use.',
+      text: 'EEZYDRIVING made finding the perfect instructor so simple! My instructor was patient, professional, and helped me pass my test on the first try. The booking system was incredibly easy to use.',
       instructor: 'Michael Chen'
     },
     {
@@ -38,7 +38,7 @@ const Testimonials = () => {
       role: 'Happy Learner',
       initials: 'AH',
       rating: 5,
-      text: 'Best decision I made was using EAZYDRIVING. The instructors are top-notch, and the ability to book lessons online 24/7 was perfect for my busy schedule.',
+      text: 'Best decision I made was using EEZYDRIVING. The instructors are top-notch, and the ability to book lessons online 24/7 was perfect for my busy schedule.',
       instructor: 'Sophie Anderson'
     }
   ];

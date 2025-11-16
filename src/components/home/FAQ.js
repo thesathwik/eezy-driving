@@ -27,7 +27,7 @@ const FAQ = () => {
     },
     {
       question: 'Are all instructors verified and licenced?',
-      answer: 'Yes! All instructors on EAZYDRIVING are fully licenced, accredited, and have undergone background checks including police clearances and working with children checks. We verify all credentials before approving any instructor to join our platform.'
+      answer: 'Yes! All instructors on EEZYDRIVING are fully licenced, accredited, and have undergone background checks including police clearances and working with children checks. We verify all credentials before approving any instructor to join our platform.'
     },
     {
       question: 'Do lessons count towards my logbook hours?',
@@ -48,7 +48,7 @@ const FAQ = () => {
       <div className="container">
         <div className="section-title">
           <h2>Frequently Asked Questions</h2>
-          <p>Everything you need to know about EAZYDRIVING</p>
+          <p>Everything you need to know about EEZYDRIVING</p>
         </div>
 
         <div className="faq-container">

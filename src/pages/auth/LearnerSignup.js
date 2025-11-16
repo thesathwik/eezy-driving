@@ -229,7 +229,7 @@ const LearnerSignup = () => {
         </div>
 
         <div className="auth-info">
-          <h2>Why Choose EAZYDRIVING?</h2>
+          <h2>Why Choose EEZYDRIVING?</h2>
           <ul className="info-list">
             <li>
               <div className="info-icon">✓</div>

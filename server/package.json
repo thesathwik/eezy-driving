@@ -1,7 +1,7 @@
 {
   "name": "eazydriving-server",
   "version": "1.0.0",
-  "description": "EAZYDRIVING Platform Backend API",
+  "description": "EEZYDRIVING Platform Backend API",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

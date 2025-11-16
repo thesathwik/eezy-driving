@@ -1,6 +1,6 @@
-# EAZYDRIVING Backend API
+# EEZYDRIVING Backend API
 
-Production-ready RESTful API for the EAZYDRIVING platform built with Node.js, Express, and MongoDB.
+Production-ready RESTful API for the EEZYDRIVING platform built with Node.js, Express, and MongoDB.
 
 ## Features
 
@@ -340,4 +340,4 @@ For issues or questions:
 
 ## License
 
-Proprietary - EAZYDRIVING Platform
+Proprietary - EEZYDRIVING Platform

@@ -12,7 +12,7 @@ const DashboardSidebar = () => {
     <aside className="dashboard-sidebar">
       <div className="sidebar-logo">
         <Link to="/">
-          <h2>EAZYDRIVING</h2>
+          <h2>EEZYDRIVING</h2>
         </Link>
       </div>
 
@@ -105,10 +105,10 @@ const DashboardSidebar = () => {
 
       <div className="sidebar-rewards">
         <div className="rewards-card">
-          <div className="rewards-label">EazyRewards</div>
+          <div className="rewards-label">EezyRewards</div>
           <div className="rewards-amount">Earn $500</div>
           <Link to="/refer" className="rewards-link">
-            Refer instructors to EAZYDRIVING →
+            Refer instructors to EEZYDRIVING →
           </Link>
         </div>
       </div>

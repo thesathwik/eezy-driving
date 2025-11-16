@@ -383,7 +383,7 @@ const CompleteInstructorProfile = () => {
 
     // Validate marketplace lesson rate
     if (!formData.pricing.marketplaceLessonRate || parseFloat(formData.pricing.marketplaceLessonRate) <= 0) {
-      newErrors.marketplaceLessonRate = 'EAZYDRIVING lesson rate is required and must be greater than 0';
+      newErrors.marketplaceLessonRate = 'EEZYDRIVING lesson rate is required and must be greater than 0';
     }
 
     // Validate private lesson rate
@@ -393,7 +393,7 @@ const CompleteInstructorProfile = () => {
 
     // Validate marketplace test package rate
     if (!formData.pricing.marketplaceTestPackageRate || parseFloat(formData.pricing.marketplaceTestPackageRate) <= 0) {
-      newErrors.marketplaceTestPackageRate = 'EAZYDRIVING test package rate is required and must be greater than 0';
+      newErrors.marketplaceTestPackageRate = 'EEZYDRIVING test package rate is required and must be greater than 0';
     }
 
     // Validate private test package rate
@@ -817,12 +817,12 @@ const CompleteInstructorProfile = () => {
 
       <div className="pricing-info-banner">
         <div className="learner-type">
-          <strong>EAZYDRIVING Learners:</strong>
-          <p>from EAZYDRIVING marketplace.</p>
+          <strong>EEZYDRIVING Learners:</strong>
+          <p>from EEZYDRIVING marketplace.</p>
         </div>
         <div className="learner-type">
           <strong>Private Learners:</strong>
-          <p>invited to EAZYDRIVING by you.</p>
+          <p>invited to EEZYDRIVING by you.</p>
         </div>
       </div>
 
@@ -833,7 +833,7 @@ const CompleteInstructorProfile = () => {
 
           <div className="pricing-row">
             <div className="pricing-label">
-              <span className="pricing-type">EAZYDRIVING Learners</span>
+              <span className="pricing-type">EEZYDRIVING Learners</span>
             </div>
             <div className="pricing-input-group">
               <span className="pricing-currency">$</span>
@@ -875,7 +875,7 @@ const CompleteInstructorProfile = () => {
 
           <div className="pricing-row">
             <div className="pricing-label">
-              <span className="pricing-type">EAZYDRIVING Learners</span>
+              <span className="pricing-type">EEZYDRIVING Learners</span>
             </div>
             <div className="pricing-input-group">
               <span className="pricing-currency">$</span>
@@ -1609,10 +1609,10 @@ const CompleteInstructorProfile = () => {
       </div>
 
       <div className="form-section">
-        <h3 className="section-heading">EAZYDRIVING Marketplace</h3>
+        <h3 className="section-heading">EEZYDRIVING Marketplace</h3>
         <div className="marketplace-toggle">
           <div className="toggle-info">
-            <p>Your profile is discoverable by Learners on EAZYDRIVING marketplace search results.</p>
+            <p>Your profile is discoverable by Learners on EEZYDRIVING marketplace search results.</p>
           </div>
           <label className="toggle-switch">
             <input
