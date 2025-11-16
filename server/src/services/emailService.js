@@ -1,5 +1,8 @@
 const nodemailer = require('nodemailer');
 
+// Log nodemailer to debug
+console.log('Nodemailer loaded:', typeof nodemailer, typeof nodemailer.createTransporter);
+
 // Create email transporter
 const createTransporter = () => {
   // For production, use actual email service (Gmail, SendGrid, AWS SES, etc.)
