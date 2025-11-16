@@ -38,16 +38,8 @@ const InstructorProfile = () => {
 
         const data = await response.json();
 
-        console.log('=== INSTRUCTOR API RESPONSE ===');
-        console.log('API URL:', `${API_URL}/instructors/${id}`);
-        console.log('Success:', data.success);
-        console.log('Raw Data:', JSON.stringify(data, null, 2));
-
         if (data.success) {
           const instructorData = data.data;
-          console.log('Bio from backend:', instructorData.bio);
-          console.log('Languages from backend:', instructorData.languages);
-          console.log('Service areas from backend:', instructorData.serviceArea?.suburbs);
 
           // Calculate years and months of experience from instructingSince
           let yearsExperience = 0;

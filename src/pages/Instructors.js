@@ -60,15 +60,6 @@ const Instructors = () => {
 
       const data = await response.json();
 
-      console.log('=== INSTRUCTORS LIST API RESPONSE ===');
-      console.log('API URL:', `${API_URL}/instructors`);
-      console.log('Total instructors:', data.data?.length);
-      console.log('Instructors:', data.data?.map(i => ({
-        id: i._id,
-        name: `${i.user?.firstName} ${i.user?.lastName}`,
-        serviceAreas: i.serviceArea?.suburbs
-      })));
-
       if (data.success) {
         setInstructors(data.data);
         setFilteredInstructors(data.data);
@@ -90,23 +81,14 @@ const Instructors = () => {
     // Location filter (suburb)
     if (filterData.location && filterData.location.trim() !== '') {
       const searchLocation = filterData.location.toLowerCase().trim();
-      console.log('=== FILTERING BY LOCATION ===');
-      console.log('Search location:', searchLocation);
 
       filtered = filtered.filter(instructor => {
         const suburbs = instructor.serviceArea?.suburbs || [];
-        const matchFound = suburbs.some(suburb => {
+        return suburbs.some(suburb => {
           const suburbLower = suburb.toLowerCase().trim();
-          const matches = suburbLower.includes(searchLocation) || searchLocation.includes(suburbLower);
-          console.log(`  Checking: "${suburbLower}" vs "${searchLocation}" = ${matches}`);
-          return matches;
+          return suburbLower.includes(searchLocation) || searchLocation.includes(suburbLower);
         });
-
-        console.log(`  Instructor: ${instructor.user?.firstName} ${instructor.user?.lastName} - Match: ${matchFound}`);
-        return matchFound;
       });
-
-      console.log('Filtered count:', filtered.length);
     }
 
     // Transmission filter
@@ -180,9 +162,6 @@ const Instructors = () => {
       );
     }
 
-    console.log('=== SETTING FILTERED INSTRUCTORS ===');
-    console.log('Filtered array length:', filtered.length);
-    console.log('Filtered instructors:', filtered.map(i => `${i.user?.firstName} ${i.user?.lastName}`));
     setFilteredInstructors(filtered);
   };
 
@@ -246,10 +225,6 @@ const Instructors = () => {
       </div>
     );
   }
-
-  console.log('=== RENDER ===');
-  console.log('filteredInstructors.length:', filteredInstructors.length);
-  console.log('filteredInstructors:', filteredInstructors.map(i => `${i.user?.firstName} ${i.user?.lastName}`));
 
   return (
     <div className="instructors-page-ez">
