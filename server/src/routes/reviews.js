@@ -1,13 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const {
+  getAllReviews,
+  getInstructorReviews,
+  createReview,
+  updateReview,
+  deleteReview
+} = require('../controllers/reviewController');
 
-// Placeholder routes - to be implemented
-router.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Reviews endpoint - Coming soon'
-  });
-});
+// Public routes
+router.get('/instructor/:instructorId', getInstructorReviews);
+
+// Protected routes
+router.post('/', protect, createReview);
+router.get('/', protect, getAllReviews);
+router.put('/:id', protect, updateReview);
+router.delete('/:id', protect, deleteReview);
 
 module.exports = router;

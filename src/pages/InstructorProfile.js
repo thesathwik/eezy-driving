@@ -14,11 +14,19 @@ const InstructorProfile = () => {
   const navigate = useNavigate();
 
   const [instructor, setInstructor] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    totalPages: 1,
+    totalReviews: 0
+  });
   const [loading, setLoading] = useState(true);
   const [showFullBio, setShowFullBio] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [showServiceArea, setShowServiceArea] = useState(false);
 
+  // Fetch instructor data
   useEffect(() => {
     const fetchInstructor = async () => {
       try {
@@ -31,22 +39,54 @@ const InstructorProfile = () => {
         const data = await response.json();
 
         if (data.success) {
+          const instructorData = data.data;
+
+          // Calculate years and months of experience from instructingSince
+          let yearsExperience = 0;
+          let monthsExperience = 0;
+
+          if (instructorData.instructingSince) {
+            const startDate = new Date(
+              instructorData.instructingSince.year,
+              new Date(Date.parse(instructorData.instructingSince.month + " 1, 2000")).getMonth()
+            );
+            const today = new Date();
+            const diffTime = Math.abs(today - startDate);
+            const totalMonths = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+            yearsExperience = Math.floor(totalMonths / 12);
+            monthsExperience = totalMonths % 12;
+          }
+
+          // Calculate discounted prices
+          const baseRate = instructorData.pricing?.marketplaceLessonRate || 80;
+          const price6hrs = baseRate * 0.95; // 5% discount
+          const price10hrs = baseRate * 0.90; // 10% discount
+          const testPackageRate = instructorData.pricing?.marketplaceTestPackageRate || 225;
+
           const transformedInstructor = {
-            ...data.data,
-            id: data.data._id,
-            name: `${data.data.user?.firstName} ${data.data.user?.lastName}`.trim(),
-            pricePerHour: data.data.pricing?.marketplaceLessonRate || 80,
-            rating: data.data.stats?.averageRating || 0,
-            reviewCount: data.data.stats?.totalReviews || 0,
-            completedLessons: data.data.stats?.totalLessons || 0,
-            location: data.data.serviceArea?.suburbs?.[0] || 'Unknown',
-            transmission: data.data.vehicle?.transmission || 'Auto',
-            vehicle: `${data.data.vehicle?.year || ''} ${data.data.vehicle?.make || ''} ${data.data.vehicle?.model || ''}`.trim(),
-            bio: data.data.profileInfo?.bio || '',
-            experience: data.data.profileInfo?.yearsExperience || 0,
-            languages: data.data.profileInfo?.languagesSpoken || [],
-            specialties: data.data.profileInfo?.specialties || [],
-            gender: data.data.profileInfo?.gender || 'Male'
+            ...instructorData,
+            id: instructorData._id,
+            name: `${instructorData.user?.firstName} ${instructorData.user?.lastName}`.trim(),
+            pricePerHour: baseRate,
+            price6hrs: price6hrs,
+            price10hrs: price10hrs,
+            testPackageRate: testPackageRate,
+            rating: instructorData.stats?.averageRating || 0,
+            reviewCount: instructorData.stats?.totalReviews || 0,
+            completedLessons: instructorData.stats?.totalLessons || 0,
+            location: instructorData.serviceArea?.suburbs?.[0] || 'Unknown',
+            transmission: instructorData.vehicle?.transmission || 'Auto',
+            transmissionOffered: instructorData.vehicle?.transmissionOffered || 'auto',
+            vehicle: `${instructorData.vehicle?.year || ''} ${instructorData.vehicle?.make || ''} ${instructorData.vehicle?.model || ''}`.trim(),
+            ancapRating: instructorData.vehicle?.ancapRating || '5 Stars',
+            hasDualControls: instructorData.vehicle?.hasDualControls !== false,
+            bio: instructorData.bio || '',
+            yearsExperience,
+            monthsExperience,
+            languages: instructorData.languages || ['English'],
+            services: instructorData.services || [],
+            specialties: instructorData.profileInfo?.specialties || [],
+            gender: instructorData.gender || 'male'
           };
           setInstructor(transformedInstructor);
         }
@@ -62,6 +102,42 @@ const InstructorProfile = () => {
       fetchInstructor();
     }
   }, [id]);
+
+  // Fetch reviews data
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+        const response = await fetch(
+          `${API_URL}/reviews/instructor/${id}?page=${pagination.currentPage}&limit=5`,
+          {
+            headers: getHeaders(false)
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          setReviews(data.data || []);
+          setPagination({
+            currentPage: data.pagination?.currentPage || 1,
+            totalPages: data.pagination?.totalPages || 1,
+            totalReviews: data.pagination?.totalReviews || 0
+          });
+        }
+
+        setReviewsLoading(false);
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+        setReviewsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchReviews();
+    }
+  }, [id, pagination.currentPage]);
 
   if (loading) {
     return (
@@ -86,40 +162,6 @@ const InstructorProfile = () => {
       </div>
     );
   }
-
-  // Sample reviews data
-  const reviews = [
-    {
-      name: 'Ashleigh',
-      date: 'Posted on 4 Nov 2025',
-      rating: 5,
-      comment: 'He was good, going to book again soon thanks!'
-    },
-    {
-      name: 'Samuel',
-      date: 'Posted on 19 Oct 2025',
-      rating: 5,
-      comment: 'He teach me very well'
-    },
-    {
-      name: 'Sandra',
-      date: 'Posted on 20 Aug 2025',
-      rating: 5,
-      comment: 'Abdul was great, has great knowledge about driving and is great for beginners'
-    },
-    {
-      name: 'Kirra',
-      date: 'Posted on 18 May 2025',
-      rating: 1,
-      comment: 'My lesson is not approved for 16/02/2025'
-    },
-    {
-      name: 'John jay',
-      date: 'Posted on 14 May 2025',
-      rating: 5,
-      comment: 'hes good instructor💯'
-    }
-  ];
 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, index) => (
@@ -179,45 +221,57 @@ const InstructorProfile = () => {
               {/* Instructor Bio */}
               <section className="profile-section">
                 <h2>Instructor Bio</h2>
-                <div className={`bio-text ${showFullBio ? 'expanded' : ''}`}>
-                  <p>
-                    My name is {instructor.name}. I have been a driving instructor since 2024. I have always enjoyed helping
-                    others. I am patient and understanding. I highly enjoy seeing learners gain confidence and
-                    independence. I am knowledgeable about road safety and risk management and will emphasise
-                    these principles in my lessons. My main goal when working with learners is to help you become a safe,
-                    risk-averse driver. My past career as a seafarer gave me opportunities to visit many parts of this globe
-                    meeting differen...
-                  </p>
-                  {showFullBio && (
-                    <p>
-                      {instructor.bio}
-                    </p>
-                  )}
-                </div>
-                <button
-                  className="btn-show-more"
-                  onClick={() => setShowFullBio(!showFullBio)}
-                >
-                  {showFullBio ? 'Show less' : 'Show more'}
-                </button>
+                {instructor.bio ? (
+                  <>
+                    <div className={`bio-text ${showFullBio ? 'expanded' : ''}`}>
+                      <p>
+                        {showFullBio ? instructor.bio : `${instructor.bio.substring(0, 300)}...`}
+                      </p>
+                    </div>
+                    {instructor.bio.length > 300 && (
+                      <button
+                        className="btn-show-more"
+                        onClick={() => setShowFullBio(!showFullBio)}
+                      >
+                        {showFullBio ? 'Show less' : 'Show more'}
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="bio-text">
+                    <p>No bio available for this instructor.</p>
+                  </div>
+                )}
 
                 {/* Instructor Details */}
                 <div className="instructor-details">
                   <div className="detail-item">
                     <FaCar className="detail-icon" />
-                    <span>Auto Lessons & <strong>Test Packages</strong></span>
+                    <span>
+                      {instructor.transmissionOffered === 'both'
+                        ? 'Auto & Manual Lessons'
+                        : instructor.transmissionOffered === 'manual'
+                        ? 'Manual Lessons'
+                        : 'Auto Lessons'}
+                      {instructor.services?.some(s => s.includes('test package')) && ' & '}
+                      {instructor.services?.some(s => s.includes('test package')) && <strong>Test Packages</strong>}
+                    </span>
                   </div>
-                  <div className="detail-item">
-                    <FaCheckCircle className="detail-icon" />
-                    <span>Verified Working with Children Check</span>
-                  </div>
-                  <div className="detail-item">
-                    <FaIdCard className="detail-icon" />
-                    <span>Driving Instructor's Licence</span>
-                  </div>
+                  {instructor.verification?.backgroundCheckComplete && (
+                    <div className="detail-item">
+                      <FaCheckCircle className="detail-icon" />
+                      <span>Verified Working with Children Check</span>
+                    </div>
+                  )}
+                  {instructor.verification?.licenceVerified && (
+                    <div className="detail-item">
+                      <FaIdCard className="detail-icon" />
+                      <span>Driving Instructor's Licence</span>
+                    </div>
+                  )}
                   <div className="detail-item">
                     <FaClock className="detail-icon" />
-                    <span>Instructed for {instructor.experience} yr. 0 mo.</span>
+                    <span>Instructed for {instructor.yearsExperience} yr. {instructor.monthsExperience} mo.</span>
                   </div>
                 </div>
 
@@ -225,37 +279,103 @@ const InstructorProfile = () => {
                 <div className="languages-section">
                   <h3>Spoken language(s)</h3>
                   <div className="language-badges">
-                    <span className="language-badge">English</span>
+                    {instructor.languages && instructor.languages.length > 0 ? (
+                      instructor.languages.map((language, index) => (
+                        <span key={index} className="language-badge">{language}</span>
+                      ))
+                    ) : (
+                      <span className="language-badge">English</span>
+                    )}
                   </div>
                 </div>
               </section>
 
               {/* Reviews Section */}
               <section className="profile-section reviews-section">
-                <h2>Reviews</h2>
-                {reviews.map((review, index) => (
-                  <div key={index} className="review-item">
-                    <div className="review-header">
-                      <div className="review-info">
-                        <h4>{review.name}</h4>
-                        <span className="review-date">{review.date}</span>
-                      </div>
-                      <div className="review-stars">
-                        {renderStars(review.rating)}
-                      </div>
-                    </div>
-                    <p className="review-comment">{review.comment}</p>
+                <h2>Reviews ({pagination.totalReviews})</h2>
+                {reviewsLoading ? (
+                  <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading reviews...</p>
                   </div>
-                ))}
+                ) : reviews.length > 0 ? (
+                  <>
+                    {reviews.map((review, index) => (
+                      <div key={review.id || index} className="review-item">
+                        <div className="review-header">
+                          <div className="review-info">
+                            <h4>{review.name}</h4>
+                            <span className="review-date">Posted on {review.date}</span>
+                          </div>
+                          <div className="review-stars">
+                            {renderStars(review.rating)}
+                          </div>
+                        </div>
+                        {review.title && <h5 className="review-title">{review.title}</h5>}
+                        <p className="review-comment">{review.comment}</p>
+                        {review.instructorResponse && (
+                          <div className="instructor-response">
+                            <strong>Instructor Response:</strong>
+                            <p>{review.instructorResponse.comment}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
 
-                {/* Pagination */}
-                <div className="pagination">
-                  <button className="page-btn active">1</button>
-                  <button className="page-btn">2</button>
-                  <button className="page-btn">3</button>
-                  <button className="page-btn">Next ›</button>
-                  <button className="page-btn">Last »</button>
-                </div>
+                    {/* Pagination */}
+                    {pagination.totalPages > 1 && (
+                      <div className="pagination">
+                        {pagination.currentPage > 1 && (
+                          <button
+                            className="page-btn"
+                            onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                          >
+                            ‹ Previous
+                          </button>
+                        )}
+
+                        {[...Array(pagination.totalPages)].map((_, index) => {
+                          const pageNum = index + 1;
+                          // Show first page, last page, current page, and pages around current
+                          if (
+                            pageNum === 1 ||
+                            pageNum === pagination.totalPages ||
+                            (pageNum >= pagination.currentPage - 1 && pageNum <= pagination.currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={pageNum}
+                                className={`page-btn ${pagination.currentPage === pageNum ? 'active' : ''}`}
+                                onClick={() => setPagination(prev => ({ ...prev, currentPage: pageNum }))}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          } else if (
+                            pageNum === pagination.currentPage - 2 ||
+                            pageNum === pagination.currentPage + 2
+                          ) {
+                            return <span key={pageNum} className="page-ellipsis">...</span>;
+                          }
+                          return null;
+                        })}
+
+                        {pagination.currentPage < pagination.totalPages && (
+                          <button
+                            className="page-btn"
+                            onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                          >
+                            Next ›
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="no-reviews">
+                    <p>No reviews yet for this instructor.</p>
+                  </div>
+                )}
               </section>
             </div>
 
@@ -282,14 +402,16 @@ const InstructorProfile = () => {
                   </div>
                 </div>
 
-                <div className="pricing-section">
-                  <div className="price-row">
-                    <span className="price-label">
-                      Test Package (2.5 hrs) <FaInfoCircle className="info-icon-small" />
-                    </span>
-                    <span className="price-value">$225</span>
+                {instructor.services?.some(s => s.includes('test package')) && (
+                  <div className="pricing-section">
+                    <div className="price-row">
+                      <span className="price-label">
+                        Test Package (2.5 hrs) <FaInfoCircle className="info-icon-small" />
+                      </span>
+                      <span className="price-value">${instructor.testPackageRate}</span>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <button
                   className="btn-book-now"
@@ -311,18 +433,6 @@ const InstructorProfile = () => {
                   <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" />
                   <img src="https://img.icons8.com/color/48/amex.png" alt="Amex" />
                   <img src="https://img.icons8.com/color/48/paypal.png" alt="PayPal" />
-                </div>
-              </div>
-
-              {/* Buy Now Pay Later Card */}
-              <div className="payment-options-card">
-                <h4>
-                  Buy Now Pay Later <FaInfoCircle className="info-icon-small" />
-                </h4>
-                <p className="payment-subtitle">4 payments of $20.00</p>
-                <div className="payment-logos">
-                  <img src="https://img.icons8.com/color/48/paypal.png" alt="PayPal" />
-                  <span className="payment-text">Pay in 4</span>
                 </div>
               </div>
 
@@ -374,9 +484,9 @@ const InstructorProfile = () => {
                     <FaCar className="car-icon-large" />
                   </div>
                   <div className="vehicle-details">
-                    <h4>{instructor.vehicle}</h4>
-                    <p>5-star ANCAP rating</p>
-                    <p>Dual controls fitted</p>
+                    <h4>{instructor.vehicle || 'Vehicle information not available'}</h4>
+                    {instructor.ancapRating && <p>{instructor.ancapRating} ANCAP rating</p>}
+                    {instructor.hasDualControls && <p>Dual controls fitted</p>}
                   </div>
                 </div>
               </div>
