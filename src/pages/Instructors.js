@@ -60,6 +60,15 @@ const Instructors = () => {
 
       const data = await response.json();
 
+      console.log('=== INSTRUCTORS LIST API RESPONSE ===');
+      console.log('API URL:', `${API_URL}/instructors`);
+      console.log('Total instructors:', data.data?.length);
+      console.log('Instructors:', data.data?.map(i => ({
+        id: i._id,
+        name: `${i.user?.firstName} ${i.user?.lastName}`,
+        serviceAreas: i.serviceArea?.suburbs
+      })));
+
       if (data.success) {
         setInstructors(data.data);
         setFilteredInstructors(data.data);
