@@ -13,6 +13,8 @@ import InstructorLogin from './pages/auth/InstructorLogin';
 import LearnerSignup from './pages/auth/LearnerSignup';
 import InstructorSignup from './pages/auth/InstructorSignup';
 import CompleteInstructorProfile from './pages/auth/CompleteInstructorProfile';
+import VerifyEmail from './pages/auth/VerifyEmail';
+import VerificationSent from './pages/auth/VerificationSent';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
 import InstructorCalendar from './pages/instructor/InstructorCalendar';
 import InstructorLearners from './pages/instructor/InstructorLearners';
@@ -45,6 +47,8 @@ function AppContent() {
           <Route path="/login/instructor" element={<InstructorLogin />} />
           <Route path="/signup/learner" element={<LearnerSignup />} />
           <Route path="/signup/instructor" element={<InstructorSignup />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/auth/verification-sent" element={<VerificationSent />} />
           <Route path="/instructor/complete-profile" element={<CompleteInstructorProfile />} />
           <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
           <Route path="/instructor/calendar" element={<InstructorCalendar />} />

@@ -84,8 +84,8 @@ const InstructorSignup = () => {
       const result = await signup(userData);
 
       if (result.success) {
-        // Redirect to profile completion (mandatory 7 steps)
-        navigate('/instructor/complete-profile');
+        // Redirect to verification sent page
+        navigate(`/auth/verification-sent?email=${encodeURIComponent(formData.email)}&role=instructor`);
       } else {
         if (result.field) {
           setErrors({ [result.field]: result.error });

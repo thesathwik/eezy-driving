@@ -1602,3 +1602,203 @@
     font-size: var(--text-base);
   }
 }
+
+/* ====================================
+   Email Verification Pages Styles
+   ==================================== */
+
+.verification-card {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.verification-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verification-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.verification-icon.success {
+  background: var(--success-100);
+  color: var(--success-600);
+}
+
+.verification-icon.error {
+  background: var(--error-100);
+  color: var(--error-600);
+}
+
+.verification-icon.email {
+  background: var(--primary-100);
+  color: var(--primary-600);
+}
+
+.verification-spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto var(--space-6);
+  border: 4px solid var(--primary-200);
+  border-top-color: var(--primary-600);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.redirect-message {
+  margin-top: var(--space-4);
+  color: var(--secondary-500);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+.error-text {
+  color: var(--error-600);
+  margin-top: var(--space-2);
+}
+
+.verification-info {
+  margin-top: var(--space-6);
+}
+
+.verification-info .info-box {
+  background: var(--primary-50);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  text-align: left;
+}
+
+.verification-info .info-box h3 {
+  color: var(--primary-900);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-3);
+  font-weight: 600;
+}
+
+.verification-info .info-box ol {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--secondary-700);
+}
+
+.verification-info .info-box ol li {
+  margin-bottom: var(--space-2);
+}
+
+.email-display {
+  font-weight: 600;
+  color: var(--primary-700);
+  font-size: var(--text-xl);
+  margin-top: var(--space-2);
+}
+
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.btn-secondary-auth {
+  background: transparent;
+  color: var(--secondary-700);
+  border: 2px solid var(--secondary-300);
+}
+
+.btn-secondary-auth:hover {
+  background: var(--secondary-50);
+  border-color: var(--secondary-400);
+}
+
+.success-banner {
+  padding: var(--space-4);
+  background: var(--success-50);
+  border: 2px solid var(--success-500);
+  border-radius: var(--radius-lg);
+  color: var(--success-700);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.change-email-form {
+  margin-top: var(--space-6);
+}
+
+.help-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-3);
+  text-align: left;
+  color: var(--secondary-600);
+  font-size: var(--text-sm);
+}
+
+.help-list li {
+  padding: var(--space-2) 0;
+  padding-left: var(--space-6);
+  position: relative;
+}
+
+.help-list li:before {
+  content: '•';
+  position: absolute;
+  left: var(--space-3);
+  color: var(--primary-600);
+  font-weight: bold;
+}
+
+.back-link {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--secondary-200);
+}
+
+.back-link button {
+  background: none;
+  border: none;
+  color: var(--secondary-600);
+  text-decoration: none;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: color var(--transition-base);
+}
+
+.back-link button:hover {
+  color: var(--primary-600);
+}
+
+/* Responsive styles for verification pages */
+@media (max-width: 768px) {
+  .verification-card {
+    padding: var(--space-6);
+  }
+
+  .verification-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .verification-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .email-display {
+    font-size: var(--text-lg);
+  }
+}

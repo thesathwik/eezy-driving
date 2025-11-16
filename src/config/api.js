@@ -53,6 +53,8 @@ export const API = {
     register: `${API_BASE_URL}/auth/register`,
     login: `${API_BASE_URL}/auth/login`,
     me: `${API_BASE_URL}/auth/me`,
+    verifyEmail: `${API_BASE_URL}/auth/verify-email`,
+    resendVerification: `${API_BASE_URL}/auth/resend-verification`,
   },
 
   // Instructor endpoints

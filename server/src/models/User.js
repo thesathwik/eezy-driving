@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   // Basic Information
@@ -153,6 +154,40 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
     return JWTTimestamp < changedTimestamp;
   }
   return false;
+};
+
+// Method to generate email verification token
+userSchema.methods.generateEmailVerificationToken = function() {
+  // Generate random token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+
+  // Hash token and set to emailVerificationToken field
+  this.emailVerificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+
+  // Set expiration to 24 hours from now
+  this.emailVerificationExpire = Date.now() + 24 * 60 * 60 * 1000;
+
+  return verificationToken; // Return unhashed token to send in email
+};
+
+// Method to generate password reset token
+userSchema.methods.generatePasswordResetToken = function() {
+  // Generate random token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // Hash token and set to passwordResetToken field
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // Set expiration to 1 hour from now
+  this.passwordResetExpire = Date.now() + 60 * 60 * 1000;
+
+  return resetToken; // Return unhashed token to send in email
 };
 
 module.exports = mongoose.model('User', userSchema);

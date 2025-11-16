@@ -406,6 +406,114 @@ const sendBookingConfirmation = async (bookingData) => {
   }
 };
 
+// Email verification template
+const emailVerificationTemplate = (userData, verificationUrl) => {
+  const { firstName, role } = userData;
+  const isInstructor = role === 'instructor';
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      ${emailStyles}
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="email-header">
+          <h1>✉️ Verify Your Email</h1>
+        </div>
+
+        <div class="email-body">
+          <p class="greeting">Hi ${firstName},</p>
+
+          <p>Welcome to Eezy Driving! We're excited to have you${isInstructor ? ' join our community of professional driving instructors' : ' on board'}.</p>
+
+          <p>To complete your registration and ${isInstructor ? 'set up your instructor profile' : 'start booking lessons'}, please verify your email address by clicking the button below:</p>
+
+          <center>
+            <a href="${verificationUrl}" class="button-primary" style="display: inline-block; background-color: #1a1a1a; color: #ffffff !important; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 500; margin: 24px 0;">
+              Verify Email Address
+            </a>
+          </center>
+
+          <p style="color: #666; font-size: 14px; margin-top: 24px;">
+            Or copy and paste this link into your browser:<br>
+            <a href="${verificationUrl}" style="color: #666; word-break: break-all;">${verificationUrl}</a>
+          </p>
+
+          <div class="info-box">
+            <strong>⏰ Important:</strong><br>
+            This verification link will expire in 24 hours. If you didn't create an account with Eezy Driving, you can safely ignore this email.
+          </div>
+
+          ${isInstructor ? `
+            <p style="margin-top: 24px;">After verifying your email, you'll be able to:</p>
+            <ul style="color: #666;">
+              <li>Complete your instructor profile</li>
+              <li>Set your availability and pricing</li>
+              <li>Start receiving booking requests</li>
+              <li>Grow your driving school business</li>
+            </ul>
+          ` : `
+            <p style="margin-top: 24px;">After verifying your email, you can:</p>
+            <ul style="color: #666;">
+              <li>Search for driving instructors in your area</li>
+              <li>Book driving lessons instantly</li>
+              <li>Track your progress</li>
+              <li>Manage your bookings easily</li>
+            </ul>
+          `}
+        </div>
+
+        <div class="email-footer">
+          <p>Need help? Contact our support team</p>
+          <div class="footer-links">
+            <a href="${process.env.FRONTEND_URL || 'https://eezydriving.com'}/support">Help Center</a>
+            <a href="${process.env.FRONTEND_URL || 'https://eezydriving.com'}/contact">Contact Us</a>
+          </div>
+          <p style="margin-top: 16px; font-size: 12px;">
+            © ${new Date().getFullYear()} Eezy Driving. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// Send email verification
+const sendVerificationEmail = async (user, verificationToken) => {
+  const transporter = createTransporter();
+
+  try {
+    const verificationUrl = `${process.env.FRONTEND_URL || 'https://eezydriving.com'}/verify-email?token=${verificationToken}`;
+
+    const emailOptions = {
+      from: `"Eezy Driving" <${process.env.EMAIL_FROM || 'noreply@eezydriving.com'}>`,
+      to: user.email,
+      subject: 'Verify Your Email - Eezy Driving',
+      html: emailVerificationTemplate({
+        firstName: user.firstName,
+        role: user.role
+      }, verificationUrl)
+    };
+
+    const result = await transporter.sendMail(emailOptions);
+    console.log('✅ Verification email sent:', result.messageId);
+
+    return {
+      success: true,
+      messageId: result.messageId
+    };
+  } catch (error) {
+    console.error('❌ Error sending verification email:', error);
+    throw error;
+  }
+};
+
 module.exports = {
-  sendBookingConfirmation
+  sendBookingConfirmation,
+  sendVerificationEmail
 };

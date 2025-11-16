@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Instructor = require('../models/Instructor');
 const Learner = require('../models/Learner');
+const { sendVerificationEmail } = require('../services/emailService');
+const crypto = require('crypto');
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -36,23 +38,25 @@ exports.register = async (req, res, next) => {
       role: role || 'learner'
     });
 
-    // Generate token
-    const token = user.generateAuthToken();
+    // Generate email verification token
+    const verificationToken = user.generateEmailVerificationToken();
+    await user.save({ validateBeforeSave: false });
 
+    // Send verification email
+    try {
+      await sendVerificationEmail(user, verificationToken);
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
+      // Don't fail registration if email fails
+    }
+
+    // DO NOT generate auth token - user must verify email first
     res.status(201).json({
       success: true,
-      message: 'Registration successful',
+      message: 'Registration successful. Please check your email to verify your account.',
       data: {
-        user: {
-          id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-          isProfileComplete: user.isProfileComplete
-        },
-        token
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
@@ -217,6 +221,170 @@ exports.updatePassword = async (req, res, next) => {
       data: { token }
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Verify email
+// @route   POST /api/auth/verify-email
+// @access  Public
+exports.verifyEmail = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Verification token is required'
+      });
+    }
+
+    // Hash the token to compare with stored hashed token
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    // Find user with matching token and check expiration
+    const user = await User.findOne({
+      emailVerificationToken: hashedToken,
+      emailVerificationExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      // Still log them in if already verified
+      const authToken = user.generateAuthToken();
+
+      // Get profile data
+      let profileData = null;
+      if (user.role === 'instructor') {
+        profileData = await Instructor.findOne({ user: user._id });
+      } else if (user.role === 'learner') {
+        profileData = await Learner.findOne({ user: user._id });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Email already verified',
+        data: {
+          user: {
+            id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+            isProfileComplete: user.isProfileComplete,
+            profileData
+          },
+          token: authToken
+        }
+      });
+    }
+
+    // Update user to verified status
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    // Generate auth token for auto-login
+    const authToken = user.generateAuthToken();
+
+    // Get profile data based on role
+    let profileData = null;
+    if (user.role === 'instructor') {
+      profileData = await Instructor.findOne({ user: user._id });
+    } else if (user.role === 'learner') {
+      profileData = await Learner.findOne({ user: user._id });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Email verified successfully',
+      data: {
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          isEmailVerified: user.isEmailVerified,
+          isProfileComplete: user.isProfileComplete,
+          profileData
+        },
+        token: authToken
+      }
+    });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    next(error);
+  }
+};
+
+// @desc    Resend verification email
+// @route   POST /api/auth/resend-verification
+// @access  Public
+exports.resendVerification = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No user found with this email address'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified'
+      });
+    }
+
+    // Generate new verification token
+    const verificationToken = user.generateEmailVerificationToken();
+    await user.save({ validateBeforeSave: false });
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(user, verificationToken);
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send verification email. Please try again.'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Verification email sent successfully'
+    });
+  } catch (error) {
+    console.error('Resend verification error:', error);
     next(error);
   }
 };

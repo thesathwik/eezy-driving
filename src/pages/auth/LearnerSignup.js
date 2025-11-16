@@ -85,7 +85,8 @@ const LearnerSignup = () => {
       const result = await signup(userData);
 
       if (result.success) {
-        navigate('/');
+        // Redirect to verification sent page
+        navigate(`/auth/verification-sent?email=${encodeURIComponent(formData.email)}&role=learner`);
       } else {
         if (result.field) {
           setErrors({ [result.field]: result.error });

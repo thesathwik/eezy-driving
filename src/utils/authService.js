@@ -21,15 +21,15 @@ export const registerUser = async (userData) => {
 
     const data = await handleResponse(response);
 
-    // Save session with token
-    // Backend returns: { success: true, data: { user: {...}, token: "..." } }
-    if (data.success && data.data) {
-      const userSession = {
-        ...data.data.user,
-        token: data.data.token,
+    // NEW: Registration now requires email verification, so no token is returned
+    // Backend returns: { success: true, message: "...", data: { email: "...", role: "..." } }
+    if (data.success) {
+      return {
+        success: true,
+        email: data.data.email,
+        role: data.data.role,
+        message: data.message
       };
-      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userSession));
-      return { success: true, user: data.data.user, token: data.data.token };
     }
 
     return data;
@@ -203,4 +203,51 @@ export const isAuthenticated = () => {
 export const getUserRole = () => {
   const session = getCurrentSession();
   return session?.role || null;
+};
+
+// Verify email with token
+export const verifyEmail = async (token) => {
+  try {
+    const response = await fetch(API.auth.verifyEmail, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await handleResponse(response);
+
+    // Save session with token after verification
+    if (data.success && data.data) {
+      const userSession = {
+        ...data.data.user,
+        token: data.data.token,
+      };
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userSession));
+      return { success: true, user: data.data.user, token: data.data.token };
+    }
+
+    return data;
+  } catch (error) {
+    throw {
+      message: error.data?.message || error.message || 'Email verification failed',
+    };
+  }
+};
+
+// Resend verification email
+export const resendVerificationEmail = async (email) => {
+  try {
+    const response = await fetch(API.auth.resendVerification, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await handleResponse(response);
+    return data;
+  } catch (error) {
+    throw {
+      message: error.data?.message || error.message || 'Failed to resend verification email',
+    };
+  }
 };
