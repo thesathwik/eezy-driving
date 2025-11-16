@@ -35,9 +35,9 @@ const Instructors = () => {
     fetchInstructors();
   }, []);
 
-  // Apply filters when location state changes
+  // Apply filters when location state changes or instructors are loaded
   useEffect(() => {
-    if (location.state) {
+    if (location.state && instructors.length > 0) {
       const newFilters = {
         ...filters,
         location: location.state.location || '',
@@ -46,7 +46,7 @@ const Instructors = () => {
       setFilters(newFilters);
       applyFilters(newFilters);
     }
-  }, [location.state]);
+  }, [location.state, instructors]);
 
   const fetchInstructors = async () => {
     try {
@@ -180,6 +180,9 @@ const Instructors = () => {
       );
     }
 
+    console.log('=== SETTING FILTERED INSTRUCTORS ===');
+    console.log('Filtered array length:', filtered.length);
+    console.log('Filtered instructors:', filtered.map(i => `${i.user?.firstName} ${i.user?.lastName}`));
     setFilteredInstructors(filtered);
   };
 
@@ -243,6 +246,10 @@ const Instructors = () => {
       </div>
     );
   }
+
+  console.log('=== RENDER ===');
+  console.log('filteredInstructors.length:', filteredInstructors.length);
+  console.log('filteredInstructors:', filteredInstructors.map(i => `${i.user?.firstName} ${i.user?.lastName}`));
 
   return (
     <div className="instructors-page-ez">
