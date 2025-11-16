@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { FaCheck, FaInfoCircle, FaChevronDown, FaChevronUp, FaStar, FaCheckCircle, FaClock, FaArrowLeft, FaEnvelope, FaLock, FaCreditCard } from 'react-icons/fa';
+import { FaCheck, FaInfoCircle, FaChevronDown, FaChevronUp, FaStar, FaCheckCircle, FaClock, FaArrowLeft, FaEnvelope, FaLock, FaCreditCard, FaSpinner } from 'react-icons/fa';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { LoadScript } from '@react-google-maps/api';
 import StripePaymentForm from '../components/payment/StripePaymentForm';
 import LocationAutocomplete from '../components/LocationAutocomplete';
 import { getHeaders } from '../config/api';
+import { getCurrentUser, resendVerificationEmail } from '../utils/authService';
 import './BookingFlow.css';
 
 // Initialize Stripe
@@ -26,6 +27,14 @@ const BookingFlowContent = () => {
   const [customHoursExpanded, setCustomHoursExpanded] = useState(false);
   const [customHours, setCustomHours] = useState(10);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+
+  // Email verification state
+  const [waitingForVerification, setWaitingForVerification] = useState(false);
+  const [isUserVerified, setIsUserVerified] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [resendError, setResendError] = useState('');
+  const verificationCheckInterval = useRef(null);
 
   // Step 3: Book your lessons state
   const [bookings, setBookings] = useState([{
@@ -144,6 +153,15 @@ const BookingFlowContent = () => {
     fetchAvailability();
   }, [instructor]);
 
+  // Cleanup verification interval on unmount
+  useEffect(() => {
+    return () => {
+      if (verificationCheckInterval.current) {
+        clearInterval(verificationCheckInterval.current);
+      }
+    };
+  }, []);
+
   const steps = [
     { number: 1, label: 'Instructor' },
     { number: 2, label: 'Amount' },
@@ -151,6 +169,68 @@ const BookingFlowContent = () => {
     { number: 4, label: 'Learner Registration' },
     { number: 5, label: 'Payment' }
   ];
+
+  // Function to check user verification status
+  const checkVerificationStatus = async () => {
+    try {
+      const response = await getCurrentUser();
+      if (response.success && response.data) {
+        const user = response.data;
+        if (user.isEmailVerified) {
+          setIsUserVerified(true);
+          setWaitingForVerification(false);
+          // Clear the polling interval
+          if (verificationCheckInterval.current) {
+            clearInterval(verificationCheckInterval.current);
+            verificationCheckInterval.current = null;
+          }
+          // Show success message and proceed to payment
+          setTimeout(() => {
+            setCurrentStep(5);
+          }, 1500);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking verification status:', error);
+      return false;
+    }
+  };
+
+  // Function to start polling for verification status
+  const startVerificationPolling = () => {
+    // Clear any existing interval
+    if (verificationCheckInterval.current) {
+      clearInterval(verificationCheckInterval.current);
+    }
+
+    // Check immediately
+    checkVerificationStatus();
+
+    // Then check every 5 seconds
+    verificationCheckInterval.current = setInterval(() => {
+      checkVerificationStatus();
+    }, 5000);
+  };
+
+  // Function to handle resend verification email
+  const handleResendVerification = async () => {
+    setResendSuccess(false);
+    setResendError('');
+
+    try {
+      const result = await resendVerificationEmail(verificationEmail);
+      if (result.success) {
+        setResendSuccess(true);
+        setTimeout(() => setResendSuccess(false), 5000);
+      } else {
+        setResendError(result.message || 'Failed to resend verification email');
+      }
+    } catch (error) {
+      setResendError(error.message || 'Failed to resend verification email');
+    }
+  };
 
   // Pricing calculations
   const hourlyRate = instructor?.pricePerHour || 80;
@@ -296,7 +376,7 @@ const BookingFlowContent = () => {
     return errors;
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     // Validate current step
     const errors = validateStep(currentStep);
 
@@ -354,6 +434,113 @@ const BookingFlowContent = () => {
           suburb: extractedSuburb,
           state: extractedState
         }));
+      }
+    }
+
+    // Handle learner registration step - check for email verification
+    if (currentStep === 4 && !showLogin) {
+      // This is a registration, we need to register the user and check verification
+      try {
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+        const registerResponse = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: learnerDetails.firstName,
+            lastName: learnerDetails.lastName,
+            email: learnerDetails.email,
+            password: learnerDetails.password,
+            phone: learnerDetails.phone,
+            role: 'learner'
+          })
+        });
+
+        const registerData = await registerResponse.json();
+
+        if (!registerResponse.ok) {
+          setValidationErrors({ registration: registerData.message || 'Failed to create account' });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        // Check if user needs email verification
+        if (registerData.data && registerData.data.isEmailVerified === false) {
+          // User needs to verify email
+          setVerificationEmail(learnerDetails.email);
+          setWaitingForVerification(true);
+          setIsUserVerified(false);
+
+          // Store the token for later use
+          if (registerData.data.token) {
+            localStorage.setItem('authToken', registerData.data.token);
+            localStorage.setItem('userRole', 'learner');
+          }
+
+          // Start polling for verification
+          startVerificationPolling();
+
+          // Clear errors
+          setValidationErrors({});
+          return; // Don't proceed to next step yet
+        } else if (registerData.data && registerData.data.isEmailVerified === true) {
+          // User is already verified, proceed to payment
+          if (registerData.data.token) {
+            localStorage.setItem('authToken', registerData.data.token);
+            localStorage.setItem('userRole', 'learner');
+          }
+          setValidationErrors({});
+          setCurrentStep(5);
+          return;
+        }
+      } catch (error) {
+        console.error('Error during registration:', error);
+        setValidationErrors({ registration: 'An error occurred during registration. Please try again.' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    }
+
+    // Handle login step - check if user is verified
+    if (currentStep === 4 && showLogin) {
+      try {
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+        const loginResponse = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: loginCredentials.email,
+            password: loginCredentials.password,
+            role: 'learner'
+          })
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (!loginResponse.ok) {
+          setValidationErrors({ login: loginData.message || 'Login failed' });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        // Store token
+        if (loginData.data && loginData.data.token) {
+          localStorage.setItem('authToken', loginData.data.token);
+          localStorage.setItem('userRole', 'learner');
+        }
+
+        // Proceed to payment
+        setValidationErrors({});
+        setCurrentStep(5);
+        return;
+      } catch (error) {
+        console.error('Error during login:', error);
+        setValidationErrors({ login: 'An error occurred during login. Please try again.' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
       }
     }
 
@@ -420,48 +607,14 @@ const BookingFlowContent = () => {
 
     try {
       const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
-      let authToken = null;
 
-      // Step 1: Register the learner if not already logged in
-      if (!showLogin) {
-        // This is a new registration
-        console.log('Registering new learner...');
-        const registerResponse = await fetch(`${API_URL}/auth/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            firstName: learnerDetails.firstName,
-            lastName: learnerDetails.lastName,
-            email: learnerDetails.email,
-            password: learnerDetails.password,
-            phone: learnerDetails.phone,
-            role: 'learner'
-          })
-        });
-
-        const registerData = await registerResponse.json();
-
-        if (!registerResponse.ok) {
-          throw new Error(registerData.message || 'Failed to create account');
-        }
-
-        authToken = registerData.data.token;
-        console.log('Learner registered successfully');
-
-        // Store token in localStorage for future sessions
-        localStorage.setItem('authToken', authToken);
-        localStorage.setItem('userRole', 'learner');
-      } else {
-        // User logged in - get token from localStorage
-        authToken = localStorage.getItem('authToken');
-        if (!authToken) {
-          throw new Error('Authentication required. Please log in again.');
-        }
+      // Get auth token from localStorage (user should be already registered/logged in at this point)
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        throw new Error('Authentication required. Please log in again.');
       }
 
-      // Step 2: Create booking with auth token
+      // Create booking with auth token
       console.log('Creating booking...');
       const bookingData = {
         instructorId: id,
@@ -1500,7 +1653,75 @@ const BookingFlowContent = () => {
             </div>
           )}
 
-          {currentStep === 5 && (
+          {/* Email Verification Screen */}
+          {waitingForVerification && currentStep === 4 && (
+            <div className="booking-step-simple">
+              <div className="verification-container">
+                <div className="verification-card">
+                  {/* Email icon */}
+                  <div className="verification-icon">
+                    <FaEnvelope />
+                  </div>
+
+                  {/* Title */}
+                  <h1 className="verification-title">
+                    {isUserVerified ? 'Email Verified!' : 'Verify Your Email to Continue'}
+                  </h1>
+
+                  {/* Message */}
+                  {!isUserVerified ? (
+                    <>
+                      <p className="verification-message">
+                        We've sent a verification link to <strong>{verificationEmail}</strong>
+                      </p>
+                      <p className="verification-sub-message">
+                        Please check your email and click the verification link to continue with your booking
+                      </p>
+
+                      {/* Checking status indicator */}
+                      <div className="verification-status">
+                        <FaSpinner className="verification-spinner" />
+                        <span>Checking verification status...</span>
+                      </div>
+
+                      {/* Resend section */}
+                      <div className="verification-resend">
+                        <p>Didn't receive the email?</p>
+                        <button
+                          className="btn-resend-verification"
+                          onClick={handleResendVerification}
+                          disabled={resendSuccess}
+                        >
+                          {resendSuccess ? 'Email Sent!' : 'Resend'}
+                        </button>
+                      </div>
+
+                      {/* Success/Error messages */}
+                      {resendSuccess && (
+                        <div className="verification-alert success">
+                          Verification email resent successfully!
+                        </div>
+                      )}
+                      {resendError && (
+                        <div className="verification-alert error">
+                          {resendError}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="verification-success">
+                        <FaCheckCircle className="verification-success-icon" />
+                        <p>Email verified! Proceeding to payment...</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 5 && !waitingForVerification && (
             <div className="booking-step booking-main-content">
               <div>
                 {/* Back Button at Top */}

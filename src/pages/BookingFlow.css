@@ -2646,3 +2646,186 @@
   border-radius: 12px;
   margin-bottom: 24px;
 }
+
+/* Email Verification Screen */
+.verification-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.verification-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 48px 40px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.verification-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 24px;
+}
+
+.verification-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0 0 16px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.verification-message {
+  font-size: 17px;
+  color: #1d1d1f;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.005em;
+}
+
+.verification-message strong {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.verification-sub-message {
+  font-size: 15px;
+  color: #86868b;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+}
+
+.verification-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 12px;
+  margin-bottom: 32px;
+  font-size: 15px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.verification-spinner {
+  animation: spin 1s linear infinite;
+  font-size: 18px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.verification-resend {
+  margin-bottom: 24px;
+}
+
+.verification-resend p {
+  font-size: 15px;
+  color: #86868b;
+  margin: 0 0 12px 0;
+}
+
+.btn-resend-verification {
+  background: transparent;
+  color: #ffc107;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+}
+
+.btn-resend-verification:hover:not(:disabled) {
+  background: #ffc107;
+  color: #1d1d1f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.btn-resend-verification:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.verification-alert {
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+.verification-alert.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.verification-alert.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.verification-success {
+  padding: 32px;
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: 12px;
+}
+
+.verification-success-icon {
+  font-size: 48px;
+  color: #10b981;
+  margin-bottom: 16px;
+}
+
+.verification-success p {
+  font-size: 17px;
+  color: #10b981;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Mobile Responsive for Verification Screen */
+@media (max-width: 768px) {
+  .verification-card {
+    padding: 32px 24px;
+  }
+
+  .verification-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+
+  .verification-title {
+    font-size: 24px;
+  }
+
+  .verification-message {
+    font-size: 16px;
+  }
+
+  .verification-sub-message {
+    font-size: 14px;
+  }
+}
