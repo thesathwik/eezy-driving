@@ -19,6 +19,13 @@ const createTransporter = () => {
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD // Use app password for Gmail
+      },
+      // Additional settings to help with cloud server connections
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false
       }
     });
   } else if (process.env.EMAIL_SERVICE === 'smtp') {
