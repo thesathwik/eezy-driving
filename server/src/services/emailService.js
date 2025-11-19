@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 // Create email transporter
 const createTransporter = () => {
@@ -28,6 +29,26 @@ const createTransporter = () => {
         rejectUnauthorized: false
       }
     });
+  } else if (process.env.EMAIL_SERVICE === 'sendgrid') {
+    // Use SendGrid HTTP API (works even if SMTP ports are blocked)
+    console.log('📧 Using SendGrid HTTP API');
+    if (process.env.SENDGRID_API_KEY) {
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    }
+    // Return a mock transporter that uses SendGrid API
+    return {
+      sendMail: async (mailOptions) => {
+        const msg = {
+          to: mailOptions.to,
+          from: mailOptions.from || process.env.EMAIL_FROM,
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+          text: mailOptions.text
+        };
+        await sgMail.send(msg);
+        return { messageId: 'sendgrid-' + Date.now() };
+      }
+    };
   } else if (process.env.EMAIL_SERVICE === 'smtp') {
     console.log('📧 Configuring SMTP with:', {
       host: process.env.SMTP_HOST,
