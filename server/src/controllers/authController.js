@@ -55,12 +55,17 @@ exports.register = async (req, res, next) => {
     const verificationToken = user.generateEmailVerificationToken();
     await user.save({ validateBeforeSave: false });
 
-    // Send verification email
+    // Send verification email with timeout
     try {
-      await sendVerificationEmail(user, verificationToken);
+      const emailPromise = sendVerificationEmail(user, verificationToken);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email sending timeout')), 10000)
+      );
+      await Promise.race([emailPromise, timeoutPromise]);
+      console.log('✅ Verification email sent successfully');
     } catch (emailError) {
-      console.error('Error sending verification email:', emailError);
-      // Don't fail registration if email fails
+      console.error('Error sending verification email:', emailError.message);
+      // Don't fail registration if email fails - user account is still created
     }
 
     // DO NOT generate auth token - user must verify email first
