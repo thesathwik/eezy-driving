@@ -22,10 +22,23 @@ exports.register = async (req, res, next) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User with this email already exists'
-      });
+      // If user exists but is NOT verified, delete the old account and allow re-registration
+      if (!existingUser.isEmailVerified) {
+        console.log(`Deleting unverified user account for ${email} to allow re-registration`);
+        await User.findByIdAndDelete(existingUser._id);
+        // Also delete any associated instructor/learner profiles
+        if (existingUser.role === 'instructor') {
+          await Instructor.deleteOne({ user: existingUser._id });
+        } else if (existingUser.role === 'learner') {
+          await Learner.deleteOne({ user: existingUser._id });
+        }
+      } else {
+        // User exists and is verified
+        return res.status(400).json({
+          success: false,
+          message: 'User with this email already exists. Please login instead.'
+        });
+      }
     }
 
     // Create user
