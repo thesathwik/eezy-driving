@@ -2,11 +2,19 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter
 const createTransporter = () => {
+  // Handle both nodemailer v6 (default export) and v7 (named export)
+  const createTransporterFn = nodemailer.createTransporter || nodemailer.default?.createTransporter;
+
+  if (!createTransporterFn) {
+    console.error('❌ nodemailer.createTransporter is not available. Module structure:', Object.keys(nodemailer));
+    throw new Error('nodemailer.createTransporter is not a function');
+  }
+
   // For production, use actual email service (Gmail, SendGrid, AWS SES, etc.)
   // For development, you can use ethereal.email for testing
 
   if (process.env.EMAIL_SERVICE === 'gmail') {
-    return nodemailer.createTransporter({
+    return createTransporterFn({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
@@ -14,7 +22,7 @@ const createTransporter = () => {
       }
     });
   } else if (process.env.EMAIL_SERVICE === 'smtp') {
-    return nodemailer.createTransporter({
+    return createTransporterFn({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 587,
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
