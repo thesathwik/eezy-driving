@@ -2,12 +2,12 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter
 const createTransporter = () => {
-  // Handle both nodemailer v6 (default export) and v7 (named export)
-  const createTransporterFn = nodemailer.createTransporter || nodemailer.default?.createTransporter;
+  // Handle both naming conventions: createTransport (correct) and createTransporter (typo we had)
+  const createTransporterFn = nodemailer.createTransport || nodemailer.createTransporter || nodemailer.default?.createTransport;
 
   if (!createTransporterFn) {
-    console.error('❌ nodemailer.createTransporter is not available. Module structure:', Object.keys(nodemailer));
-    throw new Error('nodemailer.createTransporter is not a function');
+    console.error('❌ nodemailer transport creator is not available. Module structure:', Object.keys(nodemailer));
+    throw new Error('nodemailer.createTransport is not a function');
   }
 
   // For production, use actual email service (Gmail, SendGrid, AWS SES, etc.)
