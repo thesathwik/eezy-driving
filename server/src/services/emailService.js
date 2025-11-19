@@ -29,14 +29,32 @@ const createTransporter = () => {
       }
     });
   } else if (process.env.EMAIL_SERVICE === 'smtp') {
-    return createTransporterFn({
+    console.log('📧 Configuring SMTP with:', {
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 587,
+      secure: process.env.SMTP_SECURE === 'true',
+      user: process.env.SMTP_USER
+    });
+
+    return createTransporterFn({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT) || 587,
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD
-      }
+      },
+      // Additional timeout settings
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+      // Disable TLS certificate validation for cloud environments
+      tls: {
+        rejectUnauthorized: false
+      },
+      // Enable debug logging
+      debug: process.env.NODE_ENV !== 'production',
+      logger: process.env.NODE_ENV !== 'production'
     });
   } else {
     // Fallback to console logging if no email service configured
