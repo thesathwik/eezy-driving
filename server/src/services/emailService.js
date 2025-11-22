@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
+const { Resend } = require('resend');
 
 // Create email transporter
 const createTransporter = () => {
@@ -31,6 +33,33 @@ const createTransporter = () => {
         rejectUnauthorized: false
       }
     });
+  } else if (process.env.EMAIL_SERVICE === 'resend') {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    console.log('📧 Using Resend API');
+
+    return {
+      sendMail: async (mailOptions) => {
+        try {
+          const { data, error } = await resend.emails.send({
+            from: 'Eezy Driving <onboarding@resend.dev>', // Default testing domain
+            to: mailOptions.to,
+            subject: mailOptions.subject,
+            html: mailOptions.html,
+            text: mailOptions.text
+          });
+
+          if (error) {
+            console.error('❌ Resend API Error:', error);
+            throw new Error(error.message);
+          }
+
+          return { messageId: data.id };
+        } catch (err) {
+          console.error('❌ Error sending with Resend:', err);
+          throw err;
+        }
+      }
+    };
   } else if (process.env.EMAIL_SERVICE === 'sendgrid') {
     // Use SendGrid HTTP API (works even if SMTP ports are blocked)
     console.log('📧 Using SendGrid HTTP API');
