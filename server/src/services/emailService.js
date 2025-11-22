@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
 const { Resend } = require('resend');
 
