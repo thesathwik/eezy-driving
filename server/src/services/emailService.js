@@ -33,7 +33,16 @@ const createTransporter = () => {
     // Use SendGrid HTTP API (works even if SMTP ports are blocked)
     console.log('📧 Using SendGrid HTTP API');
     if (process.env.SENDGRID_API_KEY) {
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const key = process.env.SENDGRID_API_KEY.trim();
+      console.log('📧 SendGrid Key Configured');
+      console.log('📧 Key Length:', key.length);
+      if (key.length > 8) {
+        console.log('📧 Key Start:', key.substring(0, 4));
+        console.log('📧 Key End:', key.substring(key.length - 4));
+      }
+      sgMail.setApiKey(key);
+    } else {
+      console.error('❌ SENDGRID_API_KEY is missing in environment variables');
     }
     // Return a mock transporter that uses SendGrid API
     return {
