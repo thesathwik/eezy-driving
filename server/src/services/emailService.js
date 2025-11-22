@@ -16,7 +16,7 @@ const createTransporter = () => {
   // For production, use actual email service (Gmail, SendGrid, AWS SES, etc.)
   // For development, you can use ethereal.email for testing
 
-  if (process.env.EMAIL_SERVICE === 'gmail') {
+  if (process.env.MAIL_SERVICE === 'gmail') {
     return createTransporterFn({
       host: 'smtp.gmail.com',
       port: 587,
@@ -33,7 +33,7 @@ const createTransporter = () => {
         rejectUnauthorized: false
       }
     });
-  } else if (process.env.EMAIL_SERVICE === 'resend') {
+  } else if (process.env.MAIL_SERVICE === 'resend') {
     const resend = new Resend(process.env.RESEND_API_KEY);
     console.log('📧 Using Resend API');
 
@@ -60,7 +60,7 @@ const createTransporter = () => {
         }
       }
     };
-  } else if (process.env.EMAIL_SERVICE === 'sendgrid') {
+  } else if (process.env.MAIL_SERVICE === 'sendgrid') {
     // Use SendGrid HTTP API (works even if SMTP ports are blocked)
     console.log('📧 Using SendGrid HTTP API');
     if (process.env.SENDGRID_API_KEY) {
@@ -80,7 +80,7 @@ const createTransporter = () => {
         return { messageId: 'sendgrid-' + Date.now() };
       }
     };
-  } else if (process.env.EMAIL_SERVICE === 'smtp') {
+  } else if (process.env.MAIL_SERVICE === 'smtp') {
     console.log('📧 Configuring SMTP with:', {
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 587,
