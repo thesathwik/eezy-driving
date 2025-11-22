@@ -19,7 +19,7 @@ const createTransporter = () => {
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD // Use app password for Gmail
+        pass: process.env.EMAIL_PASSWORD?.replace(/\s+/g, '') // Remove spaces if present
       },
       // Additional settings to help with cloud server connections
       connectionTimeout: 10000,
@@ -33,16 +33,7 @@ const createTransporter = () => {
     // Use SendGrid HTTP API (works even if SMTP ports are blocked)
     console.log('📧 Using SendGrid HTTP API');
     if (process.env.SENDGRID_API_KEY) {
-      const key = process.env.SENDGRID_API_KEY.trim();
-      console.log('📧 SendGrid Key Configured');
-      console.log('📧 Key Length:', key.length);
-      if (key.length > 8) {
-        console.log('📧 Key Start:', key.substring(0, 4));
-        console.log('📧 Key End:', key.substring(key.length - 4));
-      }
-      sgMail.setApiKey(key);
-    } else {
-      console.error('❌ SENDGRID_API_KEY is missing in environment variables');
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     }
     // Return a mock transporter that uses SendGrid API
     return {
