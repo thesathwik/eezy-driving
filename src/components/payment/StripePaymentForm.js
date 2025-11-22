@@ -20,7 +20,7 @@ const CARD_ELEMENT_OPTIONS = {
   },
 };
 
-const StripePaymentForm = ({ amount, onPaymentSuccess, onPaymentError, learnerDetails }) => {
+const StripePaymentForm = ({ amount, onPaymentSuccess, onPaymentError, learnerDetails, purchaseType, credits }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
@@ -70,6 +70,9 @@ const StripePaymentForm = ({ amount, onPaymentSuccess, onPaymentError, learnerDe
             learnerEmail: learnerDetails.email,
             learnerName: `${learnerDetails.firstName} ${learnerDetails.lastName}`,
             learnerPhone: learnerDetails.phone || 'Not provided',
+            learnerId: learnerDetails._id || learnerDetails.id, // Ensure ID is passed
+            type: purchaseType || 'booking', // 'package_purchase' or 'booking'
+            credits: credits ? credits.toString() : undefined // e.g. '10'
           },
         }),
       });

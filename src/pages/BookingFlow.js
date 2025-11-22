@@ -1337,278 +1337,278 @@ const BookingFlowContent = () => {
 
                 {/* Registration Form */}
                 {!showLogin && (
-                <div className="registration-form">
-                  {/* Who are you registering for? */}
-                  <div className="form-group">
-                    <label className="form-label-required">Who are you registering for?</label>
-                    <div className="radio-group">
-                      <label className="radio-option">
-                        <input
-                          type="radio"
-                          name="registrationFor"
-                          value="myself"
-                          checked={registrationFor === 'myself'}
-                          onChange={(e) => setRegistrationFor(e.target.value)}
-                        />
-                        <span className="radio-custom"></span>
-                        <span className="radio-label">Myself</span>
-                      </label>
-                      <label className="radio-option">
-                        <input
-                          type="radio"
-                          name="registrationFor"
-                          value="someone-else"
-                          checked={registrationFor === 'someone-else'}
-                          onChange={(e) => setRegistrationFor(e.target.value)}
-                        />
-                        <span className="radio-custom"></span>
-                        <span className="radio-label">Someone else</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Pick up details */}
-                  <div className="form-section">
-                    <h3 className="section-heading">Pick up details</h3>
-
+                  <div className="registration-form">
+                    {/* Who are you registering for? */}
                     <div className="form-group">
-                      <label className="form-label-required">Pick up address</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={learnerDetails.pickupAddress}
-                        onChange={(e) => handleLearnerDetailsChange('pickupAddress', e.target.value)}
-                        placeholder="Enter your pick up address"
-                      />
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label-required">Suburb</label>
-                        <select
-                          className="form-select"
-                          value={learnerDetails.suburb}
-                          onChange={(e) => handleLearnerDetailsChange('suburb', e.target.value)}
-                        >
-                          <option value="">Select suburb</option>
-                          <option value="Sunnybank">Sunnybank</option>
-                          <option value="Sunnybank Hills">Sunnybank Hills</option>
-                          <option value="Eight Mile Plains">Eight Mile Plains</option>
-                          <option value="Runcorn">Runcorn</option>
-                          <option value="Macgregor">Macgregor</option>
-                          <option value="Robertson">Robertson</option>
-                          <option value="Kuraby">Kuraby</option>
-                          <option value="Stretton">Stretton</option>
-                          <option value="Calamvale">Calamvale</option>
-                          <option value="Parkinson">Parkinson</option>
-                        </select>
-                      </div>
-
-                      <div className="form-group">
-                        <label className="form-label-required">State</label>
-                        <select
-                          className="form-select"
-                          value={learnerDetails.state}
-                          onChange={(e) => handleLearnerDetailsChange('state', e.target.value)}
-                        >
-                          <option value="QLD">Queensland</option>
-                          <option value="NSW">New South Wales</option>
-                          <option value="VIC">Victoria</option>
-                          <option value="SA">South Australia</option>
-                          <option value="WA">Western Australia</option>
-                          <option value="TAS">Tasmania</option>
-                          <option value="ACT">Australian Capital Territory</option>
-                          <option value="NT">Northern Territory</option>
-                        </select>
+                      <label className="form-label-required">Who are you registering for?</label>
+                      <div className="radio-group">
+                        <label className="radio-option">
+                          <input
+                            type="radio"
+                            name="registrationFor"
+                            value="myself"
+                            checked={registrationFor === 'myself'}
+                            onChange={(e) => setRegistrationFor(e.target.value)}
+                          />
+                          <span className="radio-custom"></span>
+                          <span className="radio-label">Myself</span>
+                        </label>
+                        <label className="radio-option">
+                          <input
+                            type="radio"
+                            name="registrationFor"
+                            value="someone-else"
+                            checked={registrationFor === 'someone-else'}
+                            onChange={(e) => setRegistrationFor(e.target.value)}
+                          />
+                          <span className="radio-custom"></span>
+                          <span className="radio-label">Someone else</span>
+                        </label>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Personal details */}
-                  <div className="form-section">
-                    <h3 className="section-heading">Personal details</h3>
+                    {/* Pick up details */}
+                    <div className="form-section">
+                      <h3 className="section-heading">Pick up details</h3>
 
-                    <div className="form-row">
                       <div className="form-group">
-                        <label className="form-label-required">First name</label>
+                        <label className="form-label-required">Pick up address</label>
                         <input
                           type="text"
                           className="form-input"
-                          value={learnerDetails.firstName}
-                          onChange={(e) => handleLearnerDetailsChange('firstName', e.target.value)}
-                          placeholder="Enter your first name"
+                          value={learnerDetails.pickupAddress}
+                          onChange={(e) => handleLearnerDetailsChange('pickupAddress', e.target.value)}
+                          placeholder="Enter your pick up address"
                         />
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label-required">Suburb</label>
+                          <select
+                            className="form-select"
+                            value={learnerDetails.suburb}
+                            onChange={(e) => handleLearnerDetailsChange('suburb', e.target.value)}
+                          >
+                            <option value="">Select suburb</option>
+                            <option value="Sunnybank">Sunnybank</option>
+                            <option value="Sunnybank Hills">Sunnybank Hills</option>
+                            <option value="Eight Mile Plains">Eight Mile Plains</option>
+                            <option value="Runcorn">Runcorn</option>
+                            <option value="Macgregor">Macgregor</option>
+                            <option value="Robertson">Robertson</option>
+                            <option value="Kuraby">Kuraby</option>
+                            <option value="Stretton">Stretton</option>
+                            <option value="Calamvale">Calamvale</option>
+                            <option value="Parkinson">Parkinson</option>
+                          </select>
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label-required">State</label>
+                          <select
+                            className="form-select"
+                            value={learnerDetails.state}
+                            onChange={(e) => handleLearnerDetailsChange('state', e.target.value)}
+                          >
+                            <option value="QLD">Queensland</option>
+                            <option value="NSW">New South Wales</option>
+                            <option value="VIC">Victoria</option>
+                            <option value="SA">South Australia</option>
+                            <option value="WA">Western Australia</option>
+                            <option value="TAS">Tasmania</option>
+                            <option value="ACT">Australian Capital Territory</option>
+                            <option value="NT">Northern Territory</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Personal details */}
+                    <div className="form-section">
+                      <h3 className="section-heading">Personal details</h3>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label-required">First name</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={learnerDetails.firstName}
+                            onChange={(e) => handleLearnerDetailsChange('firstName', e.target.value)}
+                            placeholder="Enter your first name"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label-required">Last name</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={learnerDetails.lastName}
+                            onChange={(e) => handleLearnerDetailsChange('lastName', e.target.value)}
+                            placeholder="Enter your last name"
+                          />
+                        </div>
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label-required">Last name</label>
+                        <label className="form-label-required">Email address</label>
+                        <div className="input-with-icon">
+                          <FaEnvelope className="input-icon-left" />
+                          <input
+                            type="email"
+                            className="form-input with-icon"
+                            value={learnerDetails.email}
+                            onChange={(e) => handleLearnerDetailsChange('email', e.target.value)}
+                            placeholder="Enter your email address"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label-required">Phone number</label>
                         <input
-                          type="text"
+                          type="tel"
                           className="form-input"
-                          value={learnerDetails.lastName}
-                          onChange={(e) => handleLearnerDetailsChange('lastName', e.target.value)}
-                          placeholder="Enter your last name"
+                          value={learnerDetails.phone}
+                          onChange={(e) => handleLearnerDetailsChange('phone', e.target.value)}
+                          placeholder="0400 000 000"
                         />
                       </div>
                     </div>
 
-                    <div className="form-group">
-                      <label className="form-label-required">Email address</label>
-                      <div className="input-with-icon">
-                        <FaEnvelope className="input-icon-left" />
-                        <input
-                          type="email"
-                          className="form-input with-icon"
-                          value={learnerDetails.email}
-                          onChange={(e) => handleLearnerDetailsChange('email', e.target.value)}
-                          placeholder="Enter your email address"
-                        />
+                    {/* Date of birth */}
+                    <div className="form-section">
+                      <div className="form-group">
+                        <label className="form-label-required">Date of birth</label>
+                        <div className="date-inputs">
+                          <select
+                            className="form-select date-select"
+                            value={learnerDetails.dobDay}
+                            onChange={(e) => handleLearnerDetailsChange('dobDay', e.target.value)}
+                          >
+                            <option value="">Day</option>
+                            {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                              <option key={day} value={day}>{day}</option>
+                            ))}
+                          </select>
+                          <select
+                            className="form-select date-select"
+                            value={learnerDetails.dobMonth}
+                            onChange={(e) => handleLearnerDetailsChange('dobMonth', e.target.value)}
+                          >
+                            <option value="">Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                          </select>
+                          <select
+                            className="form-select date-select"
+                            value={learnerDetails.dobYear}
+                            onChange={(e) => handleLearnerDetailsChange('dobYear', e.target.value)}
+                          >
+                            <option value="">Year</option>
+                            {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                              <option key={year} value={year}>{year}</option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="form-group">
-                      <label className="form-label-required">Phone number</label>
-                      <input
-                        type="tel"
-                        className="form-input"
-                        value={learnerDetails.phone}
-                        onChange={(e) => handleLearnerDetailsChange('phone', e.target.value)}
-                        placeholder="0400 000 000"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Date of birth */}
-                  <div className="form-section">
-                    <div className="form-group">
-                      <label className="form-label-required">Date of birth</label>
-                      <div className="date-inputs">
+                    {/* Which best describes you? */}
+                    <div className="form-section">
+                      <div className="form-group">
+                        <label className="form-label-required">Which best describes you?</label>
                         <select
-                          className="form-select date-select"
-                          value={learnerDetails.dobDay}
-                          onChange={(e) => handleLearnerDetailsChange('dobDay', e.target.value)}
+                          className="form-select"
+                          value={learnerDetails.learnerType}
+                          onChange={(e) => handleLearnerDetailsChange('learnerType', e.target.value)}
                         >
-                          <option value="">Day</option>
-                          {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                            <option key={day} value={day}>{day}</option>
-                          ))}
-                        </select>
-                        <select
-                          className="form-select date-select"
-                          value={learnerDetails.dobMonth}
-                          onChange={(e) => handleLearnerDetailsChange('dobMonth', e.target.value)}
-                        >
-                          <option value="">Month</option>
-                          <option value="1">January</option>
-                          <option value="2">February</option>
-                          <option value="3">March</option>
-                          <option value="4">April</option>
-                          <option value="5">May</option>
-                          <option value="6">June</option>
-                          <option value="7">July</option>
-                          <option value="8">August</option>
-                          <option value="9">September</option>
-                          <option value="10">October</option>
-                          <option value="11">November</option>
-                          <option value="12">December</option>
-                        </select>
-                        <select
-                          className="form-select date-select"
-                          value={learnerDetails.dobYear}
-                          onChange={(e) => handleLearnerDetailsChange('dobYear', e.target.value)}
-                        >
-                          <option value="">Year</option>
-                          {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                            <option key={year} value={year}>{year}</option>
-                          ))}
+                          <option value="">Select an option</option>
+                          <option value="new-learner">New Learner</option>
+                          <option value="overseas-license">Overseas License Holder</option>
+                          <option value="refresher">Refresher Course</option>
+                          <option value="test-ready">Test Ready</option>
+                          <option value="other">Other</option>
                         </select>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Which best describes you? */}
-                  <div className="form-section">
-                    <div className="form-group">
-                      <label className="form-label-required">Which best describes you?</label>
-                      <select
-                        className="form-select"
-                        value={learnerDetails.learnerType}
-                        onChange={(e) => handleLearnerDetailsChange('learnerType', e.target.value)}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="new-learner">New Learner</option>
-                        <option value="overseas-license">Overseas License Holder</option>
-                        <option value="refresher">Refresher Course</option>
-                        <option value="test-ready">Test Ready</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
+                    {/* Password */}
+                    <div className="form-section">
+                      <h3 className="section-heading">Create your password</h3>
 
-                  {/* Password */}
-                  <div className="form-section">
-                    <h3 className="section-heading">Create your password</h3>
+                      <div className="form-group">
+                        <label className="form-label-required">Password</label>
+                        <div className="input-with-icon">
+                          <FaLock className="input-icon-left" />
+                          <input
+                            type="password"
+                            className="form-input with-icon"
+                            value={learnerDetails.password}
+                            onChange={(e) => handleLearnerDetailsChange('password', e.target.value)}
+                            placeholder="Enter your password"
+                          />
+                        </div>
+                      </div>
 
-                    <div className="form-group">
-                      <label className="form-label-required">Password</label>
-                      <div className="input-with-icon">
-                        <FaLock className="input-icon-left" />
-                        <input
-                          type="password"
-                          className="form-input with-icon"
-                          value={learnerDetails.password}
-                          onChange={(e) => handleLearnerDetailsChange('password', e.target.value)}
-                          placeholder="Enter your password"
-                        />
+                      <div className="form-group">
+                        <label className="form-label-required">Confirm password</label>
+                        <div className="input-with-icon">
+                          <FaLock className="input-icon-left" />
+                          <input
+                            type="password"
+                            className="form-input with-icon"
+                            value={learnerDetails.confirmPassword}
+                            onChange={(e) => handleLearnerDetailsChange('confirmPassword', e.target.value)}
+                            placeholder="Confirm your password"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="form-group">
-                      <label className="form-label-required">Confirm password</label>
-                      <div className="input-with-icon">
-                        <FaLock className="input-icon-left" />
-                        <input
-                          type="password"
-                          className="form-input with-icon"
-                          value={learnerDetails.confirmPassword}
-                          onChange={(e) => handleLearnerDetailsChange('confirmPassword', e.target.value)}
-                          placeholder="Confirm your password"
-                        />
+                    {/* Consent checkboxes */}
+                    <div className="form-section">
+                      <div className="checkbox-group">
+                        <label className="checkbox-option">
+                          <input
+                            type="checkbox"
+                            checked={learnerDetails.marketingConsent}
+                            onChange={(e) => handleLearnerDetailsChange('marketingConsent', e.target.checked)}
+                            className="checkbox-input-yellow"
+                          />
+                          <span className="checkbox-custom-yellow"></span>
+                          <span className="checkbox-label">
+                            I would like to receive marketing communications including special offers and promotions
+                          </span>
+                        </label>
+
+                        <label className="checkbox-option">
+                          <input
+                            type="checkbox"
+                            checked={learnerDetails.termsAccepted}
+                            onChange={(e) => handleLearnerDetailsChange('termsAccepted', e.target.checked)}
+                            className="checkbox-input"
+                          />
+                          <span className="checkbox-custom"></span>
+                          <span className="checkbox-label">
+                            I agree to the <a href="/terms" className="terms-link">Terms & Conditions</a> and <a href="/privacy" className="terms-link">Privacy Policy</a>
+                          </span>
+                        </label>
                       </div>
                     </div>
                   </div>
-
-                  {/* Consent checkboxes */}
-                  <div className="form-section">
-                    <div className="checkbox-group">
-                      <label className="checkbox-option">
-                        <input
-                          type="checkbox"
-                          checked={learnerDetails.marketingConsent}
-                          onChange={(e) => handleLearnerDetailsChange('marketingConsent', e.target.checked)}
-                          className="checkbox-input-yellow"
-                        />
-                        <span className="checkbox-custom-yellow"></span>
-                        <span className="checkbox-label">
-                          I would like to receive marketing communications including special offers and promotions
-                        </span>
-                      </label>
-
-                      <label className="checkbox-option">
-                        <input
-                          type="checkbox"
-                          checked={learnerDetails.termsAccepted}
-                          onChange={(e) => handleLearnerDetailsChange('termsAccepted', e.target.checked)}
-                          className="checkbox-input"
-                        />
-                        <span className="checkbox-custom"></span>
-                        <span className="checkbox-label">
-                          I agree to the <a href="/terms" className="terms-link">Terms & Conditions</a> and <a href="/privacy" className="terms-link">Privacy Policy</a>
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
                 )}
               </div>
 
@@ -1768,6 +1768,8 @@ const BookingFlowContent = () => {
                           onPaymentSuccess={handlePaymentSuccess}
                           onPaymentError={handlePaymentError}
                           learnerDetails={learnerDetails}
+                          purchaseType="package_purchase"
+                          credits={packageDetails.hours}
                         />
                       </div>
                     )}
@@ -1805,7 +1807,7 @@ const BookingFlowContent = () => {
                       <span className="payment-radio-custom"></span>
                       <div className="payment-method-logo">
                         <svg viewBox="0 0 120 30" className="afterpay-logo">
-                          <rect width="120" height="30" rx="4" fill="#B2FCE4"/>
+                          <rect width="120" height="30" rx="4" fill="#B2FCE4" />
                           <text x="60" y="20" textAnchor="middle" fill="#000" fontSize="14" fontWeight="600">afterpay</text>
                         </svg>
                       </div>
@@ -1826,7 +1828,7 @@ const BookingFlowContent = () => {
                       <span className="payment-radio-custom"></span>
                       <div className="payment-method-logo">
                         <svg viewBox="0 0 120 30" className="klarna-logo">
-                          <rect width="120" height="30" rx="4" fill="#FFB3C7"/>
+                          <rect width="120" height="30" rx="4" fill="#FFB3C7" />
                           <text x="60" y="20" textAnchor="middle" fill="#000" fontSize="16" fontWeight="700">Klarna</text>
                         </svg>
                       </div>
@@ -1847,7 +1849,7 @@ const BookingFlowContent = () => {
                       <span className="payment-radio-custom"></span>
                       <div className="payment-method-logo">
                         <svg viewBox="0 0 120 30" className="gpay-logo">
-                          <rect width="120" height="30" rx="4" fill="#fff" stroke="#e0e0e0"/>
+                          <rect width="120" height="30" rx="4" fill="#fff" stroke="#e0e0e0" />
                           <text x="20" y="20" fill="#5F6368" fontSize="14" fontWeight="500">G Pay</text>
                         </svg>
                       </div>
@@ -1923,15 +1925,15 @@ const BookingFlowContent = () => {
                   <p className="bnpl-description">4 payments of ${(totalDue / 4).toFixed(2)}</p>
                   <div className="bnpl-logos">
                     <svg viewBox="0 0 80 24" className="bnpl-logo-small">
-                      <rect width="80" height="24" rx="3" fill="#5469d4"/>
+                      <rect width="80" height="24" rx="3" fill="#5469d4" />
                       <text x="40" y="16" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="600">Pay in 4</text>
                     </svg>
                     <svg viewBox="0 0 80 24" className="bnpl-logo-small">
-                      <rect width="80" height="24" rx="3" fill="#B2FCE4"/>
+                      <rect width="80" height="24" rx="3" fill="#B2FCE4" />
                       <text x="40" y="16" textAnchor="middle" fill="#000" fontSize="9" fontWeight="600">afterpay</text>
                     </svg>
                     <svg viewBox="0 0 80 24" className="bnpl-logo-small">
-                      <rect width="80" height="24" rx="3" fill="#FFB3C7"/>
+                      <rect width="80" height="24" rx="3" fill="#FFB3C7" />
                       <text x="40" y="16" textAnchor="middle" fill="#000" fontSize="10" fontWeight="700">Klarna</text>
                     </svg>
                   </div>

@@ -106,6 +106,10 @@ const learnerSchema = new mongoose.Schema({
     logbookHours: {
       type: Number,
       default: 0
+    },
+    lessonCredits: {
+      type: Number,
+      default: 0
     }
   },
 
@@ -146,7 +150,7 @@ learnerSchema.virtual('bookings', {
 });
 
 // Calculate age
-learnerSchema.virtual('age').get(function() {
+learnerSchema.virtual('age').get(function () {
   if (!this.dateOfBirth) return null;
 
   const today = new Date();

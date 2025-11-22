@@ -218,6 +218,44 @@ exports.getBooking = async (req, res) => {
 exports.createBooking = async (req, res) => {
   try {
     const bookingData = req.body;
+    const { learner: learnerId, lesson } = bookingData;
+
+    // Check if learner has credits
+    const learner = await Learner.findById(learnerId);
+    if (!learner) {
+      return res.status(404).json({
+        success: false,
+        message: 'Learner not found'
+      });
+    }
+
+    const creditsNeeded = lesson.duration; // 1 or 2 credits
+    const availableCredits = learner.progress.lessonCredits || 0;
+
+    if (availableCredits >= creditsNeeded) {
+      // Use credits
+      learner.progress.lessonCredits -= creditsNeeded;
+      await learner.save();
+
+      // Set booking as confirmed and paid
+      bookingData.status = 'confirmed';
+      bookingData.payment = {
+        status: 'paid',
+        amount: 0, // Paid via credits
+        method: 'credit',
+        paidAt: new Date()
+      };
+
+      console.log(`✅ Deducted ${creditsNeeded} credits from learner ${learnerId}. Remaining: ${learner.progress.lessonCredits}`);
+    } else {
+      // If not enough credits, we expect a payment intent or return error
+      // For now, we'll return an error as per requirement "Only Learners who have paid can book"
+      // Unless the frontend handles the "pay now" flow separately, but the prompt implies prepaid model.
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient lesson credits. You have ${availableCredits}, but need ${creditsNeeded}. Please purchase a package.`
+      });
+    }
 
     // Create booking
     const booking = await Booking.create(bookingData);
@@ -225,6 +263,44 @@ exports.createBooking = async (req, res) => {
     // Populate learner and instructor info
     await booking.populate('learner', 'firstName lastName phone email');
     await booking.populate('instructor', 'businessName phone email');
+
+    // Send confirmation emails immediately since it's confirmed
+    if (booking.status === 'confirmed') {
+      const { sendBookingConfirmation } = require('../services/emailService');
+
+      const emailData = {
+        learner: {
+          firstName: booking.learner.user.firstName,
+          lastName: booking.learner.user.lastName,
+          email: booking.learner.user.email,
+          phone: booking.learner.user.phone
+        },
+        instructor: {
+          firstName: booking.instructor.user.firstName,
+          lastName: booking.instructor.user.lastName,
+          email: booking.instructor.user.email
+        },
+        lesson: {
+          date: booking.lesson.date,
+          startTime: booking.lesson.startTime,
+          endTime: booking.lesson.endTime,
+          duration: booking.lesson.duration,
+          pickupLocation: booking.lesson.pickupLocation,
+          dropoffLocation: booking.lesson.dropoffLocation,
+          notes: booking.lesson.notes
+        },
+        pricing: {
+          totalAmount: booking.pricing.totalAmount,
+          instructorPayout: booking.pricing.instructorPayout
+        }
+      };
+
+      try {
+        await sendBookingConfirmation(emailData);
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+      }
+    }
 
     res.status(201).json({
       success: true,

@@ -161,6 +161,26 @@ exports.handleWebhook = async (req, res) => {
       console.log('Payment metadata:', paymentIntent.metadata);
 
       try {
+        // Check if this is a package purchase
+        if (paymentIntent.metadata.type === 'package_purchase') {
+          const { learnerId, credits } = paymentIntent.metadata;
+
+          if (!learnerId || !credits) {
+            console.error('❌ Missing learnerId or credits in package purchase metadata');
+            return;
+          }
+
+          const learner = await Learner.findById(learnerId);
+          if (learner) {
+            learner.progress.lessonCredits = (learner.progress.lessonCredits || 0) + parseInt(credits);
+            await learner.save();
+            console.log(`✅ Added ${credits} credits to learner ${learnerId}. New balance: ${learner.progress.lessonCredits}`);
+          } else {
+            console.error(`❌ Learner not found for credit addition: ${learnerId}`);
+          }
+          return; // Exit as this is not a direct booking payment
+        }
+
         // Find the booking by paymentIntentId
         const booking = await Booking.findOne({
           'payment.paymentIntentId': paymentIntent.id
