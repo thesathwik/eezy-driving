@@ -40,7 +40,7 @@ const createTransporter = () => {
       sendMail: async (mailOptions) => {
         try {
           const { data, error } = await resend.emails.send({
-            from: 'Eezy Driving <onboarding@resend.dev>', // Default testing domain
+            from: mailOptions.from || process.env.EMAIL_FROM || 'Eezy Driving <noreply@eezydriving.com.au>',
             to: mailOptions.to,
             subject: mailOptions.subject,
             html: mailOptions.html,
