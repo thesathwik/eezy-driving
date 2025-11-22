@@ -16,7 +16,9 @@ const createTransporter = () => {
 
   if (process.env.EMAIL_SERVICE === 'gmail') {
     return createTransporterFn({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // Use STARTTLS
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD?.replace(/\s+/g, '') // Remove spaces if present
