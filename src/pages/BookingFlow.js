@@ -202,15 +202,22 @@ const BookingFlowContent = () => {
           if (response.success && response.data) {
             // Handle both { data: user } and { data: { user: ... } } structures
             const user = response.data.user || response.data;
+
+            // Extract the correct Learner ID
+            // The backend expects the Learner ID (from profileData), not the User ID
+            const learnerId = (user.profileData && user.profileData._id) || user._id || user.id;
+
             console.log('👤 User data extraction:', {
               fromDataUser: !!response.data.user,
-              finalUser: user
+              hasProfileData: !!user.profileData,
+              userId: user._id || user.id,
+              learnerId: learnerId
             });
 
             // Populate learner details from logged-in user
             setLearnerDetails(prev => ({
               ...prev,
-              _id: user._id || user.id, // Handle both _id and id
+              _id: learnerId,
               firstName: user.firstName,
               lastName: user.lastName,
               email: user.email,
