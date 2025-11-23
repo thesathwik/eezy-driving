@@ -709,8 +709,22 @@ const BookingFlowContent = () => {
     try {
       const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
-      // Get auth token from localStorage (user should be already registered/logged in at this point)
-      const authToken = localStorage.getItem('authToken');
+      // Get auth token from session
+      let authToken = localStorage.getItem('authToken');
+
+      // Try to get from session object if not found directly
+      if (!authToken) {
+        const sessionStr = localStorage.getItem('eazydriving_session');
+        if (sessionStr) {
+          try {
+            const session = JSON.parse(sessionStr);
+            authToken = session.token;
+          } catch (e) {
+            console.error('Error parsing session for booking:', e);
+          }
+        }
+      }
+
       if (!authToken) {
         throw new Error('Authentication required. Please log in again.');
       }
