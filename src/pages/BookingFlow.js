@@ -166,14 +166,36 @@ const BookingFlowContent = () => {
   // Check if user is already logged in on mount
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const authToken = localStorage.getItem('authToken');
-      const userRole = localStorage.getItem('userRole');
+      // Fix: Read from the correct storage key used by authService.js
+      const sessionStr = localStorage.getItem('eazydriving_session');
+      let authToken = null;
+      let userRole = null;
 
-      console.log('🔐 Auth check:', { authToken: authToken ? 'exists' : 'missing', userRole });
+      if (sessionStr) {
+        try {
+          const session = JSON.parse(sessionStr);
+          authToken = session.token;
+          userRole = session.role;
+        } catch (e) {
+          console.error('Error parsing session:', e);
+        }
+      }
+
+      // Fallback to individual keys if session key is missing (backward compatibility)
+      if (!authToken) authToken = localStorage.getItem('authToken');
+      if (!userRole) userRole = localStorage.getItem('userRole');
+
+      console.log('🔐 Auth check:', {
+        sessionFound: !!sessionStr,
+        authToken: authToken ? 'exists' : 'missing',
+        userRole
+      });
 
       if (authToken && userRole && userRole.toLowerCase() === 'learner') {
         try {
           console.log('📡 Fetching current user...');
+          // We need to ensure the API call uses the correct token
+          // The API config likely reads from localStorage too, but let's verify
           const response = await getCurrentUser();
           console.log('📡 getCurrentUser response:', response);
 
@@ -196,9 +218,6 @@ const BookingFlowContent = () => {
           }
         } catch (error) {
           console.error('❌ Error fetching current user:', error);
-          // Clear invalid token
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userRole');
         }
       } else {
         console.log('🚫 Not logged in or not a learner');
