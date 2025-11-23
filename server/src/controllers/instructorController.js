@@ -1,5 +1,89 @@
 const User = require('../models/User');
 const Instructor = require('../models/Instructor');
+const Availability = require('../models/Availability');
+
+// Helper function to generate availability records from opening hours
+const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) => {
+  try {
+    const dayMap = {
+      'Monday': 1,
+      'Tuesday': 2,
+      'Wednesday': 3,
+      'Thursday': 4,
+      'Friday': 5,
+      'Saturday': 6,
+      'Sunday': 0
+    };
+
+    // Generate availability for next 60 days
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < 60; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dayOfWeek = date.getDay();
+
+      // Find which day name matches this day of week
+      const dayName = Object.keys(dayMap).find(name => dayMap[name] === dayOfWeek);
+      const hoursForDay = openingHours[dayName] || [];
+
+      // Skip if no hours defined for this day
+      if (hoursForDay.length === 0) continue;
+
+      // Generate time slots based on opening hours
+      const timeSlots = [];
+      hoursForDay.forEach(hourRange => {
+        if (hourRange.start && hourRange.end) {
+          // Parse start and end times
+          const startHour = parseTime(hourRange.start);
+          const endHour = parseTime(hourRange.end);
+
+          // Generate hourly slots between start and end
+          for (let hour = startHour; hour < endHour; hour++) {
+            const timeStr = formatHour(hour);
+            timeSlots.push({ time: timeStr, available: true });
+          }
+        }
+      });
+
+      if (timeSlots.length > 0) {
+        // Upsert availability for this date
+        await Availability.findOneAndUpdate(
+          { instructorId, date },
+          { instructorId, date, timeSlots, enabled: true },
+          { upsert: true, new: true }
+        );
+      }
+    }
+
+    console.log(`✅ Generated availability for instructor ${instructorId}`);
+  } catch (error) {
+    console.error('Error generating availability:', error);
+  }
+};
+
+// Helper to parse time string like "09:00 A" or "05:00 P" to hour number
+const parseTime = (timeStr) => {
+  if (!timeStr) return 0;
+  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(A|P)?/i);
+  if (!match) return 0;
+
+  let hour = parseInt(match[1]);
+  const isPM = match[3] && match[3].toUpperCase() === 'P';
+
+  if (isPM && hour !== 12) hour += 12;
+  if (!isPM && hour === 12) hour = 0;
+
+  return hour;
+};
+
+// Helper to format hour number to display string
+const formatHour = (hour) => {
+  const isPM = hour >= 12;
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:00 ${isPM ? 'PM' : 'AM'}`;
+};
 
 // @desc    Create or update instructor profile
 // @route   POST /api/instructors/profile
@@ -31,6 +115,11 @@ exports.createOrUpdateProfile = async (req, res, next) => {
       await User.findByIdAndUpdate(userId, {
         isProfileComplete: true
       });
+    }
+
+    // Generate availability records if openingHours are provided
+    if (req.body.openingHours) {
+      await generateAvailabilityFromOpeningHours(userId, req.body.openingHours);
     }
 
     res.status(200).json({
