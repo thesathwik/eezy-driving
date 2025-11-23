@@ -169,11 +169,18 @@ const BookingFlowContent = () => {
       const authToken = localStorage.getItem('authToken');
       const userRole = localStorage.getItem('userRole');
 
+      console.log('🔐 Auth check:', { authToken: authToken ? 'exists' : 'missing', userRole });
+
       if (authToken && userRole === 'learner') {
         try {
+          console.log('📡 Fetching current user...');
           const response = await getCurrentUser();
+          console.log('📡 getCurrentUser response:', response);
+
           if (response.success && response.data) {
             const user = response.data;
+            console.log('👤 User data:', { _id: user._id, email: user.email });
+
             // Populate learner details from logged-in user
             setLearnerDetails(prev => ({
               ...prev,
@@ -184,13 +191,17 @@ const BookingFlowContent = () => {
               phone: user.phone || ''
             }));
             console.log('✅ User already logged in:', user.email);
+          } else {
+            console.warn('⚠️ getCurrentUser failed:', response);
           }
         } catch (error) {
-          console.error('Error fetching current user:', error);
+          console.error('❌ Error fetching current user:', error);
           // Clear invalid token
           localStorage.removeItem('authToken');
           localStorage.removeItem('userRole');
         }
+      } else {
+        console.log('🚫 Not logged in or not a learner');
       }
     };
 
