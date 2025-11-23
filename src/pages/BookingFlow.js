@@ -163,6 +163,40 @@ const BookingFlowContent = () => {
     };
   }, []);
 
+  // Check if user is already logged in on mount
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const authToken = localStorage.getItem('authToken');
+      const userRole = localStorage.getItem('userRole');
+
+      if (authToken && userRole === 'learner') {
+        try {
+          const response = await getCurrentUser();
+          if (response.success && response.data) {
+            const user = response.data;
+            // Populate learner details from logged-in user
+            setLearnerDetails(prev => ({
+              ...prev,
+              _id: user._id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              phone: user.phone || ''
+            }));
+            console.log('✅ User already logged in:', user.email);
+          }
+        } catch (error) {
+          console.error('Error fetching current user:', error);
+          // Clear invalid token
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+        }
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
   const steps = [
     { number: 1, label: 'Instructor' },
     { number: 2, label: 'Amount' },
@@ -378,6 +412,13 @@ const BookingFlowContent = () => {
   };
 
   const handleContinue = async () => {
+    // Check if user is already logged in - skip step 4 (registration)
+    if (currentStep === 3 && learnerDetails._id) {
+      // User is already logged in, skip to payment
+      setCurrentStep(5);
+      return;
+    }
+
     // Validate current step
     const errors = validateStep(currentStep);
 
