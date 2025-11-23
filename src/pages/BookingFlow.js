@@ -54,6 +54,7 @@ const BookingFlowContent = () => {
     password: ''
   });
   const [learnerDetails, setLearnerDetails] = useState({
+    _id: '', // Store learner ID after registration
     firstName: '',
     lastName: '',
     email: '',
@@ -472,10 +473,14 @@ const BookingFlowContent = () => {
           setWaitingForVerification(true);
           setIsUserVerified(false);
 
-          // Store the token for later use
+          // Store the token and learner ID for later use
           if (registerData.data.token) {
             localStorage.setItem('authToken', registerData.data.token);
             localStorage.setItem('userRole', 'learner');
+          }
+          // Store learner ID
+          if (registerData.data.user && registerData.data.user._id) {
+            setLearnerDetails(prev => ({ ...prev, _id: registerData.data.user._id }));
           }
 
           // Start polling for verification
@@ -489,6 +494,10 @@ const BookingFlowContent = () => {
           if (registerData.data.token) {
             localStorage.setItem('authToken', registerData.data.token);
             localStorage.setItem('userRole', 'learner');
+          }
+          // Store learner ID
+          if (registerData.data.user && registerData.data.user._id) {
+            setLearnerDetails(prev => ({ ...prev, _id: registerData.data.user._id }));
           }
           setValidationErrors({});
           setCurrentStep(5);
@@ -526,10 +535,14 @@ const BookingFlowContent = () => {
           return;
         }
 
-        // Store token
+        // Store token and learner ID
         if (loginData.data && loginData.data.token) {
           localStorage.setItem('authToken', loginData.data.token);
           localStorage.setItem('userRole', 'learner');
+        }
+        // Store learner ID from login
+        if (loginData.data && loginData.data.user && loginData.data.user._id) {
+          setLearnerDetails(prev => ({ ...prev, _id: loginData.data.user._id }));
         }
 
         // Proceed to payment
