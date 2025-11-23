@@ -221,11 +221,38 @@ exports.createBooking = async (req, res) => {
     const { learner: learnerId, lesson } = bookingData;
 
     // Check if learner has credits
-    const learner = await Learner.findById(learnerId);
+    let learner = await Learner.findById(learnerId);
+
+    // If not found by ID, it might be a User ID
+    if (!learner) {
+      console.log(`Learner not found by ID ${learnerId}, checking if it's a User ID...`);
+      learner = await Learner.findOne({ user: learnerId });
+
+      // If still not found, check if it's a valid User and create a profile
+      if (!learner) {
+        const User = require('../models/User');
+        const userExists = await User.findById(learnerId);
+
+        if (userExists) {
+          console.log(`Creating new Learner profile for User ${learnerId}...`);
+          learner = await Learner.create({
+            user: learnerId,
+            // Add default required fields if any (DOB is now optional)
+            preferences: {
+              transmissionType: 'auto',
+              timePreference: 'flexible'
+            }
+          });
+          // Update the booking data to use the new Learner ID
+          bookingData.learner = learner._id;
+        }
+      }
+    }
+
     if (!learner) {
       return res.status(404).json({
         success: false,
-        message: 'Learner not found'
+        message: 'Learner profile not found and could not be created'
       });
     }
 

@@ -12,7 +12,7 @@ const learnerSchema = new mongoose.Schema({
   // Personal Details
   dateOfBirth: {
     type: Date,
-    required: [true, 'Please provide date of birth']
+    // required: [true, 'Please provide date of birth'] // Made optional to allow auto-creation
   },
   gender: {
     type: String,
