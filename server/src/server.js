@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const mongoose = require('mongoose');
 const connectDB = require('./config/database');
 
 // Initialize Express app
@@ -124,6 +125,27 @@ const server = app.listen(PORT, () => {
   console.log(`   POST http://localhost:${PORT}/api/auth/register`);
   console.log(`   POST http://localhost:${PORT}/api/auth/login`);
   console.log('');
+
+  // MongoDB Keep-Alive: Ping database every 12 hours to prevent M0 cluster from pausing
+  const KEEP_ALIVE_INTERVAL = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
+  const keepAlive = async () => {
+    try {
+      if (mongoose.connection.readyState === 1) {
+        await mongoose.connection.db.admin().ping();
+        console.log('🏓 MongoDB keep-alive ping successful -', new Date().toISOString());
+      }
+    } catch (error) {
+      console.error('❌ MongoDB keep-alive ping failed:', error.message);
+    }
+  };
+
+  // Run keep-alive ping every 12 hours
+  setInterval(keepAlive, KEEP_ALIVE_INTERVAL);
+
+  // Also ping on startup (after a short delay to ensure connection is ready)
+  setTimeout(keepAlive, 10000);
+  console.log('🏓 MongoDB keep-alive scheduled (every 12 hours)');
 });
 
 // Handle unhandled promise rejections
