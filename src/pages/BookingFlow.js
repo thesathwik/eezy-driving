@@ -200,13 +200,17 @@ const BookingFlowContent = () => {
           console.log('📡 getCurrentUser response:', response);
 
           if (response.success && response.data) {
-            const user = response.data;
-            console.log('👤 User data:', { _id: user._id, email: user.email });
+            // Handle both { data: user } and { data: { user: ... } } structures
+            const user = response.data.user || response.data;
+            console.log('👤 User data extraction:', {
+              fromDataUser: !!response.data.user,
+              finalUser: user
+            });
 
             // Populate learner details from logged-in user
             setLearnerDetails(prev => ({
               ...prev,
-              _id: user._id,
+              _id: user._id || user.id, // Handle both _id and id
               firstName: user.firstName,
               lastName: user.lastName,
               email: user.email,
