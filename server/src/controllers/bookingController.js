@@ -330,9 +330,21 @@ exports.createBooking = async (req, res) => {
     // Create booking
     const booking = await Booking.create(bookingData);
 
-    // Populate learner and instructor info
-    await booking.populate('learner', 'firstName lastName phone email');
-    await booking.populate('instructor', 'businessName phone email');
+    // Populate learner and instructor info with nested user references
+    await booking.populate({
+      path: 'learner',
+      populate: {
+        path: 'user',
+        select: 'firstName lastName phone email'
+      }
+    });
+    await booking.populate({
+      path: 'instructor',
+      populate: {
+        path: 'user',
+        select: 'firstName lastName phone email'
+      }
+    });
 
     // Send confirmation emails immediately since it's confirmed
     if (booking.status === 'confirmed') {
@@ -340,15 +352,15 @@ exports.createBooking = async (req, res) => {
 
       const emailData = {
         learner: {
-          firstName: booking.learner.user.firstName,
-          lastName: booking.learner.user.lastName,
-          email: booking.learner.user.email,
-          phone: booking.learner.user.phone
+          firstName: booking.learner?.user?.firstName || 'Learner',
+          lastName: booking.learner?.user?.lastName || '',
+          email: booking.learner?.user?.email || '',
+          phone: booking.learner?.user?.phone || ''
         },
         instructor: {
-          firstName: booking.instructor.user.firstName,
-          lastName: booking.instructor.user.lastName,
-          email: booking.instructor.user.email
+          firstName: booking.instructor?.user?.firstName || 'Instructor',
+          lastName: booking.instructor?.user?.lastName || '',
+          email: booking.instructor?.user?.email || ''
         },
         lesson: {
           date: booking.lesson.date,
