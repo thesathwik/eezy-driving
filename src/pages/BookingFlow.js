@@ -197,13 +197,19 @@ const BookingFlowContent = () => {
     checkAuthStatus();
   }, []);
 
-  const steps = [
+  // Define all steps
+  const allSteps = [
     { number: 1, label: 'Instructor' },
     { number: 2, label: 'Amount' },
     { number: 3, label: 'Book your lessons' },
     { number: 4, label: 'Learner Registration' },
     { number: 5, label: 'Payment' }
   ];
+
+  // Filter out step 4 (registration) if user is already logged in
+  const steps = learnerDetails._id
+    ? allSteps.filter(step => step.number !== 4)
+    : allSteps;
 
   // Function to check user verification status
   const checkVerificationStatus = async () => {
