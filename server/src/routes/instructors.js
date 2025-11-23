@@ -19,6 +19,8 @@ router.get('/:id', getInstructorById);
 // Protected routes (Instructor only)
 router.post('/profile', protect, isInstructor, createOrUpdateProfile);
 router.get('/profile/me', protect, isInstructor, getProfile);
+router.post('/profile/me', protect, isInstructor, createOrUpdateProfile); // Save settings
+router.put('/profile/me', protect, isInstructor, createOrUpdateProfile); // Save settings (PUT)
 router.put('/availability', protect, isInstructor, updateAvailability);
 router.put('/pricing', protect, isInstructor, updatePricing);
 router.put('/visibility', protect, isInstructor, toggleVisibility);
