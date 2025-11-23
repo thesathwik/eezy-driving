@@ -211,6 +211,13 @@ const BookingFlowContent = () => {
     ? allSteps.filter(step => step.number !== 4)
     : allSteps;
 
+  // Debug log
+  console.log('🔍 Steps debug:', {
+    learnerId: learnerDetails._id,
+    totalSteps: steps.length,
+    stepNumbers: steps.map(s => s.number)
+  });
+
   // Function to check user verification status
   const checkVerificationStatus = async () => {
     try {
