@@ -171,7 +171,7 @@ const BookingFlowContent = () => {
 
       console.log('🔐 Auth check:', { authToken: authToken ? 'exists' : 'missing', userRole });
 
-      if (authToken && userRole === 'learner') {
+      if (authToken && userRole && userRole.toLowerCase() === 'learner') {
         try {
           console.log('📡 Fetching current user...');
           const response = await getCurrentUser();
