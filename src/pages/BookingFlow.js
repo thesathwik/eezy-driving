@@ -736,62 +736,71 @@ const BookingFlowContent = () => {
         throw new Error('Authentication required. Please log in again.');
       }
 
-      // Create booking with auth token
-      console.log('Creating booking...');
-      const bookingData = {
-        instructorId: id,
-        packageDetails: {
-          hours: packageDetails.hours,
-          totalAmount: totalDue,
-          discount: discount,
-          processingFee: processingFee
-        },
-        bookings: bookings
-          .filter(b => b.selectedDate && b.selectedTime)
-          .map(b => ({
-            ...b,
-            pickupLocation: b.pickupAddress // Full address from Google Places
-          })),
-        paymentIntent: {
-          id: paymentIntent.id,
-          status: paymentIntent.status,
-          amount: paymentIntent.amount
-        },
-        learnerDetails: {
-          firstName: learnerDetails.firstName,
-          lastName: learnerDetails.lastName,
-          email: learnerDetails.email,
-          phone: learnerDetails.phone,
-          dob: `${learnerDetails.dobYear}-${learnerDetails.dobMonth}-${learnerDetails.dobDay}`,
-          pickupAddress: learnerDetails.pickupAddress,
-          suburb: learnerDetails.suburb,
-          state: learnerDetails.state,
-          learnerType: learnerDetails.learnerType
-        }
-      };
+      // Create bookings sequentially
+      console.log('Creating bookings...');
 
-      const response = await fetch(`${API_URL}/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify(bookingData)
+      const validBookings = bookings.filter(b => b.selectedDate && b.selectedTime);
+      const createdBookings = [];
+
+      for (const booking of validBookings) {
+        const singleBookingData = {
+          learner: learnerDetails._id,
+          instructor: id,
+          lesson: {
+            date: booking.selectedDate,
+            startTime: booking.selectedTime,
+            endTime: booking.endTime, // Ensure endTime is calculated/passed
+            duration: 1, // Assuming 1 hour per slot, or calculate from times
+            pickupLocation: booking.pickupAddress || learnerDetails.pickupAddress,
+            dropoffLocation: booking.pickupAddress || learnerDetails.pickupAddress,
+            status: 'confirmed' // Since payment is successful
+          },
+          payment: {
+            status: 'paid',
+            amount: 0, // Paid via package credits
+            method: 'credit',
+            transactionId: paymentIntent.id
+          },
+          status: 'confirmed'
+        };
+
+        console.log('Sending booking request:', singleBookingData);
+
+        const response = await fetch(`${API_URL}/bookings`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(singleBookingData)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Booking creation failed:', errorData);
+          throw new Error(errorData.message || 'Failed to create booking');
+        }
+
+        const result = await response.json();
+        createdBookings.push(result.data);
+      }
+
+      console.log('All bookings created successfully:', createdBookings);
+
+      // Clear bookings from state/storage
+      localStorage.removeItem('booking_flow_state');
+
+      // Redirect to success page
+      navigate('/booking/success', {
+        state: {
+          bookings: createdBookings,
+          packageDetails
+        }
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Booking saved:', result);
-        alert('Payment successful! Your booking has been confirmed.');
-        navigate('/'); // Redirect to home or dashboard
-      } else {
-        console.error('Failed to save booking');
-        alert('Payment successful but failed to save booking. Please contact support.');
-      }
     } catch (error) {
       console.error('Error saving booking:', error);
-      alert('Payment successful but failed to save booking. Please contact support.');
-    } finally {
+      setPaymentError(error.message || 'Failed to save booking details. Please contact support.');
       setPaymentProcessing(false);
     }
   };
