@@ -98,6 +98,8 @@ const BookingFlowContent = () => {
           const transformedInstructor = {
             ...data.data,
             id: data.data._id,
+            // userId is needed for availability lookup (availability is stored by user ID, not instructor ID)
+            userId: data.data.user?._id || data.data.user,
             name: `${data.data.user?.firstName} ${data.data.user?.lastName}`.trim(),
             pricePerHour: data.data.pricing?.marketplaceLessonRate || 80,
             rating: data.data.stats?.averageRating || 0,
@@ -138,7 +140,7 @@ const BookingFlowContent = () => {
 
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
         const response = await fetch(
-          `${API_URL}/availability/instructor/${instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`
+          `${API_URL}/availability/instructor/${instructor.userId || instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`
         );
 
         if (response.ok) {
