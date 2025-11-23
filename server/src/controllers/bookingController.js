@@ -378,9 +378,13 @@ exports.createBooking = async (req, res) => {
       };
 
       try {
-        await sendBookingConfirmation(emailData);
+        console.log('📧 Sending booking confirmation emails...');
+        console.log('📧 Learner email:', emailData.learner.email);
+        console.log('📧 Instructor email:', emailData.instructor.email);
+        const emailResult = await sendBookingConfirmation(emailData);
+        console.log('✅ Booking confirmation emails sent successfully:', emailResult);
       } catch (emailError) {
-        console.error('Failed to send confirmation email:', emailError);
+        console.error('❌ Failed to send confirmation email:', emailError);
       }
     }
 
