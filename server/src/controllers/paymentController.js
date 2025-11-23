@@ -172,9 +172,23 @@ exports.handleWebhook = async (req, res) => {
 
           const learner = await Learner.findById(learnerId);
           if (learner) {
-            learner.progress.lessonCredits = (learner.progress.lessonCredits || 0) + parseInt(credits);
-            await learner.save();
-            console.log(`✅ Added ${credits} credits to learner ${learnerId}. New balance: ${learner.progress.lessonCredits}`);
+            // Check if this payment intent has already been processed (e.g., by booking controller)
+            const isProcessed = learner.progress.processedPaymentIntents?.includes(paymentIntent.id);
+
+            if (isProcessed) {
+              console.log(`ℹ️ Payment ${paymentIntent.id} already processed for learner ${learnerId}. Skipping credit addition.`);
+            } else {
+              learner.progress.lessonCredits = (learner.progress.lessonCredits || 0) + parseInt(credits);
+
+              // Add to processed list
+              if (!learner.progress.processedPaymentIntents) {
+                learner.progress.processedPaymentIntents = [];
+              }
+              learner.progress.processedPaymentIntents.push(paymentIntent.id);
+
+              await learner.save();
+              console.log(`✅ Added ${credits} credits to learner ${learnerId}. New balance: ${learner.progress.lessonCredits}`);
+            }
           } else {
             console.error(`❌ Learner not found for credit addition: ${learnerId}`);
           }

@@ -257,7 +257,49 @@ exports.createBooking = async (req, res) => {
     }
 
     const creditsNeeded = lesson.duration; // 1 or 2 credits
-    const availableCredits = learner.progress.lessonCredits || 0;
+    let availableCredits = learner.progress.lessonCredits || 0;
+
+    // Handle Race Condition: If insufficient credits, check if we have a valid payment transaction
+    if (availableCredits < creditsNeeded && bookingData.payment && bookingData.payment.transactionId) {
+      console.log(`Checking payment verification for transaction: ${bookingData.payment.transactionId}`);
+
+      try {
+        // Verify with Stripe
+        const Stripe = require('stripe');
+        const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+        const paymentIntent = await stripe.paymentIntents.retrieve(bookingData.payment.transactionId);
+
+        // Check if payment was successful and matches
+        if (paymentIntent.status === 'succeeded' && paymentIntent.metadata.type === 'package_purchase') {
+
+          // Check if this payment was already processed
+          const isProcessed = learner.progress.processedPaymentIntents?.includes(paymentIntent.id);
+
+          if (!isProcessed) {
+            const newCredits = parseInt(paymentIntent.metadata.credits || 0);
+
+            if (newCredits > 0) {
+              console.log(`✅ Verified payment ${paymentIntent.id}. Adding ${newCredits} credits immediately.`);
+
+              // Add credits
+              learner.progress.lessonCredits = (learner.progress.lessonCredits || 0) + newCredits;
+              availableCredits = learner.progress.lessonCredits;
+
+              // Mark as processed
+              if (!learner.progress.processedPaymentIntents) {
+                learner.progress.processedPaymentIntents = [];
+              }
+              learner.progress.processedPaymentIntents.push(paymentIntent.id);
+
+              await learner.save();
+            }
+          }
+        }
+      } catch (stripeError) {
+        console.error('Error verifying Stripe payment in booking controller:', stripeError);
+        // Continue to standard check (will fail if credits still insufficient)
+      }
+    }
 
     if (availableCredits >= creditsNeeded) {
       // Use credits
@@ -270,7 +312,8 @@ exports.createBooking = async (req, res) => {
         status: 'paid',
         amount: 0, // Paid via credits
         method: 'credit',
-        paidAt: new Date()
+        paidAt: new Date(),
+        transactionId: bookingData.payment?.transactionId // Keep the transaction ID reference
       };
 
       console.log(`✅ Deducted ${creditsNeeded} credits from learner ${learnerId}. Remaining: ${learner.progress.lessonCredits}`);

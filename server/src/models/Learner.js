@@ -110,7 +110,10 @@ const learnerSchema = new mongoose.Schema({
     lessonCredits: {
       type: Number,
       default: 0
-    }
+    },
+    processedPaymentIntents: [{
+      type: String
+    }]
   },
 
   // Emergency Contact
