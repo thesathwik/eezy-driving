@@ -746,19 +746,43 @@ const BookingFlowContent = () => {
         const singleBookingData = {
           learner: learnerDetails._id,
           instructor: id,
+          bookingType: 'lesson', // Required field
+          learnerType: 'marketplace', // Default value
           lesson: {
             date: booking.selectedDate,
             startTime: booking.selectedTime,
-            endTime: booking.endTime, // Ensure endTime is calculated/passed
-            duration: 1, // Assuming 1 hour per slot, or calculate from times
-            pickupLocation: booking.pickupAddress || learnerDetails.pickupAddress,
-            dropoffLocation: booking.pickupAddress || learnerDetails.pickupAddress,
-            status: 'confirmed' // Since payment is successful
+            endTime: booking.endTime || '00:00', // Provide default if missing
+            duration: 1, // Assuming 1 hour per slot
+            pickupLocation: {
+              address: booking.pickupAddress || learnerDetails.pickupAddress || '',
+              suburb: learnerDetails.suburb || '',
+              postcode: '',
+              coordinates: {
+                lat: 0,
+                lng: 0
+              }
+            },
+            dropoffLocation: {
+              address: booking.pickupAddress || learnerDetails.pickupAddress || '',
+              suburb: learnerDetails.suburb || '',
+              postcode: '',
+              coordinates: {
+                lat: 0,
+                lng: 0
+              }
+            },
+            notes: ''
+          },
+          pricing: {
+            baseRate: packageDetails.hours * 100, // $100 per hour example
+            platformFee: 0,
+            gst: 0,
+            totalAmount: packageDetails.hours * 100,
+            instructorPayout: packageDetails.hours * 100
           },
           payment: {
             status: 'paid',
-            amount: 0, // Paid via package credits
-            method: 'credit',
+            method: 'credit-card', // Valid enum value
             transactionId: paymentIntent.id
           },
           status: 'confirmed'
