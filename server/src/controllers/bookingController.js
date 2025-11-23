@@ -308,10 +308,10 @@ exports.createBooking = async (req, res) => {
 
       // Set booking as confirmed and paid
       bookingData.status = 'confirmed';
+      // Preserve the original payment method from the request, or default to 'credit-card'
       bookingData.payment = {
         status: 'paid',
-        amount: 0, // Paid via credits
-        method: 'credit',
+        method: bookingData.payment?.method || 'credit-card', // Use the method from request
         paidAt: new Date(),
         transactionId: bookingData.payment?.transactionId // Keep the transaction ID reference
       };
