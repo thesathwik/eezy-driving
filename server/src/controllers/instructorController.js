@@ -5,27 +5,33 @@ const Availability = require('../models/Availability');
 // Helper function to generate availability records from opening hours
 const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) => {
   try {
+    // Map day of week (0=Sunday) to lowercase day names used in openingHours
     const dayMap = {
-      'Monday': 1,
-      'Tuesday': 2,
-      'Wednesday': 3,
-      'Thursday': 4,
-      'Friday': 5,
-      'Saturday': 6,
-      'Sunday': 0
+      0: 'sunday',
+      1: 'monday',
+      2: 'tuesday',
+      3: 'wednesday',
+      4: 'thursday',
+      5: 'friday',
+      6: 'saturday'
     };
+
+    console.log('📅 Generating availability for instructor:', instructorId);
+    console.log('📅 Opening hours:', JSON.stringify(openingHours));
 
     // Generate availability for next 60 days
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    let daysGenerated = 0;
 
     for (let i = 0; i < 60; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       const dayOfWeek = date.getDay();
 
-      // Find which day name matches this day of week
-      const dayName = Object.keys(dayMap).find(name => dayMap[name] === dayOfWeek);
+      // Get the lowercase day name
+      const dayName = dayMap[dayOfWeek];
       const hoursForDay = openingHours[dayName] || [];
 
       // Skip if no hours defined for this day
@@ -34,10 +40,16 @@ const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) 
       // Generate time slots based on opening hours
       const timeSlots = [];
       hoursForDay.forEach(hourRange => {
-        if (hourRange.start && hourRange.end) {
-          // Parse start and end times
-          const startHour = parseTime(hourRange.start);
-          const endHour = parseTime(hourRange.end);
+        // Support both formats: {start, end} and {startTime, endTime}
+        const startTimeStr = hourRange.startTime || hourRange.start;
+        const endTimeStr = hourRange.endTime || hourRange.end;
+
+        if (startTimeStr && endTimeStr) {
+          // Parse start and end times (format: "09:00" or "17:00")
+          const startHour = parseTime(startTimeStr);
+          const endHour = parseTime(endTimeStr);
+
+          console.log(`  📅 ${dayName}: ${startTimeStr}-${endTimeStr} → hours ${startHour}-${endHour}`);
 
           // Generate hourly slots between start and end
           for (let hour = startHour; hour < endHour; hour++) {
@@ -54,28 +66,39 @@ const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) 
           { instructorId, date, timeSlots, enabled: true },
           { upsert: true, new: true }
         );
+        daysGenerated++;
       }
     }
 
-    console.log(`✅ Generated availability for instructor ${instructorId}`);
+    console.log(`✅ Generated availability for ${daysGenerated} days for instructor ${instructorId}`);
   } catch (error) {
     console.error('Error generating availability:', error);
   }
 };
 
-// Helper to parse time string like "09:00 A" or "05:00 P" to hour number
+// Helper to parse time string like "09:00", "17:00", "09:00 A", or "05:00 P" to hour number
 const parseTime = (timeStr) => {
   if (!timeStr) return 0;
-  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(A|P)?/i);
-  if (!match) return 0;
 
-  let hour = parseInt(match[1]);
-  const isPM = match[3] && match[3].toUpperCase() === 'P';
+  // Try 24-hour format first (e.g., "09:00", "17:00")
+  const match24 = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+  if (match24) {
+    return parseInt(match24[1]);
+  }
 
-  if (isPM && hour !== 12) hour += 12;
-  if (!isPM && hour === 12) hour = 0;
+  // Try 12-hour format with AM/PM (e.g., "09:00 A", "05:00 PM")
+  const match12 = timeStr.match(/(\d{1,2}):(\d{2})\s*(A|P)/i);
+  if (match12) {
+    let hour = parseInt(match12[1]);
+    const isPM = match12[3].toUpperCase() === 'P';
 
-  return hour;
+    if (isPM && hour !== 12) hour += 12;
+    if (!isPM && hour === 12) hour = 0;
+
+    return hour;
+  }
+
+  return 0;
 };
 
 // Helper to format hour number to display string
