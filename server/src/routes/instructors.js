@@ -15,8 +15,8 @@ const { protect, isInstructor } = require('../middleware/auth');
 
 // Public routes
 router.get('/', getAllInstructors);
-router.get('/:id', getInstructorById);
-router.post('/regenerate-availability', regenerateAvailability); // Temporary public route
+router.post('/regenerate-availability', regenerateAvailability); // Temporary public route - must be before /:id
+router.get('/:id', getInstructorById); // This must be LAST among public routes (catches all)
 
 // Protected routes (Instructor only)
 router.post('/profile', protect, isInstructor, createOrUpdateProfile);
