@@ -364,3 +364,30 @@ exports.getStats = async (req, res, next) => {
     next(error);
   }
 };
+// @desc    Regenerate availability for all instructors (Admin/Dev tool)
+// @route   POST /api/instructors/regenerate-availability
+// @access  Public (Temporary for debugging)
+exports.regenerateAvailability = async (req, res, next) => {
+  try {
+    const instructors = await Instructor.find({});
+    console.log(`Found ${instructors.length} instructors for availability regeneration`);
+
+    let totalGenerated = 0;
+
+    for (const instructor of instructors) {
+      if (!instructor.openingHours) continue;
+
+      // Call the helper function directly
+      await generateAvailabilityFromOpeningHours(instructor.user, instructor.openingHours);
+      totalGenerated++;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Regenerated availability for ${totalGenerated} instructors`,
+      count: totalGenerated
+    });
+  } catch (error) {
+    next(error);
+  }
+};

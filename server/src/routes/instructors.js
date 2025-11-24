@@ -8,13 +8,15 @@ const {
   updateAvailability,
   updatePricing,
   toggleVisibility,
-  getStats
+  getStats,
+  regenerateAvailability
 } = require('../controllers/instructorController');
 const { protect, isInstructor } = require('../middleware/auth');
 
 // Public routes
 router.get('/', getAllInstructors);
 router.get('/:id', getInstructorById);
+router.post('/regenerate-availability', regenerateAvailability); // Temporary public route
 
 // Protected routes (Instructor only)
 router.post('/profile', protect, isInstructor, createOrUpdateProfile);
