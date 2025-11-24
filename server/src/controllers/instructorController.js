@@ -396,21 +396,33 @@ exports.regenerateAvailability = async (req, res, next) => {
     console.log(`Found ${instructors.length} instructors for availability regeneration`);
 
     let totalGenerated = 0;
+    const results = [];
 
     for (const instructor of instructors) {
-      if (!instructor.openingHours) continue;
+      console.log(`Processing instructor: ${instructor._id}`);
+      console.log(`  User ID: ${instructor.user}`);
+      console.log(`  Has openingHours: ${!!instructor.openingHours}`);
+      console.log(`  openingHours:`, JSON.stringify(instructor.openingHours));
+
+      if (!instructor.openingHours) {
+        results.push({ id: instructor._id, status: 'skipped - no openingHours' });
+        continue;
+      }
 
       // Call the helper function directly
       await generateAvailabilityFromOpeningHours(instructor.user, instructor.openingHours);
       totalGenerated++;
+      results.push({ id: instructor._id, userId: instructor.user, status: 'generated' });
     }
 
     res.status(200).json({
       success: true,
       message: `Regenerated availability for ${totalGenerated} instructors`,
-      count: totalGenerated
+      count: totalGenerated,
+      details: results
     });
   } catch (error) {
+    console.error('Error in regenerateAvailability:', error);
     next(error);
   }
 };
