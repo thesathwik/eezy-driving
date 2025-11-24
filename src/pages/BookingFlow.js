@@ -139,9 +139,14 @@ const BookingFlowContent = () => {
         const endDateStr = endDate.toISOString().split('T')[0];
 
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
-        const response = await fetch(
-          `${API_URL}/availability/instructor/${instructor.userId || instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`
-        );
+        const targetId = instructor.userId || instructor.id;
+        const fetchUrl = `${API_URL}/availability/instructor/${targetId}?startDate=${startDateStr}&endDate=${endDateStr}`;
+
+        console.log('🔍 Fetching availability from:', fetchUrl);
+        console.log('👤 Instructor object:', instructor);
+        console.log('🆔 Target ID used:', targetId);
+
+        const response = await fetch(fetchUrl);
 
         if (response.ok) {
           const data = await response.json();
