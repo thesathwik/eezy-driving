@@ -854,13 +854,21 @@ const BookingFlowContent = () => {
 
   // Generate available dates based on instructor availability from API
   const getAvailableDates = () => {
-    if (!availabilityData || availabilityData.length === 0) return [];
+    console.log('🔍 getAvailableDates called');
+    console.log('📊 availabilityData:', availabilityData);
+
+    if (!availabilityData || availabilityData.length === 0) {
+      console.log('⚠️ No availability data available');
+      return [];
+    }
 
     // Extract dates from availability data that have at least one available slot
     const dates = availabilityData
       .filter(avail => {
         // Check if there's at least one available time slot
-        return avail.timeSlots && avail.timeSlots.some(slot => slot.available === true);
+        const hasAvailableSlot = avail.timeSlots && avail.timeSlots.some(slot => slot.available === true);
+        console.log(`📅 Date ${avail.date}: hasAvailableSlot=${hasAvailableSlot}, timeSlots:`, avail.timeSlots);
+        return hasAvailableSlot;
       })
       .map(avail => {
         // Convert date to YYYY-MM-DD format
@@ -869,6 +877,7 @@ const BookingFlowContent = () => {
       })
       .sort(); // Sort dates chronologically
 
+    console.log('✅ Generated available dates:', dates);
     return dates;
   };
 
