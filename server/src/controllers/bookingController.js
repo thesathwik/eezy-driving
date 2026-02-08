@@ -69,7 +69,9 @@ exports.getInstructorBookings = async (req, res) => {
 exports.getUpcomingBookings = async (req, res) => {
   try {
     const { instructorId } = req.params;
+    // Use start of today UTC so today's bookings (stored as midnight UTC) still show
     const now = new Date();
+    now.setUTCHours(0, 0, 0, 0);
 
     // Try to find instructor profile by user ID or instructor ID
     let instructor = await Instructor.findOne({ user: instructorId });
@@ -127,7 +129,7 @@ exports.getPendingProposals = async (req, res) => {
     const bookings = await Booking.find({
       instructor: instructorIdToUse,
       status: 'pending',
-      'lesson.date': { $gte: new Date() }
+      'lesson.date': { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) }
     })
       .populate({
         path: 'learner',
@@ -604,7 +606,9 @@ exports.deleteBooking = async (req, res) => {
 exports.getLearnerUpcoming = async (req, res) => {
   try {
     const { learnerId } = req.params;
+    // Use start of today UTC so today's bookings (stored as midnight UTC) still show
     const now = new Date();
+    now.setUTCHours(0, 0, 0, 0);
 
     // Resolve learnerId — could be User._id or Learner._id
     let learner = await Learner.findOne({ user: learnerId });
