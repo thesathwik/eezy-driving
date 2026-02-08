@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { LoadScript } from '@react-google-maps/api';
 import { API, getHeaders } from '../../config/api';
 import LocationAutocomplete from '../LocationAutocomplete';
 import './QuickBookModal.css';
+
+const GOOGLE_LIBRARIES = ['places'];
 
 const parseTimeToMinutes = (timeStr) => {
   const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
@@ -444,22 +447,27 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="qbm-overlay" onClick={onClose}>
-      <div className="qbm-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="qbm-header">
-          <div>
-            <h2>Book a Lesson</h2>
-            {credits > 0 && !success && (
-              <span className="qbm-credits-badge">{credits} credit{credits !== 1 ? 's' : ''} remaining</span>
-            )}
+    <LoadScript
+      googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+      libraries={GOOGLE_LIBRARIES}
+    >
+      <div className="qbm-overlay" onClick={onClose}>
+        <div className="qbm-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="qbm-header">
+            <div>
+              <h2>Book a Lesson</h2>
+              {credits > 0 && !success && (
+                <span className="qbm-credits-badge">{credits} credit{credits !== 1 ? 's' : ''} remaining</span>
+              )}
+            </div>
+            <button className="qbm-close" onClick={onClose}>&times;</button>
           </div>
-          <button className="qbm-close" onClick={onClose}>&times;</button>
-        </div>
-        <div className="qbm-body">
-          {renderContent()}
+          <div className="qbm-body">
+            {renderContent()}
+          </div>
         </div>
       </div>
-    </div>
+    </LoadScript>
   );
 };
 
