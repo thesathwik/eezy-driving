@@ -282,6 +282,44 @@ exports.createBooking = async (req, res) => {
       });
     }
 
+    // Check for time conflicts with existing bookings for this instructor on this date
+    const parseTime = (timeStr) => {
+      const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (!match) return 0;
+      let h = parseInt(match[1]);
+      const m = parseInt(match[2]);
+      const period = match[3].toUpperCase();
+      if (period === 'PM' && h !== 12) h += 12;
+      if (period === 'AM' && h === 12) h = 0;
+      return h * 60 + m;
+    };
+
+    const lessonDate = new Date(lesson.date);
+    lessonDate.setUTCHours(0, 0, 0, 0);
+    const nextDay = new Date(lessonDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    const conflictingBookings = await Booking.find({
+      instructor: bookingData.instructor,
+      status: { $in: ['confirmed', 'pending'] },
+      'lesson.date': { $gte: lessonDate, $lt: nextDay }
+    });
+
+    const newStart = parseTime(lesson.startTime);
+    const newEnd = newStart + (lesson.duration || 1) * 60;
+
+    for (const existing of conflictingBookings) {
+      const existStart = parseTime(existing.lesson.startTime);
+      const existEnd = existStart + (existing.lesson.duration || 1) * 60;
+
+      if (newStart < existEnd && newEnd > existStart) {
+        return res.status(409).json({
+          success: false,
+          message: `Time conflict: this instructor already has a booking from ${existing.lesson.startTime} to ${existing.lesson.endTime} on this date.`
+        });
+      }
+    }
+
     const creditsNeeded = lesson.duration; // 1 or 2 credits
     let availableCredits = learner.progress.lessonCredits || 0;
 
