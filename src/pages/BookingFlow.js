@@ -751,6 +751,28 @@ const BookingFlowContent = () => {
       const createdBookings = [];
 
       for (const booking of validBookings) {
+        // Derive duration from booking type
+        let durationHours = 1;
+        if (booking.bookingType === '2hour') durationHours = 2;
+        if (booking.bookingType === 'test') durationHours = 2.5;
+
+        // Calculate endTime from startTime + duration
+        const calcEndTime = (startTime, hours) => {
+          const match = startTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+          if (!match) return '00:00';
+          let h = parseInt(match[1]);
+          const m = parseInt(match[2]);
+          const period = match[3].toUpperCase();
+          if (period === 'PM' && h !== 12) h += 12;
+          if (period === 'AM' && h === 12) h = 0;
+          const totalMin = h * 60 + m + hours * 60;
+          const endH = Math.floor(totalMin / 60) % 24;
+          const endM = totalMin % 60;
+          const endPeriod = endH >= 12 ? 'PM' : 'AM';
+          const displayH = endH % 12 || 12;
+          return `${displayH}:${String(endM).padStart(2, '0')} ${endPeriod}`;
+        };
+
         const singleBookingData = {
           learner: learnerDetails._id,
           instructor: id,
@@ -759,8 +781,8 @@ const BookingFlowContent = () => {
           lesson: {
             date: booking.selectedDate,
             startTime: booking.selectedTime,
-            endTime: booking.endTime || '00:00', // Provide default if missing
-            duration: 1, // Assuming 1 hour per slot
+            endTime: booking.endTime || calcEndTime(booking.selectedTime, durationHours),
+            duration: durationHours,
             pickupLocation: {
               address: booking.pickupAddress || learnerDetails.pickupAddress || '',
               suburb: learnerDetails.suburb || '',
