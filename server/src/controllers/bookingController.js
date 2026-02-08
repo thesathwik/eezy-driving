@@ -380,6 +380,12 @@ exports.createBooking = async (req, res) => {
         transactionId: bookingData.payment?.transactionId // Keep the transaction ID reference
       };
 
+      // Set currentInstructor if not already set
+      if (!learner.progress.currentInstructor) {
+        learner.progress.currentInstructor = bookingData.instructor;
+        await learner.save();
+      }
+
       console.log(`✅ Deducted ${creditsNeeded} credits from learner ${learnerId}. Remaining: ${learner.progress.lessonCredits}`);
     } else {
       // If not enough credits, we expect a payment intent or return error

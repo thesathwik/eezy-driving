@@ -48,18 +48,47 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
 
   const credits = profile?.lessonCredits || 0;
   const currentInstructor = profile?.currentInstructor;
+  const [resolvedInstructorId, setResolvedInstructorId] = useState(null);
+
+  // Resolve instructor: use currentInstructor, or fall back to instructor from upcoming bookings
+  useEffect(() => {
+    if (currentInstructor) {
+      setResolvedInstructorId(currentInstructor._id || currentInstructor);
+      return;
+    }
+
+    // Fallback: look up instructor from learner's upcoming bookings
+    const resolveFromBookings = async () => {
+      try {
+        const res = await fetch(`${API.bookings}/learner/${userId}/upcoming`, {
+          headers: getHeaders(true)
+        });
+        const data = await res.json();
+        if (data.success && data.data?.length > 0) {
+          const booking = data.data[0];
+          const instrId = booking.instructor?._id || booking.instructor;
+          if (instrId) {
+            setResolvedInstructorId(instrId);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Error resolving instructor from bookings:', err);
+      }
+      setLoadingData(false); // No instructor found anywhere
+    };
+
+    resolveFromBookings();
+  }, [currentInstructor, userId]);
 
   // Fetch instructor details + availability + existing bookings
   useEffect(() => {
-    if (!currentInstructor) {
-      setLoadingData(false);
-      return;
-    }
+    if (!resolvedInstructorId) return;
 
     const fetchData = async () => {
       try {
         setLoadingData(true);
-        const instructorId = currentInstructor._id || currentInstructor;
+        const instructorId = resolvedInstructorId;
 
         // Fetch instructor details
         const instrRes = await fetch(API.instructors.byId(instructorId), {
@@ -115,7 +144,7 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
     };
 
     fetchData();
-  }, [currentInstructor]);
+  }, [resolvedInstructorId]);
 
   // Reset time when date or duration changes
   useEffect(() => {
@@ -290,7 +319,7 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
     }
 
     // Guard: no instructor
-    if (!currentInstructor) {
+    if (!resolvedInstructorId && !loadingData) {
       return (
         <div className="qbm-guard">
           <p>You don't have an assigned instructor yet.</p>
