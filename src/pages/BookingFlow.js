@@ -21,6 +21,7 @@ const BookingFlowContent = () => {
   const [instructor, setInstructor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [availabilityData, setAvailabilityData] = useState([]);
+  const [existingBookings, setExistingBookings] = useState([]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState('10hours');
@@ -153,6 +154,17 @@ const BookingFlowContent = () => {
           const data = await response.json();
           console.log('Availability data for booking:', data);
           setAvailabilityData(data.data || []);
+        }
+
+        // Also fetch existing bookings for this instructor to check for conflicts
+        const bookingsUrl = `${API_URL}/bookings/instructor/${instructor.id}`;
+        const bookingsResponse = await fetch(bookingsUrl, {
+          headers: getHeaders(true)
+        });
+        if (bookingsResponse.ok) {
+          const bookingsData = await bookingsResponse.json();
+          console.log('Existing bookings for conflict check:', bookingsData);
+          setExistingBookings(bookingsData.data || []);
         }
       } catch (err) {
         console.error('Error fetching availability for booking:', err);
@@ -977,7 +989,31 @@ const BookingFlowContent = () => {
       }
     }
 
-    return validSlots;
+    // Filter out slots that conflict with existing bookings on this date
+    const bookedOnDate = existingBookings.filter(b => {
+      if (!b.lesson?.date) return false;
+      const bookingDate = new Date(b.lesson.date).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+      return bookingDate === dateString && (b.status === 'confirmed' || b.status === 'pending');
+    });
+
+    if (bookedOnDate.length === 0) return validSlots;
+
+    return validSlots.filter(slotTime => {
+      const slotStart = parseTimeToMinutes(slotTime);
+      const slotEnd = slotStart + durationMinutes;
+
+      // Check if this slot overlaps with any existing booking
+      for (const booked of bookedOnDate) {
+        const bookedStart = parseTimeToMinutes(booked.lesson.startTime);
+        const bookedEnd = bookedStart + (booked.lesson.duration || 1) * 60;
+
+        // Overlap: slotStart < bookedEnd AND slotEnd > bookedStart
+        if (slotStart < bookedEnd && slotEnd > bookedStart) {
+          return false;
+        }
+      }
+      return true;
+    });
   };
 
   if (loading) {
