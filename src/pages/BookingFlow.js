@@ -37,6 +37,8 @@ const BookingFlowContent = () => {
   const [resendError, setResendError] = useState('');
   const verificationCheckInterval = useRef(null);
 
+  const [userHadPhone, setUserHadPhone] = useState(false);
+
   // Step 3: Book your lessons state
   const [bookings, setBookings] = useState([{
     id: 1,
@@ -243,6 +245,7 @@ const BookingFlowContent = () => {
               email: user.email,
               phone: user.phone || ''
             }));
+            if (user.phone) setUserHadPhone(true);
             console.log('✅ User already logged in:', user.email);
           } else {
             console.warn('⚠️ getCurrentUser failed:', response);
@@ -488,6 +491,26 @@ const BookingFlowContent = () => {
   const handleContinue = async () => {
     // Check if user is already logged in - skip step 4 (registration)
     if (currentStep === 3 && learnerDetails._id) {
+      // If user didn't have a phone on file, validate and save it
+      if (!userHadPhone) {
+        if (!learnerDetails.phone?.trim()) {
+          setValidationErrors({ phone: 'Phone number is required for booking confirmations' });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        try {
+          const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+          await fetch(`${API_URL}/auth/update-phone`, {
+            method: 'PUT',
+            headers: getHeaders(true),
+            body: JSON.stringify({ phone: learnerDetails.phone.trim() })
+          });
+        } catch (err) {
+          console.error('Failed to save phone number:', err);
+        }
+      }
+
       // User is already logged in, skip to payment
       setCurrentStep(5);
       return;
@@ -1446,6 +1469,26 @@ const BookingFlowContent = () => {
                 <button className="btn-add-booking" onClick={handleAddBooking}>
                   <FaInfoCircle /> Add Another Booking
                 </button>
+
+                {/* Phone number - only for logged-in users who didn't have a phone on file */}
+                {learnerDetails._id && !userHadPhone && (
+                  <div className="new-booking-section">
+                    <div className="form-group">
+                      <label className="form-label-required">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={learnerDetails.phone || ''}
+                        onChange={(e) => setLearnerDetails(prev => ({ ...prev, phone: e.target.value }))}
+                        placeholder="e.g. +61412345678"
+                        className="form-input"
+                      />
+                      <p className="field-hint">Required for booking confirmations via SMS and WhatsApp.</p>
+                      {validationErrors.phone && (
+                        <p className="field-error" style={{ color: '#f44336', fontSize: '0.85rem', marginTop: '4px' }}>{validationErrors.phone}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="booking-actions">
