@@ -412,9 +412,9 @@ exports.createBooking = async (req, res) => {
 
     // Send confirmation emails immediately since it's confirmed
     if (booking.status === 'confirmed') {
-      const { sendBookingConfirmation } = require('../services/emailService');
+      const { sendBookingNotifications } = require('../services/notificationService');
 
-      const emailData = {
+      const notificationData = {
         learner: {
           firstName: booking.learner?.user?.firstName || 'Learner',
           lastName: booking.learner?.user?.lastName || '',
@@ -424,7 +424,8 @@ exports.createBooking = async (req, res) => {
         instructor: {
           firstName: booking.instructor?.user?.firstName || 'Instructor',
           lastName: booking.instructor?.user?.lastName || '',
-          email: booking.instructor?.user?.email || ''
+          email: booking.instructor?.user?.email || '',
+          phone: booking.instructor?.user?.phone || ''
         },
         lesson: {
           date: booking.lesson.date,
@@ -442,13 +443,13 @@ exports.createBooking = async (req, res) => {
       };
 
       try {
-        console.log('📧 Sending booking confirmation emails...');
-        console.log('📧 Learner email:', emailData.learner.email);
-        console.log('📧 Instructor email:', emailData.instructor.email);
-        const emailResult = await sendBookingConfirmation(emailData);
-        console.log('✅ Booking confirmation emails sent successfully:', emailResult);
-      } catch (emailError) {
-        console.error('❌ Failed to send confirmation email:', emailError);
+        console.log('📧 Sending booking notifications (email, SMS, WhatsApp)...');
+        console.log('📧 Learner:', notificationData.learner.email, notificationData.learner.phone);
+        console.log('📧 Instructor:', notificationData.instructor.email, notificationData.instructor.phone);
+        const notificationResult = await sendBookingNotifications(notificationData);
+        console.log('✅ Booking notifications sent:', notificationResult);
+      } catch (notificationError) {
+        console.error('❌ Failed to send booking notifications:', notificationError);
       }
     }
 
