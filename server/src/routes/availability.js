@@ -138,8 +138,9 @@ router.post('/bulk', protect, restrictTo('instructor'), async (req, res) => {
     const availabilityDocs = [];
 
     // Generate availability for each day in the range
-    for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    // Use UTC to avoid timezone issues
+    for (let date = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate(), 12, 0, 0)); date <= end; date.setUTCDate(date.getUTCDate() + 1)) {
+      const dayOfWeek = date.getUTCDay(); // 0 = Sunday, 1 = Monday, etc.
 
       // If daysOfWeek is specified, only create for those days
       if (!daysOfWeek || daysOfWeek.includes(dayOfWeek)) {

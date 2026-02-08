@@ -74,8 +74,8 @@ const InstructorAvailability = () => {
         const weekEnd = new Date(currentWeekStart);
         weekEnd.setDate(weekEnd.getDate() + 7);
 
-        const startDateStr = currentWeekStart.toISOString().split('T')[0];
-        const endDateStr = weekEnd.toISOString().split('T')[0];
+        const startDateStr = currentWeekStart.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+        const endDateStr = weekEnd.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
 
         const apiUrl = `${process.env.REACT_APP_API_URL}/availability/instructor/${instructor.id}?startDate=${startDateStr}&endDate=${endDateStr}`;
         console.log('Fetching availability from:', apiUrl);
@@ -134,9 +134,9 @@ const InstructorAvailability = () => {
 
   // Check if a time slot is available for a specific date
   const isSlotAvailable = (date, time) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = date.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
     const availability = availabilityData.find(
-      (avail) => new Date(avail.date).toISOString().split('T')[0] === dateStr
+      (avail) => new Date(avail.date).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' }) === dateStr
     );
 
     if (!availability) return false;

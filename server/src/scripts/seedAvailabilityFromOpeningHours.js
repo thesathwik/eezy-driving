@@ -22,16 +22,16 @@ const seedAvailabilityFromOpeningHours = async () => {
       console.log(`Processing instructor: ${instructor._id}`);
 
       // Generate availability for next 60 days
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      // Use UTC consistently to avoid timezone mismatches between server and client
+      const now = new Date();
+      const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0, 0));
 
       for (let i = 0; i < 60; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
+        const date = new Date(todayUTC.getTime() + i * 24 * 60 * 60 * 1000);
 
         // Get day name (monday, tuesday, etc.)
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        const dayName = dayNames[date.getDay()];
+        const dayName = dayNames[date.getUTCDay()];
 
         // Get opening hours for this day
         const dayHours = instructor.openingHours[dayName] || [];

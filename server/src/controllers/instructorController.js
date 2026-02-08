@@ -19,16 +19,23 @@ const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) 
     console.log('📅 Generating availability for instructor:', instructorId);
     console.log('📅 Opening hours:', JSON.stringify(openingHours));
 
+    // Delete existing future availability to clear any incorrectly-dated records
+    const now = new Date();
+    await Availability.deleteMany({
+      instructorId,
+      date: { $gte: now }
+    });
+    console.log('🗑️ Cleared existing future availability for instructor:', instructorId);
+
     // Generate availability for next 60 days
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Use UTC consistently to avoid timezone mismatches between server and client
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0, 0));
 
     let daysGenerated = 0;
 
     for (let i = 0; i < 60; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      const dayOfWeek = date.getDay();
+      const date = new Date(todayUTC.getTime() + i * 24 * 60 * 60 * 1000);
+      const dayOfWeek = date.getUTCDay();
 
       // Get the lowercase day name
       const dayName = dayMap[dayOfWeek];

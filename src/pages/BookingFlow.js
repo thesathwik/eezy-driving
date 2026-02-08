@@ -135,8 +135,9 @@ const BookingFlowContent = () => {
         const endDate = new Date(today);
         endDate.setDate(today.getDate() + 60); // Fetch 60 days of availability
 
-        const startDateStr = today.toISOString().split('T')[0];
-        const endDateStr = endDate.toISOString().split('T')[0];
+        // Use Brisbane timezone for date strings to ensure consistency
+        const startDateStr = today.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+        const endDateStr = endDate.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
 
         const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
         const targetId = instructor.userId || instructor.id;
@@ -854,7 +855,7 @@ const BookingFlowContent = () => {
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Tomorrow';
     if (diffDays <= 7) return `In ${diffDays} days`;
-    return availDate.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' });
+    return availDate.toLocaleDateString('en-AU', { timeZone: 'Australia/Brisbane', month: 'short', day: 'numeric' });
   };
 
   // Generate available dates based on instructor availability from API
@@ -876,9 +877,10 @@ const BookingFlowContent = () => {
         return hasAvailableSlot;
       })
       .map(avail => {
-        // Convert date to YYYY-MM-DD format
+        // Convert date to YYYY-MM-DD format in Brisbane timezone
         const date = new Date(avail.date);
-        return date.toISOString().split('T')[0];
+        const brisbaneDate = date.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' }); // en-CA gives YYYY-MM-DD format
+        return brisbaneDate;
       })
       .sort(); // Sort dates chronologically
 
@@ -912,7 +914,7 @@ const BookingFlowContent = () => {
 
     // Find the availability record for the selected date
     const dateAvailability = availabilityData.find(avail => {
-      const availDate = new Date(avail.date).toISOString().split('T')[0];
+      const availDate = new Date(avail.date).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
       return availDate === dateString;
     });
 
@@ -1303,8 +1305,11 @@ const BookingFlowContent = () => {
                           >
                             <option value="">Select a date</option>
                             {availableDates.map((date) => {
-                              const dateObj = new Date(date);
+                              // Parse YYYY-MM-DD to noon UTC to ensure correct Brisbane date display
+                              const [y, m, d] = date.split('-').map(Number);
+                              const dateObj = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
                               const formattedDate = dateObj.toLocaleDateString('en-AU', {
+                                timeZone: 'Australia/Brisbane',
                                 weekday: 'short',
                                 day: 'numeric',
                                 month: 'short',
