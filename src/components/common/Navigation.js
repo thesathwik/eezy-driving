@@ -39,6 +39,12 @@ const Navigation = () => {
             <Link to="/pricing" className="nav-link">Pricing</Link>
             <Link to="/resources" className="nav-link">Resources</Link>
             <Link to="/about" className="nav-link">About</Link>
+            {isAuthenticated && isLearner && (
+              <Link to="/learner/dashboard" className="nav-link">Dashboard</Link>
+            )}
+            {isAuthenticated && isInstructor && (
+              <Link to="/instructor/dashboard" className="nav-link">Dashboard</Link>
+            )}
           </div>
 
           <div className="nav-actions">

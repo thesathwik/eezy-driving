@@ -16,6 +16,7 @@ import CompleteInstructorProfile from './pages/auth/CompleteInstructorProfile';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import VerificationSent from './pages/auth/VerificationSent';
 import InstructorDashboard from './pages/instructor/InstructorDashboard';
+import LearnerDashboard from './pages/learner/LearnerDashboard';
 import InstructorCalendar from './pages/instructor/InstructorCalendar';
 import InstructorLearners from './pages/instructor/InstructorLearners';
 import InstructorReports from './pages/instructor/InstructorReports';
@@ -50,6 +51,7 @@ function AppContent() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/verification-sent" element={<VerificationSent />} />
           <Route path="/instructor/complete-profile" element={<CompleteInstructorProfile />} />
+          <Route path="/learner/dashboard" element={<LearnerDashboard />} />
           <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
           <Route path="/instructor/calendar" element={<InstructorCalendar />} />
           <Route path="/instructor/learners" element={<InstructorLearners />} />

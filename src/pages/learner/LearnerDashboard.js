@@ -1,31 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import DashboardSidebar from '../../components/dashboard/DashboardSidebar';
+import LearnerSidebar from '../../components/dashboard/LearnerSidebar';
 import { API, getHeaders } from '../../config/api';
-import './Dashboard.css';
+import '../instructor/Dashboard.css';
 
-const InstructorDashboard = () => {
+const LearnerDashboard = () => {
   const navigate = useNavigate();
   const { user, logout, loading: authLoading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [activeTab, setActiveTab] = useState('upcoming');
-  const [bookings, setBookings] = useState([]);
-  const [pendingProposals, setPendingProposals] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
   const [history, setHistory] = useState([]);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
 
-  // Get instructor ID from user
-  // Try both _id and id properties for compatibility
-  const instructorId = user?._id || user?.id;
+  const userId = user?._id || user?.id;
 
-  // Wait for auth to load before doing anything
   if (authLoading) {
     return (
       <div className="dashboard-page">
-        <DashboardSidebar />
+        <LearnerSidebar />
         <div className="dashboard-main">
           <div className="loading-state">
             <div className="loading-spinner"></div>
@@ -48,113 +45,69 @@ const InstructorDashboard = () => {
   }, []);
 
   useEffect(() => {
-    console.log('User:', user);
-    console.log('Instructor ID:', instructorId);
-
-    if (instructorId) {
-      fetchBookings();
+    if (userId) {
+      fetchData();
     } else {
-      console.error('No instructor ID found');
       setError('Unable to load dashboard. Please try logging in again.');
       setLoading(false);
     }
-  }, [instructorId]);
+  }, [userId]);
 
-  const fetchBookings = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // First check if instructor profile exists
-      const profileCheck = await fetch(`${API.instructors.list}/profile/me`, {
-        headers: getHeaders(true)
-      });
-      const profileData = await profileCheck.json();
-
-      console.log('Profile check response:', profileData);
-
-      // If no instructor profile, redirect to complete profile
-      if (!profileData.success || !profileData.data) {
-        console.log('No instructor profile found, redirecting to complete profile');
-        setLoading(false);
-        navigate('/instructor/complete-profile', { replace: true });
-        return;
-      }
-
-      // Fetch all three types of bookings in parallel
-      const [upcomingRes, pendingRes, historyRes] = await Promise.all([
-        fetch(`${API.bookings}/instructor/${instructorId}/upcoming`, {
+      const [profileRes, upcomingRes, historyRes] = await Promise.all([
+        fetch(`${API.learners.list}/profile/me`, {
           headers: getHeaders(true)
         }),
-        fetch(`${API.bookings}/instructor/${instructorId}/pending`, {
+        fetch(`${API.bookings}/learner/${userId}/upcoming`, {
           headers: getHeaders(true)
         }),
-        fetch(`${API.bookings}/instructor/${instructorId}/history?limit=10`, {
+        fetch(`${API.bookings}/learner/${userId}/history?limit=20`, {
           headers: getHeaders(true)
         })
       ]);
 
+      const profileData = await profileRes.json();
       const upcomingData = await upcomingRes.json();
-      const pendingData = await pendingRes.json();
       const historyData = await historyRes.json();
 
-      console.log('Bookings data:', { upcomingData, pendingData, historyData });
-
-      // Set data even if success is false (just empty arrays)
-      setBookings(upcomingData.success ? (upcomingData.data || []) : []);
-      setPendingProposals(pendingData.success ? (pendingData.data || []) : []);
+      if (profileData.success) {
+        setProfile(profileData.data);
+      }
+      setUpcoming(upcomingData.success ? (upcomingData.data || []) : []);
       setHistory(historyData.success ? (historyData.data || []) : []);
 
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching bookings:', err);
-      setError('Failed to load bookings. Please try again.');
+      console.error('Error fetching learner data:', err);
+      setError('Failed to load dashboard. Please try again.');
       setLoading(false);
     }
   };
 
-  const handleConfirmBooking = async (bookingId) => {
-    try {
-      const response = await fetch(`${API.bookings}/${bookingId}/confirm`, {
-        method: 'PUT',
-        headers: getHeaders(true)
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Refresh bookings
-        fetchBookings();
-      } else {
-        alert(data.message || 'Failed to confirm booking');
-      }
-    } catch (err) {
-      console.error('Error confirming booking:', err);
-      alert('Failed to confirm booking. Please try again.');
-    }
-  };
-
-  const handleRejectBooking = async (bookingId) => {
-    const reason = prompt('Please provide a reason for rejection (optional):');
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to cancel this booking?')) return;
 
     try {
-      const response = await fetch(`${API.bookings}/${bookingId}/reject`, {
+      const response = await fetch(`${API.bookings}/${bookingId}/status`, {
         method: 'PUT',
         headers: getHeaders(true),
-        body: JSON.stringify({ reason })
+        body: JSON.stringify({ status: 'cancelled', reason: 'Cancelled by learner' })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        // Refresh bookings
-        fetchBookings();
+        fetchData();
       } else {
-        alert(data.message || 'Failed to reject booking');
+        alert(data.message || 'Failed to cancel booking');
       }
     } catch (err) {
-      console.error('Error rejecting booking:', err);
-      alert('Failed to reject booking. Please try again.');
+      console.error('Error cancelling booking:', err);
+      alert('Failed to cancel booking. Please try again.');
     }
   };
 
@@ -173,10 +126,6 @@ const InstructorDashboard = () => {
     });
   };
 
-  const formatTime = (time) => {
-    return time;
-  };
-
   const getStatusColor = (status) => {
     const colors = {
       confirmed: '#4CAF50',
@@ -188,23 +137,21 @@ const InstructorDashboard = () => {
     return colors[status] || '#666';
   };
 
-  const renderBookingCard = (booking, showActions = false) => {
-    // learner is now a Learner doc with nested user populate
-    const learnerUser = booking.learner?.user || booking.learner || {};
-    const learner = learnerUser;
+  const renderBookingCard = (booking, canCancel = false) => {
+    const instructorUser = booking.instructor?.user || booking.instructor || {};
 
     return (
       <div key={booking._id} className="booking-card">
         <div className="booking-header">
           <div className="booking-learner">
             <div className="learner-avatar">
-              {learner.firstName?.charAt(0)}{learner.lastName?.charAt(0)}
+              {instructorUser.firstName?.charAt(0)}{instructorUser.lastName?.charAt(0)}
             </div>
             <div className="learner-info">
               <div className="learner-name">
-                {learner.firstName} {learner.lastName?.charAt(0)}.
+                {instructorUser.firstName} {instructorUser.lastName}
               </div>
-              <div className="learner-phone">{learner.phone}</div>
+              <div className="learner-phone">{instructorUser.phone}</div>
             </div>
           </div>
           <div
@@ -223,7 +170,7 @@ const InstructorDashboard = () => {
           <div className="booking-time">
             <span className="detail-label">Time:</span>
             <span>
-              {formatTime(booking.lesson.startTime)} - {formatTime(booking.lesson.endTime)}
+              {booking.lesson.startTime} - {booking.lesson.endTime}
             </span>
           </div>
           <div className="booking-duration">
@@ -234,7 +181,7 @@ const InstructorDashboard = () => {
 
         {booking.lesson.pickupLocation && (
           <div className="booking-location">
-            <span className="detail-label">Location:</span>
+            <span className="detail-label">Pickup:</span>
             <span className="location-text">
               {booking.lesson.pickupLocation.address}
             </span>
@@ -248,19 +195,13 @@ const InstructorDashboard = () => {
           </div>
         )}
 
-        {showActions && booking.status === 'pending' && (
+        {canCancel && (booking.status === 'confirmed' || booking.status === 'pending') && (
           <div className="booking-actions">
             <button
-              className="btn-confirm"
-              onClick={() => handleConfirmBooking(booking._id)}
-            >
-              Confirm
-            </button>
-            <button
               className="btn-reject"
-              onClick={() => handleRejectBooking(booking._id)}
+              onClick={() => handleCancelBooking(booking._id)}
             >
-              Decline
+              Cancel Booking
             </button>
           </div>
         )}
@@ -270,11 +211,11 @@ const InstructorDashboard = () => {
 
   return (
     <div className="dashboard-page">
-      <DashboardSidebar />
+      <LearnerSidebar />
 
       <div className="dashboard-main">
         <div className="dashboard-header">
-          <h1>Dashboard</h1>
+          <h1>My Dashboard</h1>
           <div className="dashboard-header-actions">
             <div className="user-profile-dropdown" ref={dropdownRef}>
               <button
@@ -282,35 +223,29 @@ const InstructorDashboard = () => {
                 onClick={() => setShowUserMenu(!showUserMenu)}
               >
                 <div className="user-avatar-circle">
-                  {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                  {user?.firstName?.charAt(0)?.toUpperCase() || user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <div className="user-info">
-                  <span className="user-name">{user?.firstName || 'User'}</span>
-                  <span className="user-role">INSTRUCTOR</span>
+                  <span className="user-name">{user?.firstName || user?.name || 'User'}</span>
+                  <span className="user-role">LEARNER</span>
                 </div>
               </button>
               {showUserMenu && (
                 <div className="user-dropdown-menu">
                   <div className="user-dropdown-header">
                     <div className="user-avatar-large">
-                      {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                      {user?.firstName?.charAt(0)?.toUpperCase() || user?.name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
                     <div className="user-dropdown-info">
-                      <div className="user-dropdown-name">User</div>
-                      <div className="user-dropdown-role">INSTRUCTOR</div>
+                      <div className="user-dropdown-name">{user?.firstName || user?.name || 'User'}</div>
+                      <div className="user-dropdown-role">LEARNER</div>
                     </div>
                   </div>
-                  <div className="user-dropdown-email">{user?.email || 'instructor@gmail.com'}</div>
+                  <div className="user-dropdown-email">{user?.email}</div>
                   <div className="user-dropdown-divider"></div>
                   <div className="user-dropdown-links">
-                    <button onClick={() => { navigate('/instructor/dashboard'); setShowUserMenu(false); }}>
+                    <button onClick={() => { navigate('/learner/dashboard'); setShowUserMenu(false); }}>
                       Dashboard
-                    </button>
-                    <button onClick={() => { navigate('/instructor/profile'); setShowUserMenu(false); }}>
-                      Profile
-                    </button>
-                    <button onClick={() => { navigate('/instructor/settings'); setShowUserMenu(false); }}>
-                      Settings
                     </button>
                   </div>
                   <div className="user-dropdown-divider"></div>
@@ -323,24 +258,54 @@ const InstructorDashboard = () => {
           </div>
         </div>
 
+        {/* Credit Balance Card */}
+        {profile && (
+          <div className="booking-card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #FFC107' }}>
+            <div className="booking-details" style={{ margin: 0 }}>
+              <div className="booking-time">
+                <span className="detail-label">Lesson Credits:</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700 }}>{profile.lessonCredits}</span>
+              </div>
+              <div className="booking-time">
+                <span className="detail-label">Lessons Completed:</span>
+                <span>{profile.totalLessonsCompleted}</span>
+              </div>
+              <div className="booking-time">
+                <span className="detail-label">Hours Completed:</span>
+                <span>{profile.totalHoursCompleted}h</span>
+              </div>
+            </div>
+            {profile.currentInstructor && (
+              <div className="booking-location" style={{ marginTop: '1rem', marginBottom: 0 }}>
+                <span className="detail-label">Instructor:</span>
+                <span className="location-text">
+                  {profile.currentInstructor.user?.firstName} {profile.currentInstructor.user?.lastName}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Book New Lesson Button */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <button
+            className="btn-confirm"
+            style={{ padding: '0.75rem 2rem' }}
+            onClick={() => navigate('/instructors')}
+          >
+            Book a New Lesson
+          </button>
+        </div>
+
         {/* Tab Navigation */}
         <div className="dashboard-tabs">
           <button
             className={`dashboard-tab ${activeTab === 'upcoming' ? 'active' : ''}`}
             onClick={() => setActiveTab('upcoming')}
           >
-            Upcoming Bookings
-            {bookings.length > 0 && (
-              <span className="tab-count">{bookings.length}</span>
-            )}
-          </button>
-          <button
-            className={`dashboard-tab ${activeTab === 'pending' ? 'active' : ''}`}
-            onClick={() => setActiveTab('pending')}
-          >
-            Pending Proposals
-            {pendingProposals.length > 0 && (
-              <span className="tab-count">{pendingProposals.length}</span>
+            Upcoming Classes
+            {upcoming.length > 0 && (
+              <span className="tab-count">{upcoming.length}</span>
             )}
           </button>
           <button
@@ -356,12 +321,12 @@ const InstructorDashboard = () => {
           {loading ? (
             <div className="loading-state">
               <div className="loading-spinner"></div>
-              <p>Loading bookings...</p>
+              <p>Loading your classes...</p>
             </div>
           ) : error ? (
             <div className="error-state">
               <p>{error}</p>
-              <button className="btn-retry" onClick={fetchBookings}>
+              <button className="btn-retry" onClick={fetchData}>
                 Try Again
               </button>
             </div>
@@ -369,26 +334,13 @@ const InstructorDashboard = () => {
             <>
               {activeTab === 'upcoming' && (
                 <div className="bookings-grid">
-                  {bookings.length === 0 ? (
+                  {upcoming.length === 0 ? (
                     <div className="empty-state">
-                      <h3>No upcoming bookings</h3>
-                      <p>Your confirmed bookings will appear here</p>
+                      <h3>No upcoming classes</h3>
+                      <p>Book a lesson to get started!</p>
                     </div>
                   ) : (
-                    bookings.map(booking => renderBookingCard(booking))
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'pending' && (
-                <div className="bookings-grid">
-                  {pendingProposals.length === 0 ? (
-                    <div className="empty-state">
-                      <h3>No pending proposals</h3>
-                      <p>New booking requests will appear here</p>
-                    </div>
-                  ) : (
-                    pendingProposals.map(booking => renderBookingCard(booking, true))
+                    upcoming.map(booking => renderBookingCard(booking, true))
                   )}
                 </div>
               )}
@@ -397,8 +349,8 @@ const InstructorDashboard = () => {
                 <div className="bookings-grid">
                   {history.length === 0 ? (
                     <div className="empty-state">
-                      <h3>No booking history</h3>
-                      <p>Completed and cancelled bookings will appear here</p>
+                      <h3>No lesson history</h3>
+                      <p>Your completed and cancelled lessons will appear here</p>
                     </div>
                   ) : (
                     history.map(booking => renderBookingCard(booking))
@@ -413,4 +365,4 @@ const InstructorDashboard = () => {
   );
 };
 
-export default InstructorDashboard;
+export default LearnerDashboard;

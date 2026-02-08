@@ -39,7 +39,13 @@ exports.getInstructorBookings = async (req, res) => {
     }
 
     const bookings = await Booking.find(query)
-      .populate('learner', 'firstName lastName phone email')
+      .populate({
+        path: 'learner',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
       .sort({ 'lesson.date': 1, 'lesson.startTime': 1 });
 
     res.status(200).json({
@@ -78,7 +84,13 @@ exports.getUpcomingBookings = async (req, res) => {
       status: { $in: ['confirmed', 'pending'] },
       'lesson.date': { $gte: now }
     })
-      .populate('learner', 'firstName lastName phone email')
+      .populate({
+        path: 'learner',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
       .sort({ 'lesson.date': 1, 'lesson.startTime': 1 })
       .limit(20);
 
@@ -117,7 +129,13 @@ exports.getPendingProposals = async (req, res) => {
       status: 'pending',
       'lesson.date': { $gte: new Date() }
     })
-      .populate('learner', 'firstName lastName phone email')
+      .populate({
+        path: 'learner',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -155,7 +173,13 @@ exports.getBookingHistory = async (req, res) => {
       instructor: instructorIdToUse,
       status: { $in: ['completed', 'cancelled', 'no-show'] }
     })
-      .populate('learner', 'firstName lastName phone email')
+      .populate({
+        path: 'learner',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
       .sort({ 'lesson.date': -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -475,7 +499,13 @@ exports.confirmBooking = async (req, res) => {
     booking.status = 'confirmed';
     await booking.save();
 
-    await booking.populate('learner', 'firstName lastName phone email');
+    await booking.populate({
+      path: 'learner',
+      populate: {
+        path: 'user',
+        select: 'firstName lastName phone email'
+      }
+    });
 
     res.status(200).json({
       success: true,
@@ -568,6 +598,105 @@ exports.deleteBooking = async (req, res) => {
   }
 };
 
+// @desc    Get upcoming bookings for learner
+// @route   GET /api/bookings/learner/:learnerId/upcoming
+// @access  Private (Learner)
+exports.getLearnerUpcoming = async (req, res) => {
+  try {
+    const { learnerId } = req.params;
+    const now = new Date();
+
+    // Resolve learnerId — could be User._id or Learner._id
+    let learner = await Learner.findOne({ user: learnerId });
+    if (!learner) {
+      learner = await Learner.findById(learnerId);
+    }
+
+    const learnerIdToUse = learner ? learner._id : learnerId;
+
+    const bookings = await Booking.find({
+      learner: learnerIdToUse,
+      status: { $in: ['confirmed', 'pending'] },
+      'lesson.date': { $gte: now }
+    })
+      .populate({
+        path: 'instructor',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
+      .sort({ 'lesson.date': 1, 'lesson.startTime': 1 })
+      .limit(20);
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      data: bookings
+    });
+  } catch (error) {
+    console.error('Error fetching learner upcoming bookings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching upcoming bookings',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get booking history for learner
+// @route   GET /api/bookings/learner/:learnerId/history
+// @access  Private (Learner)
+exports.getLearnerHistory = async (req, res) => {
+  try {
+    const { learnerId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    // Resolve learnerId — could be User._id or Learner._id
+    let learner = await Learner.findOne({ user: learnerId });
+    if (!learner) {
+      learner = await Learner.findById(learnerId);
+    }
+
+    const learnerIdToUse = learner ? learner._id : learnerId;
+
+    const bookings = await Booking.find({
+      learner: learnerIdToUse,
+      status: { $in: ['completed', 'cancelled', 'no-show'] }
+    })
+      .populate({
+        path: 'instructor',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
+      .sort({ 'lesson.date': -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const count = await Booking.countDocuments({
+      learner: learnerIdToUse,
+      status: { $in: ['completed', 'cancelled', 'no-show'] }
+    });
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+      data: bookings
+    });
+  } catch (error) {
+    console.error('Error fetching learner booking history:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching booking history',
+      error: error.message
+    });
+  }
+};
+
 // @desc    Get all learners for instructor
 // @route   GET /api/bookings/instructor/:instructorId/learners
 // @access  Private (Instructor)
@@ -587,7 +716,13 @@ exports.getInstructorLearners = async (req, res) => {
     const bookings = await Booking.find({
       instructor: instructorIdToUse
     })
-      .populate('learner', 'firstName lastName phone email')
+      .populate({
+        path: 'learner',
+        populate: {
+          path: 'user',
+          select: 'firstName lastName phone email'
+        }
+      })
       .sort({ createdAt: -1 });
 
     // Create a map of learners with their stats
@@ -597,14 +732,15 @@ exports.getInstructorLearners = async (req, res) => {
       if (!booking.learner) return;
 
       const learnerId = booking.learner._id.toString();
+      const learnerUser = booking.learner.user || {};
 
       if (!learnersMap.has(learnerId)) {
         learnersMap.set(learnerId, {
           _id: booking.learner._id,
-          firstName: booking.learner.firstName,
-          lastName: booking.learner.lastName,
-          phone: booking.learner.phone,
-          email: booking.learner.email,
+          firstName: learnerUser.firstName,
+          lastName: learnerUser.lastName,
+          phone: learnerUser.phone,
+          email: learnerUser.email,
           completedHours: 0,
           upcomingBookings: 0,
           totalBookings: 0
