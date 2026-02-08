@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LearnerSidebar from '../../components/dashboard/LearnerSidebar';
+import QuickBookModal from '../../components/dashboard/QuickBookModal';
 import { API, getHeaders } from '../../config/api';
 import '../instructor/Dashboard.css';
 
@@ -15,6 +16,7 @@ const LearnerDashboard = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showBookModal, setShowBookModal] = useState(false);
   const dropdownRef = useRef(null);
 
   const userId = user?._id || user?.id;
@@ -291,7 +293,7 @@ const LearnerDashboard = () => {
           <button
             className="btn-confirm"
             style={{ padding: '0.75rem 2rem' }}
-            onClick={() => navigate('/instructors')}
+            onClick={() => setShowBookModal(true)}
           >
             Book a New Lesson
           </button>
@@ -361,6 +363,18 @@ const LearnerDashboard = () => {
           )}
         </div>
       </div>
+
+      {showBookModal && (
+        <QuickBookModal
+          profile={profile}
+          userId={userId}
+          onClose={() => setShowBookModal(false)}
+          onSuccess={() => {
+            setShowBookModal(false);
+            fetchData();
+          }}
+        />
+      )}
     </div>
   );
 };
