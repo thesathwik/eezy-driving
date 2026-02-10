@@ -142,9 +142,10 @@ exports.createOrUpdateProfile = async (req, res, next) => {
       // Create new profile
       instructor = await Instructor.create(profileData);
 
-      // Update user's profile completion status
+      // Update user's profile completion status and ensure role is 'instructor'
       await User.findByIdAndUpdate(userId, {
-        isProfileComplete: true
+        isProfileComplete: true,
+        role: 'instructor'
       });
     }
 
