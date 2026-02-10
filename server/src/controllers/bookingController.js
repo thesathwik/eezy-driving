@@ -282,6 +282,10 @@ exports.createBooking = async (req, res) => {
       });
     }
 
+    // Look up instructor's travel buffer settings
+    const instructorDoc = await Instructor.findById(bookingData.instructor) || await Instructor.findOne({ user: bookingData.instructor });
+    const travelBufferMinutes = instructorDoc?.calendarSettings?.travelBuffer?.sameTransmission || 0;
+
     // Check for time conflicts with existing bookings for this instructor on this date
     const parseTime = (timeStr) => {
       const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
@@ -312,7 +316,7 @@ exports.createBooking = async (req, res) => {
       const existStart = parseTime(existing.lesson.startTime);
       const existEnd = existStart + (existing.lesson.duration || 1) * 60;
 
-      if (newStart < existEnd && newEnd > existStart) {
+      if (newStart < (existEnd + travelBufferMinutes) && newEnd > (existStart - travelBufferMinutes)) {
         return res.status(409).json({
           success: false,
           message: `Time conflict: this instructor already has a booking from ${existing.lesson.startTime} to ${existing.lesson.endTime} on this date.`

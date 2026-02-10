@@ -166,7 +166,27 @@ const instructorSchema = new mongoose.Schema({
     }]
   },
 
-  // Step 6: Pricing
+  // Step 6: Calendar Settings
+  calendarSettings: {
+    travelBuffer: {
+      sameTransmission: { type: Number, default: 15, enum: [15, 30, 45, 60, 75, 90, 105, 120] },
+      differentTransmission: { type: Number, default: 30, enum: [15, 30, 45, 60, 75, 90, 105, 120] }
+    },
+    syncedCalendarBuffer: { type: Number, default: 0, enum: [0, 15, 30, 45, 60] },
+    schedulingWindow: {
+      minNotice: { type: Number, default: 3, enum: [3, 5, 12, 24, 48] },
+      maxAdvance: { type: Number, default: 90, enum: [75, 90] }
+    },
+    smartScheduling: {
+      enabled: { type: Boolean, default: true },
+      slotDuration: { type: Number, default: 1, enum: [1, 2] }
+    },
+    syncedCalendarVisibility: { type: String, default: 'hide', enum: ['show', 'hide'] },
+    attachCalendarEvent: { type: Boolean, default: false },
+    defaultCalendarView: { type: String, default: 'day', enum: ['day', 'week', 'month'] }
+  },
+
+  // Step 7: Pricing
   pricing: {
     marketplaceLessonRate: {
       type: Number,
@@ -190,7 +210,7 @@ const instructorSchema = new mongoose.Schema({
     }
   },
 
-  // Step 7: Banking
+  // Step 8: Banking
   banking: {
     businessName: {
       type: String,

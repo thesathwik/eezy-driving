@@ -1,7 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Availability = require('../models/Availability');
+const Instructor = require('../models/Instructor');
 const { protect, restrictTo } = require('../middleware/auth');
+
+// Helper: combine a date and a time string like "9:00 AM" into a full Date object
+const combineDateAndTime = (date, timeStr) => {
+  const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!match) return null;
+  let h = parseInt(match[1]);
+  const m = parseInt(match[2]);
+  const period = match[3].toUpperCase();
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  const result = new Date(date);
+  result.setUTCHours(h, m, 0, 0);
+  return result;
+};
 
 // @route   GET /api/availability/instructor/:instructorId
 // @desc    Get instructor availability for a date range
@@ -9,7 +24,26 @@ const { protect, restrictTo } = require('../middleware/auth');
 router.get('/instructor/:instructorId', async (req, res) => {
   try {
     const { instructorId } = req.params;
-    const { startDate, endDate } = req.query;
+    let { startDate, endDate } = req.query;
+
+    // Look up instructor to get calendarSettings
+    const instructor = await Instructor.findOne({ user: instructorId }) || await Instructor.findById(instructorId);
+    const calendarSettings = instructor?.calendarSettings;
+    const minNoticeHours = calendarSettings?.schedulingWindow?.minNotice || 3;
+    const maxAdvanceDays = calendarSettings?.schedulingWindow?.maxAdvance || 90;
+
+    const now = new Date();
+
+    // Clamp endDate to not exceed maxAdvance days from now
+    const maxDate = new Date(now.getTime() + maxAdvanceDays * 24 * 60 * 60 * 1000);
+    if (endDate) {
+      const requestedEnd = new Date(endDate);
+      if (requestedEnd > maxDate) {
+        endDate = maxDate.toISOString();
+      }
+    } else {
+      endDate = maxDate.toISOString();
+    }
 
     const query = { instructorId, enabled: true };
 
@@ -22,10 +56,23 @@ router.get('/instructor/:instructorId', async (req, res) => {
 
     const availability = await Availability.find(query).sort({ date: 1 });
 
+    // Filter out slots that are within minNotice hours of now
+    const minNoticeThreshold = new Date(now.getTime() + minNoticeHours * 60 * 60 * 1000);
+    const filteredAvailability = availability.map(avail => {
+      const doc = avail.toObject();
+      doc.timeSlots = doc.timeSlots.filter(slot => {
+        if (!slot.time) return true;
+        const slotDateTime = combineDateAndTime(doc.date, slot.time);
+        if (!slotDateTime) return true;
+        return slotDateTime >= minNoticeThreshold;
+      });
+      return doc;
+    }).filter(doc => doc.timeSlots.length > 0);
+
     res.json({
       success: true,
-      count: availability.length,
-      data: availability
+      count: filteredAvailability.length,
+      data: filteredAvailability
     });
   } catch (error) {
     console.error('Error fetching availability:', error);

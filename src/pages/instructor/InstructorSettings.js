@@ -42,6 +42,25 @@ const InstructorSettings = () => {
       suburbs: [],
       testLocations: []
     },
+    // Calendar Settings
+    calendarSettings: {
+      travelBuffer: {
+        sameTransmission: 15,
+        differentTransmission: 30
+      },
+      syncedCalendarBuffer: 0,
+      schedulingWindow: {
+        minNotice: 3,
+        maxAdvance: 90
+      },
+      smartScheduling: {
+        enabled: true,
+        slotDuration: 1
+      },
+      syncedCalendarVisibility: 'hide',
+      attachCalendarEvent: false,
+      defaultCalendarView: 'day'
+    },
     // Opening Hours
     openingHours: {
       monday: [],
@@ -118,6 +137,15 @@ const InstructorSettings = () => {
           transmissionOffered: profile.transmissionOffered || '',
           vehicle: profile.vehicle || {},
           serviceArea: profile.serviceArea || { suburbs: [], testLocations: [] },
+          calendarSettings: profile.calendarSettings || {
+            travelBuffer: { sameTransmission: 15, differentTransmission: 30 },
+            syncedCalendarBuffer: 0,
+            schedulingWindow: { minNotice: 3, maxAdvance: 90 },
+            smartScheduling: { enabled: true, slotDuration: 1 },
+            syncedCalendarVisibility: 'hide',
+            attachCalendarEvent: false,
+            defaultCalendarView: 'day'
+          },
           openingHours: profile.openingHours || {},
           pricing: profile.pricing || {},
           banking: profile.banking || {}
@@ -141,6 +169,7 @@ const InstructorSettings = () => {
     { id: 'vehicle', label: 'Vehicles' },
     { id: 'service-area', label: 'Service Area' },
     { id: 'hours', label: 'Opening Hours' },
+    { id: 'calendar', label: 'Calendar Settings' },
     { id: 'pricing', label: 'Pricing' },
     { id: 'banking', label: 'Banking' }
   ];
@@ -163,6 +192,19 @@ const InstructorSettings = () => {
         [name]: type === 'checkbox' ? checked : value
       }));
     }
+  };
+
+  const handleCalendarSettingsChange = (path, value) => {
+    setFormData(prev => {
+      const newSettings = { ...prev.calendarSettings };
+      const parts = path.split('.');
+      if (parts.length === 1) {
+        newSettings[parts[0]] = value;
+      } else if (parts.length === 2) {
+        newSettings[parts[0]] = { ...newSettings[parts[0]], [parts[1]]: value };
+      }
+      return { ...prev, calendarSettings: newSettings };
+    });
   };
 
   const handleSave = async () => {
@@ -620,6 +662,221 @@ const InstructorSettings = () => {
                     </div>
                   );
                 })}
+
+                <div className="form-actions">
+                  <button className="btn-save" onClick={handleSave} disabled={saving}>
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'calendar' && (
+            <div className="settings-section">
+              <div className="section-content">
+                <p className="section-description">Configure your scheduling preferences and calendar behavior.</p>
+
+                {/* Travel Buffer */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Travel Buffer</h3>
+                  <p className="calendar-section-desc">Add buffer time between bookings to allow for travel.</p>
+
+                  <div className="calendar-row">
+                    <label>Same transmission</label>
+                    <select
+                      value={formData.calendarSettings?.travelBuffer?.sameTransmission || 15}
+                      onChange={(e) => handleCalendarSettingsChange('travelBuffer.sameTransmission', parseInt(e.target.value))}
+                      className="form-select"
+                    >
+                      {[15, 30, 45, 60, 75, 90, 105, 120].map(v => (
+                        <option key={v} value={v}>{v} minutes</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="calendar-row">
+                    <label>Different transmission</label>
+                    <select
+                      value={formData.calendarSettings?.travelBuffer?.differentTransmission || 30}
+                      onChange={(e) => handleCalendarSettingsChange('travelBuffer.differentTransmission', parseInt(e.target.value))}
+                      className="form-select"
+                    >
+                      {[15, 30, 45, 60, 75, 90, 105, 120].map(v => (
+                        <option key={v} value={v}>{v} minutes</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Synced Calendar Events Buffer */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Synced Calendar Events</h3>
+                  <p className="calendar-section-desc">Add buffer time around events from synced calendars.</p>
+
+                  <div className="calendar-row">
+                    <label>Buffer around synced events</label>
+                    <select
+                      value={formData.calendarSettings?.syncedCalendarBuffer || 0}
+                      onChange={(e) => handleCalendarSettingsChange('syncedCalendarBuffer', parseInt(e.target.value))}
+                      className="form-select"
+                    >
+                      <option value={0}>None</option>
+                      <option value={15}>15 minutes</option>
+                      <option value={30}>30 minutes</option>
+                      <option value={45}>45 minutes</option>
+                      <option value={60}>60 minutes</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Scheduling Window */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Scheduling Window</h3>
+                  <p className="calendar-section-desc">Control how soon and how far in advance learners can book.</p>
+
+                  <div className="calendar-row">
+                    <label>Minimum notice</label>
+                    <select
+                      value={formData.calendarSettings?.schedulingWindow?.minNotice || 3}
+                      onChange={(e) => handleCalendarSettingsChange('schedulingWindow.minNotice', parseInt(e.target.value))}
+                      className="form-select"
+                    >
+                      <option value={3}>3 hours</option>
+                      <option value={5}>5 hours</option>
+                      <option value={12}>12 hours</option>
+                      <option value={24}>1 day</option>
+                      <option value={48}>2 days</option>
+                    </select>
+                  </div>
+
+                  <div className="calendar-row">
+                    <label>Maximum advance booking</label>
+                    <select
+                      value={formData.calendarSettings?.schedulingWindow?.maxAdvance || 90}
+                      onChange={(e) => handleCalendarSettingsChange('schedulingWindow.maxAdvance', parseInt(e.target.value))}
+                      className="form-select"
+                    >
+                      <option value={75}>75 days</option>
+                      <option value={90}>90 days</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Smart Scheduling */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Smart Scheduling</h3>
+                  <p className="calendar-section-desc">Intelligently group bookings to minimise gaps in your schedule.</p>
+
+                  <div className="toggle-row">
+                    <label className="toggle-switch smart-scheduling-toggle">
+                      <input
+                        type="checkbox"
+                        checked={formData.calendarSettings?.smartScheduling?.enabled ?? true}
+                        onChange={(e) => handleCalendarSettingsChange('smartScheduling.enabled', e.target.checked)}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                    <span>{formData.calendarSettings?.smartScheduling?.enabled ? 'Enabled' : 'Disabled'}</span>
+                  </div>
+
+                  {formData.calendarSettings?.smartScheduling?.enabled && (
+                    <div className="calendar-row">
+                      <label>Slot duration</label>
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <label className="radio-label" style={{ padding: '8px 16px' }}>
+                          <input
+                            type="radio"
+                            checked={formData.calendarSettings?.smartScheduling?.slotDuration === 1}
+                            onChange={() => handleCalendarSettingsChange('smartScheduling.slotDuration', 1)}
+                          />
+                          <span>1 hour</span>
+                        </label>
+                        <label className="radio-label" style={{ padding: '8px 16px' }}>
+                          <input
+                            type="radio"
+                            checked={formData.calendarSettings?.smartScheduling?.slotDuration === 2}
+                            onChange={() => handleCalendarSettingsChange('smartScheduling.slotDuration', 2)}
+                          />
+                          <span>2 hours</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Synced Calendar Visibility */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Synced Calendar Visibility</h3>
+                  <p className="calendar-section-desc">Show or hide synced calendar event details on your booking calendar.</p>
+
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <label className="radio-label" style={{ flex: 1 }}>
+                      <input
+                        type="radio"
+                        checked={formData.calendarSettings?.syncedCalendarVisibility === 'show'}
+                        onChange={() => handleCalendarSettingsChange('syncedCalendarVisibility', 'show')}
+                      />
+                      <span>Show</span>
+                    </label>
+                    <label className="radio-label" style={{ flex: 1 }}>
+                      <input
+                        type="radio"
+                        checked={formData.calendarSettings?.syncedCalendarVisibility === 'hide'}
+                        onChange={() => handleCalendarSettingsChange('syncedCalendarVisibility', 'hide')}
+                      />
+                      <span>Hide</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Attach Calendar Event */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Attach Calendar Event</h3>
+                  <p className="calendar-section-desc">Attach a calendar event (.ics) to booking confirmation emails.</p>
+
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <label className="radio-label" style={{ flex: 1 }}>
+                      <input
+                        type="radio"
+                        checked={formData.calendarSettings?.attachCalendarEvent === true}
+                        onChange={() => handleCalendarSettingsChange('attachCalendarEvent', true)}
+                      />
+                      <span>Yes</span>
+                    </label>
+                    <label className="radio-label" style={{ flex: 1 }}>
+                      <input
+                        type="radio"
+                        checked={formData.calendarSettings?.attachCalendarEvent === false}
+                        onChange={() => handleCalendarSettingsChange('attachCalendarEvent', false)}
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Default Calendar View */}
+                <div className="calendar-section">
+                  <h3 className="calendar-section-title">Default Calendar View</h3>
+                  <p className="calendar-section-desc">Choose the default view when you open your calendar.</p>
+
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    {[
+                      { value: 'day', label: 'Day' },
+                      { value: 'week', label: 'Week' },
+                      { value: 'month', label: 'Month' }
+                    ].map(opt => (
+                      <label key={opt.value} className="radio-label" style={{ flex: 1 }}>
+                        <input
+                          type="radio"
+                          checked={formData.calendarSettings?.defaultCalendarView === opt.value}
+                          onChange={() => handleCalendarSettingsChange('defaultCalendarView', opt.value)}
+                        />
+                        <span>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
 
                 <div className="form-actions">
                   <button className="btn-save" onClick={handleSave} disabled={saving}>

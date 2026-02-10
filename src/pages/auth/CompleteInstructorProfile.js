@@ -7,7 +7,7 @@ const CompleteInstructorProfile = () => {
   const navigate = useNavigate();
   const { user, updateProfile } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const [formData, setFormData] = useState({
     // Step 1: Personal Details
@@ -52,14 +52,33 @@ const CompleteInstructorProfile = () => {
       saturday: [],
       sunday: []
     },
-    // Step 6: Pricing
+    // Step 6: Calendar Settings
+    calendarSettings: {
+      travelBuffer: {
+        sameTransmission: 15,
+        differentTransmission: 30
+      },
+      syncedCalendarBuffer: 0,
+      schedulingWindow: {
+        minNotice: 3,
+        maxAdvance: 90
+      },
+      smartScheduling: {
+        enabled: true,
+        slotDuration: 1
+      },
+      syncedCalendarVisibility: 'hide',
+      attachCalendarEvent: false,
+      defaultCalendarView: 'day'
+    },
+    // Step 7: Pricing
     pricing: {
       marketplaceLessonRate: '82.00',
       privateLessonRate: '80.00',
       marketplaceTestPackageRate: '225.00',
       privateTestPackageRate: '225.00'
     },
-    // Step 7: Banking
+    // Step 8: Banking
     banking: {
       businessName: '',
       abn: '',
@@ -282,6 +301,20 @@ const CompleteInstructorProfile = () => {
     handleBankingChange('accountNumber', numericValue);
   };
 
+  // Calendar Settings Handler
+  const handleCalendarSettingsChange = (path, value) => {
+    setFormData(prev => {
+      const newSettings = { ...prev.calendarSettings };
+      const parts = path.split('.');
+      if (parts.length === 1) {
+        newSettings[parts[0]] = value;
+      } else if (parts.length === 2) {
+        newSettings[parts[0]] = { ...newSettings[parts[0]], [parts[1]]: value };
+      }
+      return { ...prev, calendarSettings: newSettings };
+    });
+  };
+
   const validateStep1 = () => {
     const newErrors = {};
 
@@ -378,7 +411,7 @@ const CompleteInstructorProfile = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateStep6 = () => {
+  const validateStep7 = () => {
     const newErrors = {};
 
     // Validate marketplace lesson rate
@@ -405,7 +438,7 @@ const CompleteInstructorProfile = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateStep7 = () => {
+  const validateStep8 = () => {
     const newErrors = {};
 
     // Validate business name
@@ -482,6 +515,10 @@ const CompleteInstructorProfile = () => {
       return;
     }
 
+    if (currentStep === 7 && !validateStep7()) {
+      return;
+    }
+
     if (currentStep < totalSteps) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
@@ -499,7 +536,7 @@ const CompleteInstructorProfile = () => {
     e.preventDefault();
 
     // Validate banking before submitting
-    if (!validateStep7()) {
+    if (!validateStep8()) {
       return;
     }
 
@@ -538,6 +575,7 @@ const CompleteInstructorProfile = () => {
           testLocations: formData.testLocations
         },
         openingHours: formData.openingHours,
+        calendarSettings: formData.calendarSettings,
         pricing: {
           marketplaceLessonRate: parseFloat(formData.pricing.marketplaceLessonRate),
           privateLessonRate: parseFloat(formData.pricing.privateLessonRate),
@@ -810,7 +848,248 @@ const CompleteInstructorProfile = () => {
     );
   };
 
-  const renderStep6 = () => (
+  const renderStep6 = () => {
+    const cs = formData.calendarSettings;
+    const bufferOptions = [15, 30, 45, 60, 75, 90, 105, 120];
+    const syncedBufferOptions = [
+      { value: 0, label: 'None' },
+      { value: 15, label: '15 minutes' },
+      { value: 30, label: '30 minutes' },
+      { value: 45, label: '45 minutes' },
+      { value: 60, label: '60 minutes' }
+    ];
+    const minNoticeOptions = [
+      { value: 3, label: '3 hours' },
+      { value: 5, label: '5 hours' },
+      { value: 12, label: '12 hours' },
+      { value: 24, label: '1 day' },
+      { value: 48, label: '2 days' }
+    ];
+    const maxAdvanceOptions = [
+      { value: 75, label: '75 days' },
+      { value: 90, label: '90 days' }
+    ];
+
+    return (
+      <div className="form-step">
+        <h2 className="step-title">Calendar Settings</h2>
+        <p className="step-description">Configure your scheduling preferences and calendar behavior.</p>
+
+        {/* 1. Travel Buffer */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Travel Buffer</h3>
+          <p className="calendar-section-desc">
+            Add buffer time between bookings to allow for travel. This prevents back-to-back bookings that are too close together.
+          </p>
+          <div className="calendar-row">
+            <label>Same transmission</label>
+            <select
+              value={cs.travelBuffer.sameTransmission}
+              onChange={(e) => handleCalendarSettingsChange('travelBuffer.sameTransmission', parseInt(e.target.value))}
+            >
+              {bufferOptions.map(v => (
+                <option key={v} value={v}>{v} minutes</option>
+              ))}
+            </select>
+          </div>
+          <div className="calendar-row">
+            <label>Different transmission</label>
+            <select
+              value={cs.travelBuffer.differentTransmission}
+              onChange={(e) => handleCalendarSettingsChange('travelBuffer.differentTransmission', parseInt(e.target.value))}
+            >
+              {bufferOptions.map(v => (
+                <option key={v} value={v}>{v} minutes</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* 2. Synced Calendar Events Buffer */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Synced Calendar Events</h3>
+          <p className="calendar-section-desc">
+            Add buffer time around events from synced calendars (e.g., Google Calendar).
+          </p>
+          <div className="calendar-row">
+            <label>Buffer around synced events</label>
+            <select
+              value={cs.syncedCalendarBuffer}
+              onChange={(e) => handleCalendarSettingsChange('syncedCalendarBuffer', parseInt(e.target.value))}
+            >
+              {syncedBufferOptions.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* 3. Scheduling Window */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Scheduling Window</h3>
+          <p className="calendar-section-desc">
+            Control how soon and how far in advance learners can book lessons with you.
+          </p>
+          <div className="calendar-row">
+            <label>Minimum notice</label>
+            <select
+              value={cs.schedulingWindow.minNotice}
+              onChange={(e) => handleCalendarSettingsChange('schedulingWindow.minNotice', parseInt(e.target.value))}
+            >
+              {minNoticeOptions.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="calendar-row">
+            <label>Maximum advance booking</label>
+            <select
+              value={cs.schedulingWindow.maxAdvance}
+              onChange={(e) => handleCalendarSettingsChange('schedulingWindow.maxAdvance', parseInt(e.target.value))}
+            >
+              {maxAdvanceOptions.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* 4. Smart Scheduling */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Smart Scheduling</h3>
+          <p className="calendar-section-desc">
+            When enabled, the system will intelligently group bookings to minimise gaps in your schedule.
+          </p>
+          <div className="toggle-row">
+            <label className="toggle-switch smart-scheduling-toggle">
+              <input
+                type="checkbox"
+                checked={cs.smartScheduling.enabled}
+                onChange={(e) => handleCalendarSettingsChange('smartScheduling.enabled', e.target.checked)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+            <span>{cs.smartScheduling.enabled ? 'Enabled' : 'Disabled'}</span>
+          </div>
+          {cs.smartScheduling.enabled && (
+            <div className="calendar-row">
+              <label>Slot duration</label>
+              <div className="radio-group" style={{ flexDirection: 'row', gap: '16px' }}>
+                <label className="radio-label" style={{ flex: 1 }}>
+                  <input
+                    type="radio"
+                    name="slotDuration"
+                    value={1}
+                    checked={cs.smartScheduling.slotDuration === 1}
+                    onChange={() => handleCalendarSettingsChange('smartScheduling.slotDuration', 1)}
+                  />
+                  <span>1 hour</span>
+                </label>
+                <label className="radio-label" style={{ flex: 1 }}>
+                  <input
+                    type="radio"
+                    name="slotDuration"
+                    value={2}
+                    checked={cs.smartScheduling.slotDuration === 2}
+                    onChange={() => handleCalendarSettingsChange('smartScheduling.slotDuration', 2)}
+                  />
+                  <span>2 hours</span>
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 5. Synced Calendar Visibility */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Synced Calendar Visibility</h3>
+          <p className="calendar-section-desc">
+            Choose whether synced calendar event details are visible on your booking calendar.
+          </p>
+          <div className="radio-group" style={{ flexDirection: 'row', gap: '16px' }}>
+            <label className="radio-label" style={{ flex: 1 }}>
+              <input
+                type="radio"
+                name="syncedCalendarVisibility"
+                value="show"
+                checked={cs.syncedCalendarVisibility === 'show'}
+                onChange={() => handleCalendarSettingsChange('syncedCalendarVisibility', 'show')}
+              />
+              <span>Show</span>
+            </label>
+            <label className="radio-label" style={{ flex: 1 }}>
+              <input
+                type="radio"
+                name="syncedCalendarVisibility"
+                value="hide"
+                checked={cs.syncedCalendarVisibility === 'hide'}
+                onChange={() => handleCalendarSettingsChange('syncedCalendarVisibility', 'hide')}
+              />
+              <span>Hide</span>
+            </label>
+          </div>
+        </div>
+
+        {/* 6. Attach Calendar Event */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Attach Calendar Event</h3>
+          <p className="calendar-section-desc">
+            Automatically attach a calendar event (.ics) to booking confirmation emails.
+          </p>
+          <div className="radio-group" style={{ flexDirection: 'row', gap: '16px' }}>
+            <label className="radio-label" style={{ flex: 1 }}>
+              <input
+                type="radio"
+                name="attachCalendarEvent"
+                value="yes"
+                checked={cs.attachCalendarEvent === true}
+                onChange={() => handleCalendarSettingsChange('attachCalendarEvent', true)}
+              />
+              <span>Yes</span>
+            </label>
+            <label className="radio-label" style={{ flex: 1 }}>
+              <input
+                type="radio"
+                name="attachCalendarEvent"
+                value="no"
+                checked={cs.attachCalendarEvent === false}
+                onChange={() => handleCalendarSettingsChange('attachCalendarEvent', false)}
+              />
+              <span>No</span>
+            </label>
+          </div>
+        </div>
+
+        {/* 7. Default Calendar View */}
+        <div className="calendar-section">
+          <h3 className="calendar-section-title">Default Calendar View</h3>
+          <p className="calendar-section-desc">
+            Choose the default view when you open your calendar.
+          </p>
+          <div className="radio-group" style={{ flexDirection: 'row', gap: '16px' }}>
+            {[
+              { value: 'day', label: 'Day' },
+              { value: 'week', label: 'Week' },
+              { value: 'month', label: 'Month' }
+            ].map(opt => (
+              <label key={opt.value} className="radio-label" style={{ flex: 1 }}>
+                <input
+                  type="radio"
+                  name="defaultCalendarView"
+                  value={opt.value}
+                  checked={cs.defaultCalendarView === opt.value}
+                  onChange={() => handleCalendarSettingsChange('defaultCalendarView', opt.value)}
+                />
+                <span>{opt.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderStep7 = () => (
     <div className="form-step">
       <h2 className="step-title">Pricing</h2>
       <p className="step-description">Set your hourly rates for lessons and test packages.</p>
@@ -909,7 +1188,7 @@ const CompleteInstructorProfile = () => {
     </div>
   );
 
-  const renderStep7 = () => {
+  const renderStep8 = () => {
     const australianStates = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'];
     const payoutFrequencies = [
       { value: 'weekly', label: 'Weekly' },
@@ -1764,6 +2043,7 @@ const CompleteInstructorProfile = () => {
             {currentStep === 5 && renderStep5()}
             {currentStep === 6 && renderStep6()}
             {currentStep === 7 && renderStep7()}
+            {currentStep === 8 && renderStep8()}
 
             <div className="form-actions">
               {currentStep > 1 && (

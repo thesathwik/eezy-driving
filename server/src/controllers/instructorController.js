@@ -3,7 +3,7 @@ const Instructor = require('../models/Instructor');
 const Availability = require('../models/Availability');
 
 // Helper function to generate availability records from opening hours
-const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) => {
+const generateAvailabilityFromOpeningHours = async (instructorId, openingHours, calendarSettings) => {
   try {
     // Map day of week (0=Sunday) to lowercase day names used in openingHours
     const dayMap = {
@@ -27,13 +27,14 @@ const generateAvailabilityFromOpeningHours = async (instructorId, openingHours) 
     });
     console.log('🗑️ Cleared existing future availability for instructor:', instructorId);
 
-    // Generate availability for next 60 days
+    // Generate availability for next maxAdvance days (default 90)
+    const maxAdvanceDays = calendarSettings?.schedulingWindow?.maxAdvance || 90;
     // Use UTC consistently to avoid timezone mismatches between server and client
     const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0, 0));
 
     let daysGenerated = 0;
 
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < maxAdvanceDays; i++) {
       const date = new Date(todayUTC.getTime() + i * 24 * 60 * 60 * 1000);
       const dayOfWeek = date.getUTCDay();
 
@@ -149,7 +150,7 @@ exports.createOrUpdateProfile = async (req, res, next) => {
 
     // Generate availability records if openingHours are provided
     if (req.body.openingHours) {
-      await generateAvailabilityFromOpeningHours(userId, req.body.openingHours);
+      await generateAvailabilityFromOpeningHours(userId, req.body.openingHours, instructor.calendarSettings);
     }
 
     res.status(200).json({
@@ -417,7 +418,7 @@ exports.regenerateAvailability = async (req, res, next) => {
       }
 
       // Call the helper function directly
-      await generateAvailabilityFromOpeningHours(instructor.user, instructor.openingHours);
+      await generateAvailabilityFromOpeningHours(instructor.user, instructor.openingHours, instructor.calendarSettings);
       totalGenerated++;
       results.push({ id: instructor._id, userId: instructor.user, status: 'generated' });
     }
