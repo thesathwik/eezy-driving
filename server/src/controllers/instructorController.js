@@ -142,11 +142,30 @@ exports.createOrUpdateProfile = async (req, res, next) => {
       // Create new profile
       instructor = await Instructor.create(profileData);
 
-      // Update user's profile completion status and ensure role is 'instructor'
-      await User.findByIdAndUpdate(userId, {
+      // Update user's profile completion status, role, and personal details
+      const userUpdateData = {
         isProfileComplete: true,
         role: 'instructor'
-      });
+      };
+
+      // Add phone if provided
+      if (req.body.phone) userUpdateData.phone = req.body.phone;
+
+      // Add name fields if provided (allow updating name from profile)
+      if (req.body.firstName) userUpdateData.firstName = req.body.firstName;
+      if (req.body.lastName) userUpdateData.lastName = req.body.lastName;
+
+      await User.findByIdAndUpdate(userId, userUpdateData);
+    } else {
+      // If updating existing profile, also update user details if provided
+      const userUpdateData = {};
+      if (req.body.phone) userUpdateData.phone = req.body.phone;
+      if (req.body.firstName) userUpdateData.firstName = req.body.firstName;
+      if (req.body.lastName) userUpdateData.lastName = req.body.lastName;
+
+      if (Object.keys(userUpdateData).length > 0) {
+        await User.findByIdAndUpdate(userId, userUpdateData);
+      }
     }
 
     // Generate availability records if openingHours are provided

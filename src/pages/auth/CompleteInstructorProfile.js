@@ -598,7 +598,11 @@ const CompleteInstructorProfile = () => {
             bsb: formData.banking.bsb,
             accountNumber: formData.banking.accountNumber
           }
-        }
+        },
+        // Include user details for User model update
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone
       };
 
       // Get auth token
@@ -1394,116 +1398,32 @@ const CompleteInstructorProfile = () => {
   };
 
   const renderStep4 = () => (
-      <div className="form-step">
-        <h2 className="step-title">Service Area</h2>
-        <p className="step-description">
-          Select the suburbs where you can pick up learners. Searches in these locations will return you as an available instructor.
-        </p>
+    <div className="form-step">
+      <h2 className="step-title">Service Area</h2>
+      <p className="step-description">
+        Select the suburbs where you can pick up learners. Searches in these locations will return you as an available instructor.
+      </p>
 
-        <div className="service-area-container">
-          {/* Service Suburbs Section */}
-          <div className="form-group">
-            <label>
-              Service Suburbs <span className="required">*</span>
-              {formData.serviceSuburbs.length > 0 && (
-                <span className="suburb-count">
-                  You are servicing {formData.serviceSuburbs.length} suburb{formData.serviceSuburbs.length !== 1 ? 's' : ''} around Brisbane
-                </span>
-              )}
-            </label>
+      <div className="service-area-container">
+        {/* Service Suburbs Section */}
+        <div className="form-group">
+          <label>
+            Service Suburbs <span className="required">*</span>
+            {formData.serviceSuburbs.length > 0 && (
+              <span className="suburb-count">
+                You are servicing {formData.serviceSuburbs.length} suburb{formData.serviceSuburbs.length !== 1 ? 's' : ''} around Brisbane
+              </span>
+            )}
+          </label>
 
-            <div className="suburb-selection">
-              <div className="suburb-tags">
-                {formData.serviceSuburbs.map((suburb, index) => (
-                  <span key={index} className="suburb-tag">
-                    {suburb}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSuburb(suburb)}
-                      className="remove-tag"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-
-              <div className="suburb-input-wrapper">
-                <input
-                  type="text"
-                  value={suburbInput}
-                  onChange={handleSuburbInputChange}
-                  onFocus={() => suburbInput && setShowSuburbDropdown(filteredSuburbs.length > 0)}
-                  placeholder="Search and add suburbs..."
-                  className={errors.serviceSuburbs ? 'error' : ''}
-                />
-                {showSuburbDropdown && filteredSuburbs.length > 0 && (
-                  <div className="suburb-dropdown">
-                    {filteredSuburbs.map((suburb, index) => (
-                      <div
-                        key={index}
-                        className="suburb-dropdown-item"
-                        onClick={() => handleSelectSuburb(suburb)}
-                      >
-                        {suburb}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            {errors.serviceSuburbs && <span className="error-message">{errors.serviceSuburbs}</span>}
-          </div>
-
-          {/* Google Map */}
-          <div className="map-container">
-            <div className="map-controls">
-              <div className="map-toggle-buttons">
-                <button
-                  type="button"
-                  className={`map-toggle-btn ${mapType === 'roadmap' ? 'active' : ''}`}
-                  onClick={() => setMapType('roadmap')}
-                >
-                  Map
-                </button>
-                <button
-                  type="button"
-                  className={`map-toggle-btn ${mapType === 'satellite' ? 'active' : ''}`}
-                  onClick={() => setMapType('satellite')}
-                >
-                  Satellite
-                </button>
-              </div>
-            </div>
-
-            <div className="google-map-placeholder">
-              <iframe
-                title="Brisbane Service Area Map"
-                width="100%"
-                height="450"
-                frameBorder="0"
-                style={{ border: 0 }}
-                src={`https://www.google.com/maps/embed/v1/view?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&center=${mapCenter.lat},${mapCenter.lng}&zoom=11&maptype=${mapType}`}
-                allowFullScreen
-              ></iframe>
-            </div>
-          </div>
-
-          {/* Driving Test Locations */}
-          <div className="form-group test-locations-section">
-            <h3 className="section-heading">Driving Test Locations</h3>
-            <p className="section-description">
-              Test locations are separate from your lesson suburbs. You're free to choose one or more test centres that are most convenient for you.
-            </p>
-
-            <label>Driving test locations (Optional)</label>
-            <div className="test-location-tags">
-              {formData.testLocations.map((location, index) => (
-                <span key={index} className="test-location-tag">
-                  {location}
+          <div className="suburb-selection">
+            <div className="suburb-tags">
+              {formData.serviceSuburbs.map((suburb, index) => (
+                <span key={index} className="suburb-tag">
+                  {suburb}
                   <button
                     type="button"
-                    onClick={() => handleRemoveTestLocation(location)}
+                    onClick={() => handleRemoveSuburb(suburb)}
                     className="remove-tag"
                   >
                     ×
@@ -1512,33 +1432,117 @@ const CompleteInstructorProfile = () => {
               ))}
             </div>
 
-            <div className="test-location-input-wrapper">
-              <select
-                value={testLocationInput}
-                onChange={(e) => setTestLocationInput(e.target.value)}
-                className="test-location-select"
-              >
-                <option value="">Select a test centre...</option>
-                {testCentres
-                  .filter(centre => !formData.testLocations.includes(centre))
-                  .map((centre, index) => (
-                    <option key={index} value={centre}>{centre}</option>
-                  ))
-                }
-              </select>
+            <div className="suburb-input-wrapper">
+              <input
+                type="text"
+                value={suburbInput}
+                onChange={handleSuburbInputChange}
+                onFocus={() => suburbInput && setShowSuburbDropdown(filteredSuburbs.length > 0)}
+                placeholder="Search and add suburbs..."
+                className={errors.serviceSuburbs ? 'error' : ''}
+              />
+              {showSuburbDropdown && filteredSuburbs.length > 0 && (
+                <div className="suburb-dropdown">
+                  {filteredSuburbs.map((suburb, index) => (
+                    <div
+                      key={index}
+                      className="suburb-dropdown-item"
+                      onClick={() => handleSelectSuburb(suburb)}
+                    >
+                      {suburb}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          {errors.serviceSuburbs && <span className="error-message">{errors.serviceSuburbs}</span>}
+        </div>
+
+        {/* Google Map */}
+        <div className="map-container">
+          <div className="map-controls">
+            <div className="map-toggle-buttons">
               <button
                 type="button"
-                onClick={() => handleAddTestLocation(testLocationInput)}
-                className="btn-add-location"
-                disabled={!testLocationInput}
+                className={`map-toggle-btn ${mapType === 'roadmap' ? 'active' : ''}`}
+                onClick={() => setMapType('roadmap')}
               >
-                Add Location
+                Map
+              </button>
+              <button
+                type="button"
+                className={`map-toggle-btn ${mapType === 'satellite' ? 'active' : ''}`}
+                onClick={() => setMapType('satellite')}
+              >
+                Satellite
               </button>
             </div>
           </div>
+
+          <div className="google-map-placeholder">
+            <iframe
+              title="Brisbane Service Area Map"
+              width="100%"
+              height="450"
+              frameBorder="0"
+              style={{ border: 0 }}
+              src={`https://www.google.com/maps/embed/v1/view?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&center=${mapCenter.lat},${mapCenter.lng}&zoom=11&maptype=${mapType}`}
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+
+        {/* Driving Test Locations */}
+        <div className="form-group test-locations-section">
+          <h3 className="section-heading">Driving Test Locations</h3>
+          <p className="section-description">
+            Test locations are separate from your lesson suburbs. You're free to choose one or more test centres that are most convenient for you.
+          </p>
+
+          <label>Driving test locations (Optional)</label>
+          <div className="test-location-tags">
+            {formData.testLocations.map((location, index) => (
+              <span key={index} className="test-location-tag">
+                {location}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveTestLocation(location)}
+                  className="remove-tag"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+
+          <div className="test-location-input-wrapper">
+            <select
+              value={testLocationInput}
+              onChange={(e) => setTestLocationInput(e.target.value)}
+              className="test-location-select"
+            >
+              <option value="">Select a test centre...</option>
+              {testCentres
+                .filter(centre => !formData.testLocations.includes(centre))
+                .map((centre, index) => (
+                  <option key={index} value={centre}>{centre}</option>
+                ))
+              }
+            </select>
+            <button
+              type="button"
+              onClick={() => handleAddTestLocation(testLocationInput)}
+              className="btn-add-location"
+              disabled={!testLocationInput}
+            >
+              Add Location
+            </button>
+          </div>
         </div>
       </div>
-    );
+    </div>
+  );
 
   const renderStep3 = () => (
     <div className="form-step">
