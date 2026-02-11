@@ -605,7 +605,10 @@ const BookingFlowContent = () => {
         }
 
         // Check if user needs email verification
-        if (registerData.data && registerData.data.isEmailVerified === false) {
+        // Default to TRUE (needs verification) if the field is missing or explicitly false
+        const isVerified = registerData.data?.isEmailVerified === true;
+
+        if (!isVerified) {
           // User needs to verify email
           setVerificationEmail(learnerDetails.email);
           setWaitingForVerification(true);
@@ -627,7 +630,7 @@ const BookingFlowContent = () => {
           // Clear errors
           setValidationErrors({});
           return; // Don't proceed to next step yet
-        } else if (registerData.data && registerData.data.isEmailVerified === true) {
+        } else {
           // User is already verified, proceed to payment
           if (registerData.data.token) {
             localStorage.setItem('authToken', registerData.data.token);

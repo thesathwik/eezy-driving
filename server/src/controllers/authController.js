@@ -74,7 +74,8 @@ exports.register = async (req, res, next) => {
       message: 'Registration successful. Please check your email to verify your account.',
       data: {
         email: user.email,
-        role: user.role
+        role: user.role,
+        isEmailVerified: user.isEmailVerified // Explicitly return this for frontend checks
       }
     });
   } catch (error) {
