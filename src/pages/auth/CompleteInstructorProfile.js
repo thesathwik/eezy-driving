@@ -5,7 +5,7 @@ import './Auth.css';
 
 const CompleteInstructorProfile = () => {
   const navigate = useNavigate();
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, refreshUser } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 8;
 
@@ -621,6 +621,8 @@ const CompleteInstructorProfile = () => {
       const data = await response.json();
 
       if (data.success) {
+        // Refresh user data to update role in context/local storage
+        await refreshUser();
         navigate('/instructor/dashboard');
       } else {
         setErrors({ general: data.message || 'Failed to save profile' });

@@ -79,6 +79,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      // Import getCurrentUser dynamically or move import to top if not circular
+      const { getCurrentUser } = require('../utils/authService');
+      const response = await getCurrentUser();
+      if (response.success && response.data) {
+        setUser(prev => {
+          // Keep token if not returned, merge new data
+          const newData = { ...prev, ...response.data };
+          localStorage.setItem('eazydriving_session', JSON.stringify(newData));
+          return newData;
+        });
+        return { success: true, user: response.data };
+      }
+      return { success: false };
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -87,6 +108,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateProfile,
     updatePassword,
+    refreshUser,
     isAuthenticated: !!user,
     isLearner: user?.role === 'learner' || user?.type === 'learner',
     isInstructor: user?.role === 'instructor' || user?.type === 'instructor'
