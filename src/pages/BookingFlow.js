@@ -287,10 +287,27 @@ const BookingFlowContent = () => {
     try {
       const response = await getCurrentUser();
       if (response.success && response.data) {
-        const user = response.data;
+        // Fix: accessing user object correctly
+        // response.data is { user: {...} } so we need response.data.user
+        const user = response.data.user || response.data;
+
+        // Also check if we need to update local storage with the verified status
         if (user.isEmailVerified) {
           setIsUserVerified(true);
           setWaitingForVerification(false);
+
+          // Update local storage to reflect verified status
+          const sessionStr = localStorage.getItem('eazydriving_session');
+          if (sessionStr) {
+            try {
+              const session = JSON.parse(sessionStr);
+              session.isEmailVerified = true;
+              localStorage.setItem('eazydriving_session', JSON.stringify(session));
+            } catch (e) {
+              console.error('Error updating session:', e);
+            }
+          }
+
           // Clear the polling interval
           if (verificationCheckInterval.current) {
             clearInterval(verificationCheckInterval.current);

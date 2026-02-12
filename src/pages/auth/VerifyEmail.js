@@ -46,14 +46,13 @@ const VerifyEmail = () => {
         };
         localStorage.setItem('eazydriving_session', JSON.stringify(userSession));
 
-        // Auto-redirect after 2 seconds
-        setTimeout(() => {
-          if (data.data.user.role === 'instructor') {
+        // Auto-redirect ONLY for instructors
+        if (data.data.user.role === 'instructor') {
+          setTimeout(() => {
             navigate('/instructor/complete-profile');
-          } else {
-            navigate('/');
-          }
-        }, 2000);
+          }, 2000);
+        }
+        // Learners stay on the page with a clear message
       } else {
         setStatus('error');
         setMessage(data.message || 'Verification failed');
@@ -89,13 +88,34 @@ const VerifyEmail = () => {
                     <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
-                <h1>Email Verified</h1>
+                <h1>Email Verified!</h1>
                 <p>{message}</p>
-                <p className="redirect-message">
-                  {userRole === 'instructor'
-                    ? 'Redirecting to complete your instructor profile...'
-                    : 'Redirecting to homepage...'}
-                </p>
+
+                {userRole === 'instructor' ? (
+                  <p className="redirect-message">
+                    Redirecting to complete your instructor profile...
+                  </p>
+                ) : (
+                  <div className="verification-success-content">
+                    <p className="success-instruction">
+                      <strong>You can now close this tab</strong> and return to your previous tab to complete your booking.
+                    </p>
+                    <div className="verification-actions">
+                      <button
+                        onClick={() => navigate('/dashboard')}
+                        className="btn-auth btn-primary-auth"
+                      >
+                        Go to Dashboard
+                      </button>
+                      <button
+                        onClick={() => navigate('/')}
+                        className="btn-auth btn-secondary-auth"
+                      >
+                        Go to Homepage
+                      </button>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
