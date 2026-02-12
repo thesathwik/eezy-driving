@@ -17,6 +17,12 @@ const LearnerSignup = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
+  // Clear any existing booking state when starting a fresh signup
+  // This prevents users from being redirected to an old abandoned booking after verification
+  React.useEffect(() => {
+    localStorage.removeItem('booking_flow_state');
+  }, []);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({

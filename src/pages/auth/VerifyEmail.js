@@ -102,46 +102,46 @@ const VerifyEmail = () => {
                     </p>
 
                     {/* Check if we have a saved booking flow state */}
-                    {localStorage.getItem('booking_flow_state') ? (
-                      <div className="booking-resume-section">
-                        <p>We found an unfinished booking. Click below to continue.</p>
-                        <div className="verification-actions">
-                          <button
-                            onClick={() => {
-                              try {
-                                const state = JSON.parse(localStorage.getItem('booking_flow_state'));
-                                if (state && state.instructorId) {
-                                  // Fix: Use correct route /book/:id instead of /book-instructor/:id
-                                  navigate(`/book/${state.instructorId}`);
-                                } else {
-                                  navigate('/dashboard');
-                                }
-                              } catch (e) {
+                    {/* Check if we have a saved booking flow state */}
+                    {localStorage.getItem('booking_flow_state') && (
+                      <div className="booking-resume-section" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
+                        <p style={{ marginBottom: '10px' }}>We found an unfinished booking. Click below to continue.</p>
+                        <button
+                          onClick={() => {
+                            try {
+                              const state = JSON.parse(localStorage.getItem('booking_flow_state'));
+                              if (state && state.instructorId) {
+                                // Fix: Use correct route /book/:id instead of /book-instructor/:id
+                                navigate(`/book/${state.instructorId}`);
+                              } else {
                                 navigate('/dashboard');
                               }
-                            }}
-                            className="btn-auth btn-primary-auth"
-                          >
-                            Continue Booking
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="verification-actions">
-                        <button
-                          onClick={() => navigate('/dashboard')}
+                            } catch (e) {
+                              navigate('/dashboard');
+                            }
+                          }}
                           className="btn-auth btn-primary-auth"
+                          style={{ backgroundColor: '#fbbf24', color: '#000', border: 'none' }}
                         >
-                          Go to Dashboard
-                        </button>
-                        <button
-                          onClick={() => navigate('/')}
-                          className="btn-auth btn-secondary-auth"
-                        >
-                          Go to Homepage
+                          Continue Booking
                         </button>
                       </div>
                     )}
+
+                    <div className="verification-actions">
+                      <button
+                        onClick={() => navigate('/learner/dashboard')}
+                        className="btn-auth btn-primary-auth"
+                      >
+                        Go to Dashboard
+                      </button>
+                      <button
+                        onClick={() => navigate('/')}
+                        className="btn-auth btn-secondary-auth"
+                      >
+                        Go to Homepage
+                      </button>
+                    </div>
 
                     <p className="small-text mt-3">
                       You can also close this tab and return to your previous tab if you prefer.
