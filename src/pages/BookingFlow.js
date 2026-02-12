@@ -262,8 +262,14 @@ const BookingFlowContent = () => {
     checkAuthStatus();
   }, []);
 
+  // State to track if we have attempted to load saved state
+  const [isStateLoaded, setIsStateLoaded] = useState(false);
+
   // Save state to localStorage whenever it changes
   useEffect(() => {
+    // Prevent saving default state before we've had a chance to load saved state
+    if (!isStateLoaded) return;
+
     if (currentStep > 1 || bookings.length > 0 || learnerDetails.firstName) {
       const stateToSave = {
         instructorId: id,
@@ -276,7 +282,7 @@ const BookingFlowContent = () => {
       localStorage.setItem('booking_flow_state', JSON.stringify(stateToSave));
       console.log('💾 Saved booking state to localStorage');
     }
-  }, [currentStep, selectedPackage, bookings, learnerDetails, id]);
+  }, [currentStep, selectedPackage, bookings, learnerDetails, id, isStateLoaded]);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -310,6 +316,8 @@ const BookingFlowContent = () => {
         console.error('Error parsing saved state:', e);
       }
     }
+    // Mark state as loaded regardless of whether we found/restored state or not
+    setIsStateLoaded(true);
   }, [id]);
 
   // Define all steps
