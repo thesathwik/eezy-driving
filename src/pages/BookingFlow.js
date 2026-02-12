@@ -246,6 +246,13 @@ const BookingFlowContent = () => {
               phone: user.phone || ''
             }));
             if (user.phone) setUserHadPhone(true);
+
+            // Set verification status from user profile
+            if (user.isEmailVerified) {
+              setIsUserVerified(true);
+              setWaitingForVerification(false);
+            }
+
             console.log('✅ User already logged in:', user.email);
           } else {
             console.warn('⚠️ getCurrentUser failed:', response);
@@ -319,6 +326,14 @@ const BookingFlowContent = () => {
     // Mark state as loaded regardless of whether we found/restored state or not
     setIsStateLoaded(true);
   }, [id]);
+
+  // Auto-advance step if user is already logged in (e.g. returning from verification)
+  useEffect(() => {
+    if (currentStep === 4 && learnerDetails._id) {
+      console.log('⏩ User already logged in, skipping registration step');
+      setCurrentStep(5);
+    }
+  }, [currentStep, learnerDetails._id]);
 
   // Define all steps
   const allSteps = [
