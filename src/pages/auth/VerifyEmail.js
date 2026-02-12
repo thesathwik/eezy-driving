@@ -111,7 +111,8 @@ const VerifyEmail = () => {
                               try {
                                 const state = JSON.parse(localStorage.getItem('booking_flow_state'));
                                 if (state && state.instructorId) {
-                                  navigate(`/book-instructor/${state.instructorId}`);
+                                  // Fix: Use correct route /book/:id instead of /book-instructor/:id
+                                  navigate(`/book/${state.instructorId}`);
                                 } else {
                                   navigate('/dashboard');
                                 }
