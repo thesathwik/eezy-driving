@@ -98,22 +98,53 @@ const VerifyEmail = () => {
                 ) : (
                   <div className="verification-success-content">
                     <p className="success-instruction">
-                      <strong>You can now close this tab</strong> and return to your previous tab to complete your booking.
+                      <strong>Email verified successfully!</strong>
                     </p>
-                    <div className="verification-actions">
-                      <button
-                        onClick={() => navigate('/dashboard')}
-                        className="btn-auth btn-primary-auth"
-                      >
-                        Go to Dashboard
-                      </button>
-                      <button
-                        onClick={() => navigate('/')}
-                        className="btn-auth btn-secondary-auth"
-                      >
-                        Go to Homepage
-                      </button>
-                    </div>
+
+                    {/* Check if we have a saved booking flow state */}
+                    {localStorage.getItem('booking_flow_state') ? (
+                      <div className="booking-resume-section">
+                        <p>We found an unfinished booking. Click below to continue.</p>
+                        <div className="verification-actions">
+                          <button
+                            onClick={() => {
+                              try {
+                                const state = JSON.parse(localStorage.getItem('booking_flow_state'));
+                                if (state && state.instructorId) {
+                                  navigate(`/book-instructor/${state.instructorId}`);
+                                } else {
+                                  navigate('/dashboard');
+                                }
+                              } catch (e) {
+                                navigate('/dashboard');
+                              }
+                            }}
+                            className="btn-auth btn-primary-auth"
+                          >
+                            Continue Booking
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="verification-actions">
+                        <button
+                          onClick={() => navigate('/dashboard')}
+                          className="btn-auth btn-primary-auth"
+                        >
+                          Go to Dashboard
+                        </button>
+                        <button
+                          onClick={() => navigate('/')}
+                          className="btn-auth btn-secondary-auth"
+                        >
+                          Go to Homepage
+                        </button>
+                      </div>
+                    )}
+
+                    <p className="small-text mt-3">
+                      You can also close this tab and return to your previous tab if you prefer.
+                    </p>
                   </div>
                 )}
               </>

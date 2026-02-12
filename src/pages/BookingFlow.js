@@ -259,7 +259,58 @@ const BookingFlowContent = () => {
     };
 
     checkAuthStatus();
+    checkAuthStatus();
   }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    if (currentStep > 1 || bookings.length > 0 || learnerDetails.firstName) {
+      const stateToSave = {
+        instructorId: id,
+        currentStep,
+        selectedPackage,
+        bookings,
+        learnerDetails,
+        timestamp: new Date().getTime()
+      };
+      localStorage.setItem('booking_flow_state', JSON.stringify(stateToSave));
+      console.log('💾 Saved booking state to localStorage');
+    }
+  }, [currentStep, selectedPackage, bookings, learnerDetails, id]);
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedStateStr = localStorage.getItem('booking_flow_state');
+    if (savedStateStr) {
+      try {
+        const savedState = JSON.parse(savedStateStr);
+        // Only restore if it matches the current instructor
+        if (savedState.instructorId === id) {
+          console.log('📂 Restoring booking state from localStorage');
+          // Don't restore if older than 24 hours
+          const oneDay = 24 * 60 * 60 * 1000;
+          if (new Date().getTime() - savedState.timestamp < oneDay) {
+            setCurrentStep(savedState.currentStep);
+            setSelectedPackage(savedState.selectedPackage);
+            setBookings(savedState.bookings);
+
+            // Merge learner details carefully to not overwrite newer auth data
+            setLearnerDetails(prev => ({
+              ...prev,
+              ...savedState.learnerDetails,
+              // Keep _id if we have it from auth check
+              _id: prev._id || savedState.learnerDetails._id
+            }));
+          } else {
+            console.log('🕒 Saved state is too old, clearing');
+            localStorage.removeItem('booking_flow_state');
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing saved state:', e);
+      }
+    }
+  }, [id]);
 
   // Define all steps
   const allSteps = [
