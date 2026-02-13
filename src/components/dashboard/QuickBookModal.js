@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LoadScript } from '@react-google-maps/api';
 import { API, getHeaders } from '../../config/api';
 import LocationAutocomplete from '../LocationAutocomplete';
+import LocationSearch from '../common/LocationAutocomplete';
 import './QuickBookModal.css';
 
 const GOOGLE_LIBRARIES = ['places'];
@@ -35,6 +36,7 @@ const calcEndTime = (startTime, durationHours) => {
 };
 
 const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
+  const navigate = useNavigate();
   const [duration, setDuration] = useState(1);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -48,6 +50,10 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  // State for search form (when no instructor)
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchTransmission, setSearchTransmission] = useState('automatic');
 
   const credits = profile?.lessonCredits || 0;
   const currentInstructor = profile?.currentInstructor;
@@ -297,6 +303,21 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
   const availableTimes = selectedDate ? getAvailableTimeSlotsForDate(selectedDate) : [];
   const canConfirm = selectedDate && selectedTime && pickupSuburb && pickupAddress && !submitting;
 
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!searchLocation) return;
+
+    // Close modal and navigate to instructors page with search params
+    onClose();
+    navigate('/instructors', {
+      state: {
+        location: searchLocation,
+        transmission: searchTransmission
+      }
+    });
+  };
+
   // --- Render ---
 
   const renderContent = () => {
@@ -325,8 +346,45 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
     if (!resolvedInstructorId && !loadingData) {
       return (
         <div className="qbm-guard">
-          <p>You don't have an assigned instructor yet.</p>
-          <Link to="/instructors">Find an Instructor</Link>
+          <h3>Find an Instructor</h3>
+          <p>You don't have an assigned instructor yet. Search for one in your area to get started.</p>
+
+          <form onSubmit={handleSearch} className="qbm-search-form">
+            <div className="qbm-form-group">
+              <label>Pickup Location</label>
+              <LocationSearch
+                name="location"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                placeholder="Enter suburb or postcode"
+                required
+              />
+            </div>
+
+            <div className="qbm-form-group">
+              <label>Transmission</label>
+              <div className="qbm-duration-tabs">
+                <button
+                  type="button"
+                  className={`qbm-duration-tab ${searchTransmission === 'automatic' ? 'active' : ''}`}
+                  onClick={() => setSearchTransmission('automatic')}
+                >
+                  Automatic
+                </button>
+                <button
+                  type="button"
+                  className={`qbm-duration-tab ${searchTransmission === 'manual' ? 'active' : ''}`}
+                  onClick={() => setSearchTransmission('manual')}
+                >
+                  Manual
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="qbm-confirm-btn" style={{ marginTop: '1rem' }}>
+              Search Instructors
+            </button>
+          </form>
         </div>
       );
     }
