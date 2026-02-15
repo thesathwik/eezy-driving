@@ -93,13 +93,19 @@ exports.getBookedSlots = async (req, res) => {
     res.status(200).json({
       success: true,
       travelBuffer,
-      data: bookings.map(b => ({
-        date: b.lesson.date,
-        startTime: b.lesson.startTime,
-        endTime: b.lesson.endTime,
-        duration: b.lesson.duration,
-        status: b.status
-      }))
+      data: bookings.map(b => {
+        // Normalize date to YYYY-MM-DD string using the same logic as availability
+        // This avoids timezone mismatch between stored UTC dates and client-side Brisbane dates
+        const d = new Date(b.lesson.date);
+        const dateStr = d.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+        return {
+          date: dateStr,
+          startTime: b.lesson.startTime,
+          endTime: b.lesson.endTime,
+          duration: b.lesson.duration,
+          status: b.status
+        };
+      })
     });
   } catch (error) {
     console.error('Error fetching booked slots:', error);

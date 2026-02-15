@@ -1110,7 +1110,10 @@ const BookingFlowContent = () => {
     const bookedOnDate = existingBookings.filter(b => {
       const bDate = b.date || b.lesson?.date;
       if (!bDate) return false;
-      const bookingDate = new Date(bDate).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+      // If date is already a YYYY-MM-DD string, use directly; otherwise convert
+      const bookingDate = typeof bDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(bDate)
+        ? bDate
+        : new Date(bDate).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
       const bStatus = b.status;
       return bookingDate === dateString && (bStatus === 'confirmed' || bStatus === 'pending');
     });
