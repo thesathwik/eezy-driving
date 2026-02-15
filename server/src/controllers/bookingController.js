@@ -93,19 +93,13 @@ exports.getBookedSlots = async (req, res) => {
     res.status(200).json({
       success: true,
       travelBuffer,
-      data: bookings.map(b => {
-        // Normalize date to YYYY-MM-DD string using the same logic as availability
-        // This avoids timezone mismatch between stored UTC dates and client-side Brisbane dates
-        const d = new Date(b.lesson.date);
-        const dateStr = d.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
-        return {
-          date: dateStr,
-          startTime: b.lesson.startTime,
-          endTime: b.lesson.endTime,
-          duration: b.lesson.duration,
-          status: b.status
-        };
-      })
+      data: bookings.map(b => ({
+        date: b.lesson.date, // Return raw ISO date for range-based comparison
+        startTime: b.lesson.startTime,
+        endTime: b.lesson.endTime,
+        duration: b.lesson.duration,
+        status: b.status
+      }))
     });
   } catch (error) {
     console.error('Error fetching booked slots:', error);
@@ -348,15 +342,23 @@ exports.createBooking = async (req, res) => {
       return h * 60 + m;
     };
 
+    // Normalize lesson date to noon UTC to avoid timezone-related date shifts
+    // This matches how the availability system stores dates
+    const dateParts = lesson.date.split ? lesson.date.split('-').map(Number) : null;
+    if (dateParts && dateParts.length === 3) {
+      bookingData.lesson.date = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2], 12, 0, 0));
+    }
+
+    // Use a wide date range to catch bookings stored at both noon UTC and midnight UTC+1
     const lessonDate = new Date(lesson.date);
     lessonDate.setUTCHours(0, 0, 0, 0);
-    const nextDay = new Date(lessonDate);
-    nextDay.setDate(nextDay.getDate() + 1);
+    const rangeEnd = new Date(lessonDate);
+    rangeEnd.setUTCDate(rangeEnd.getUTCDate() + 2); // 2-day window to catch offset dates
 
     const conflictingBookings = await Booking.find({
       instructor: bookingData.instructor,
       status: { $in: ['confirmed', 'pending'] },
-      'lesson.date': { $gte: lessonDate, $lt: nextDay }
+      'lesson.date': { $gte: lessonDate, $lt: rangeEnd }
     });
 
     const newStart = parseTime(lesson.startTime);

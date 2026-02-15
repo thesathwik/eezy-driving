@@ -208,15 +208,16 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
       if (hasEnoughTime) validSlots.push(startSlot.time);
     }
 
-    // Filter out conflicts with existing bookings (including travel buffer)
+    // Use range-based date matching to handle timezone offset in stored dates
+    const [sy, sm, sd] = dateString.split('-').map(Number);
+    const rangeStart = new Date(Date.UTC(sy, sm - 1, sd, 0, 0, 0));
+    const rangeEnd = new Date(Date.UTC(sy, sm - 1, sd + 1, 12, 0, 0));
+
     const bookedOnDate = existingBookings.filter(b => {
       const bDate = b.date || b.lesson?.date;
       if (!bDate) return false;
-      // If date is already a YYYY-MM-DD string, use directly; otherwise convert
-      const bookingDate = typeof bDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(bDate)
-        ? bDate
-        : new Date(bDate).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
-      return bookingDate === dateString && (b.status === 'confirmed' || b.status === 'pending');
+      const bookingDate = new Date(bDate);
+      return bookingDate >= rangeStart && bookingDate < rangeEnd && (b.status === 'confirmed' || b.status === 'pending');
     });
 
     if (bookedOnDate.length === 0) return validSlots;

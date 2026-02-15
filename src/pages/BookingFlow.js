@@ -1107,15 +1107,18 @@ const BookingFlowContent = () => {
     }
 
     // Filter out slots that conflict with existing bookings on this date
+    // Use range-based date matching to handle timezone offset in stored dates
+    // Dates may be stored at noon UTC (correct) or midnight UTC of next day (legacy)
+    const [sy, sm, sd] = dateString.split('-').map(Number);
+    const rangeStart = new Date(Date.UTC(sy, sm - 1, sd, 0, 0, 0));
+    const rangeEnd = new Date(Date.UTC(sy, sm - 1, sd + 1, 12, 0, 0));
+
     const bookedOnDate = existingBookings.filter(b => {
       const bDate = b.date || b.lesson?.date;
       if (!bDate) return false;
-      // If date is already a YYYY-MM-DD string, use directly; otherwise convert
-      const bookingDate = typeof bDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(bDate)
-        ? bDate
-        : new Date(bDate).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+      const bookingDate = new Date(bDate);
       const bStatus = b.status;
-      return bookingDate === dateString && (bStatus === 'confirmed' || bStatus === 'pending');
+      return bookingDate >= rangeStart && bookingDate < rangeEnd && (bStatus === 'confirmed' || bStatus === 'pending');
     });
 
     if (bookedOnDate.length === 0) return validSlots;
