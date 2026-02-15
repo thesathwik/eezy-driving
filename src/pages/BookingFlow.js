@@ -1071,38 +1071,48 @@ const BookingFlowContent = () => {
 
     if (!dateAvailability) return [];
 
-    // Get all available slots
-    const allSlots = dateAvailability.timeSlots
+    // Get all available hourly blocks (each represents a 1-hour window of availability)
+    const availableBlocks = dateAvailability.timeSlots
       .filter(slot => slot.available === true)
-      .map(slot => ({ time: slot.time, minutes: parseTimeToMinutes(slot.time) }))
-      .sort((a, b) => a.minutes - b.minutes);
+      .map(slot => parseTimeToMinutes(slot.time))
+      .sort((a, b) => a - b);
 
-    // Filter slots that have enough consecutive availability
-    const validSlots = [];
+    // Build a set of available minutes for quick lookup
+    // Each hourly block covers 60 minutes (e.g., "9:00 AM" means 9:00-10:00 is available)
+    const availableMinutesSet = new Set();
+    for (const blockStart of availableBlocks) {
+      for (let m = blockStart; m < blockStart + 60; m++) {
+        availableMinutesSet.add(m);
+      }
+    }
+
+    // Generate candidate start times at 30-minute intervals
     const durationMinutes = durationHours * 60;
+    const validSlots = [];
 
-    for (let i = 0; i < allSlots.length; i++) {
-      const startSlot = allSlots[i];
-      const endTimeNeeded = startSlot.minutes + durationMinutes;
+    if (availableBlocks.length === 0) return [];
 
-      // Check if we have consecutive available slots to cover the duration
+    const firstSlot = availableBlocks[0];
+    const lastSlot = availableBlocks[availableBlocks.length - 1] + 60; // end of last block
+
+    for (let candidateStart = firstSlot; candidateStart + durationMinutes <= lastSlot; candidateStart += 30) {
+      // Check if the entire lesson duration is within available time
       let hasEnoughTime = true;
-      let currentTime = startSlot.minutes;
-
-      while (currentTime < endTimeNeeded) {
-        const nextHour = currentTime + 60;
-        const hasSlot = allSlots.some(s => s.minutes === currentTime);
-
-        if (!hasSlot) {
+      for (let m = candidateStart; m < candidateStart + durationMinutes; m++) {
+        if (!availableMinutesSet.has(m)) {
           hasEnoughTime = false;
           break;
         }
-
-        currentTime = nextHour;
       }
 
       if (hasEnoughTime) {
-        validSlots.push(startSlot.time);
+        // Format minutes back to time string
+        const hours = Math.floor(candidateStart / 60);
+        const mins = candidateStart % 60;
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        const timeStr = `${displayHours}:${String(mins).padStart(2, '0')} ${period}`;
+        validSlots.push(timeStr);
       }
     }
 

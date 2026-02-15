@@ -186,26 +186,42 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
 
     if (!dateAvailability) return [];
 
-    const allSlots = dateAvailability.timeSlots
+    // Get all available hourly blocks
+    const availableBlocks = dateAvailability.timeSlots
       .filter(slot => slot.available === true)
-      .map(slot => ({ time: slot.time, minutes: parseTimeToMinutes(slot.time) }))
-      .sort((a, b) => a.minutes - b.minutes);
+      .map(slot => parseTimeToMinutes(slot.time))
+      .sort((a, b) => a - b);
 
-    // Filter slots with enough consecutive availability
+    // Build a set of available minutes
+    const availableMinutesSet = new Set();
+    for (const blockStart of availableBlocks) {
+      for (let m = blockStart; m < blockStart + 60; m++) {
+        availableMinutesSet.add(m);
+      }
+    }
+
+    // Generate candidate start times at 30-minute intervals
     const validSlots = [];
-    for (let i = 0; i < allSlots.length; i++) {
-      const startSlot = allSlots[i];
-      const endTimeNeeded = startSlot.minutes + durationMinutes;
+    if (availableBlocks.length === 0) return [];
+
+    const firstSlot = availableBlocks[0];
+    const lastSlot = availableBlocks[availableBlocks.length - 1] + 60;
+
+    for (let candidateStart = firstSlot; candidateStart + durationMinutes <= lastSlot; candidateStart += 30) {
       let hasEnoughTime = true;
-      let currentTime = startSlot.minutes;
-      while (currentTime < endTimeNeeded) {
-        if (!allSlots.some(s => s.minutes === currentTime)) {
+      for (let m = candidateStart; m < candidateStart + durationMinutes; m++) {
+        if (!availableMinutesSet.has(m)) {
           hasEnoughTime = false;
           break;
         }
-        currentTime += 60;
       }
-      if (hasEnoughTime) validSlots.push(startSlot.time);
+      if (hasEnoughTime) {
+        const hours = Math.floor(candidateStart / 60);
+        const mins = candidateStart % 60;
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        validSlots.push(`${displayHours}:${String(mins).padStart(2, '0')} ${period}`);
+      }
     }
 
     // Use range-based date matching to handle timezone offset in stored dates
