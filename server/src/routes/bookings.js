@@ -3,6 +3,7 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const {
   getInstructorBookings,
+  getBookedSlots,
   getUpcomingBookings,
   getPendingProposals,
   getBookingHistory,
@@ -19,6 +20,7 @@ const {
 
 // Instructor booking routes
 router.get('/instructor/:instructorId', protect, getInstructorBookings);
+router.get('/instructor/:instructorId/booked-slots', getBookedSlots);
 router.get('/instructor/:instructorId/upcoming', protect, getUpcomingBookings);
 router.get('/instructor/:instructorId/pending', protect, getPendingProposals);
 router.get('/instructor/:instructorId/history', protect, getBookingHistory);

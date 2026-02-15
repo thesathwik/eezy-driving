@@ -22,6 +22,7 @@ const BookingFlowContent = () => {
   const [loading, setLoading] = useState(true);
   const [availabilityData, setAvailabilityData] = useState([]);
   const [existingBookings, setExistingBookings] = useState([]);
+  const [travelBufferMinutes, setTravelBufferMinutes] = useState(0);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState('10hours');
@@ -158,15 +159,14 @@ const BookingFlowContent = () => {
           setAvailabilityData(data.data || []);
         }
 
-        // Also fetch existing bookings for this instructor to check for conflicts
-        const bookingsUrl = `${API_URL}/bookings/instructor/${instructor.id}`;
-        const bookingsResponse = await fetch(bookingsUrl, {
-          headers: getHeaders(true)
-        });
-        if (bookingsResponse.ok) {
-          const bookingsData = await bookingsResponse.json();
-          console.log('Existing bookings for conflict check:', bookingsData);
-          setExistingBookings(bookingsData.data || []);
+        // Fetch booked slots (public endpoint, no auth needed)
+        const slotsUrl = `${API_URL}/bookings/instructor/${instructor.id}/booked-slots`;
+        const slotsResponse = await fetch(slotsUrl);
+        if (slotsResponse.ok) {
+          const slotsData = await slotsResponse.json();
+          setExistingBookings(slotsData.data || []);
+          const buffer = slotsData.travelBuffer?.sameTransmission || 0;
+          setTravelBufferMinutes(buffer);
         }
       } catch (err) {
         console.error('Error fetching availability for booking:', err);
@@ -1108,9 +1108,11 @@ const BookingFlowContent = () => {
 
     // Filter out slots that conflict with existing bookings on this date
     const bookedOnDate = existingBookings.filter(b => {
-      if (!b.lesson?.date) return false;
-      const bookingDate = new Date(b.lesson.date).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
-      return bookingDate === dateString && (b.status === 'confirmed' || b.status === 'pending');
+      const bDate = b.date || b.lesson?.date;
+      if (!bDate) return false;
+      const bookingDate = new Date(bDate).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+      const bStatus = b.status;
+      return bookingDate === dateString && (bStatus === 'confirmed' || bStatus === 'pending');
     });
 
     if (bookedOnDate.length === 0) return validSlots;
@@ -1119,13 +1121,15 @@ const BookingFlowContent = () => {
       const slotStart = parseTimeToMinutes(slotTime);
       const slotEnd = slotStart + durationMinutes;
 
-      // Check if this slot overlaps with any existing booking
+      // Check if this slot overlaps with any existing booking (including travel buffer)
       for (const booked of bookedOnDate) {
-        const bookedStart = parseTimeToMinutes(booked.lesson.startTime);
-        const bookedEnd = bookedStart + (booked.lesson.duration || 1) * 60;
+        const startTime = booked.startTime || booked.lesson?.startTime;
+        const dur = booked.duration || booked.lesson?.duration || 1;
+        const bookedStart = parseTimeToMinutes(startTime);
+        const bookedEnd = bookedStart + dur * 60;
 
-        // Overlap: slotStart < bookedEnd AND slotEnd > bookedStart
-        if (slotStart < bookedEnd && slotEnd > bookedStart) {
+        // Apply travel buffer: block slots within buffer time of existing bookings
+        if (slotStart < (bookedEnd + travelBufferMinutes) && slotEnd > (bookedStart - travelBufferMinutes)) {
           return false;
         }
       }

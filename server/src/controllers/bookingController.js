@@ -63,6 +63,50 @@ exports.getInstructorBookings = async (req, res) => {
   }
 };
 
+// @desc    Get booked time slots for an instructor (public, no learner data)
+// @route   GET /api/bookings/instructor/:instructorId/booked-slots
+// @access  Public
+exports.getBookedSlots = async (req, res) => {
+  try {
+    const { instructorId } = req.params;
+
+    let instructor = await Instructor.findOne({ user: instructorId });
+    if (!instructor) {
+      instructor = await Instructor.findById(instructorId);
+    }
+
+    if (!instructor) {
+      return res.status(404).json({ success: false, message: 'Instructor not found' });
+    }
+
+    const travelBuffer = instructor.calendarSettings?.travelBuffer || {
+      sameTransmission: 15,
+      differentTransmission: 30
+    };
+
+    const bookings = await Booking.find({
+      instructor: instructor._id,
+      status: { $in: ['confirmed', 'pending'] },
+      'lesson.date': { $gte: new Date() }
+    }).select('lesson.date lesson.startTime lesson.endTime lesson.duration status');
+
+    res.status(200).json({
+      success: true,
+      travelBuffer,
+      data: bookings.map(b => ({
+        date: b.lesson.date,
+        startTime: b.lesson.startTime,
+        endTime: b.lesson.endTime,
+        duration: b.lesson.duration,
+        status: b.status
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching booked slots:', error);
+    res.status(500).json({ success: false, message: 'Error fetching booked slots' });
+  }
+};
+
 // @desc    Get upcoming bookings for instructor
 // @route   GET /api/bookings/instructor/:instructorId/upcoming
 // @access  Private (Instructor)

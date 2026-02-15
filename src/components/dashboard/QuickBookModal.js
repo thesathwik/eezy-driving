@@ -46,6 +46,7 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
   const [instructor, setInstructor] = useState(null);
   const [availabilityData, setAvailabilityData] = useState([]);
   const [existingBookings, setExistingBookings] = useState([]);
+  const [travelBufferMinutes, setTravelBufferMinutes] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -129,9 +130,9 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
         const startStr = today.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
         const endStr = endDate.toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
 
-        const [availRes, bookingsRes] = await Promise.all([
+        const [availRes, slotsRes] = await Promise.all([
           fetch(`${API.availability.byInstructor(targetUserId)}?startDate=${startStr}&endDate=${endStr}`),
-          fetch(`${API.bookings}/instructor/${instr._id}`, { headers: getHeaders(true) })
+          fetch(`${API.bookings}/instructor/${instr._id}/booked-slots`)
         ]);
 
         if (availRes.ok) {
@@ -139,9 +140,11 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
           setAvailabilityData(availData.data || []);
         }
 
-        if (bookingsRes.ok) {
-          const bookingsData = await bookingsRes.json();
-          setExistingBookings(bookingsData.data || []);
+        if (slotsRes.ok) {
+          const slotsData = await slotsRes.json();
+          setExistingBookings(slotsData.data || []);
+          const buffer = slotsData.travelBuffer?.sameTransmission || 0;
+          setTravelBufferMinutes(buffer);
         }
 
         setLoadingData(false);
@@ -205,10 +208,11 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
       if (hasEnoughTime) validSlots.push(startSlot.time);
     }
 
-    // Filter out conflicts with existing bookings
+    // Filter out conflicts with existing bookings (including travel buffer)
     const bookedOnDate = existingBookings.filter(b => {
-      if (!b.lesson?.date) return false;
-      const bookingDate = new Date(b.lesson.date).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
+      const bDate = b.date || b.lesson?.date;
+      if (!bDate) return false;
+      const bookingDate = new Date(bDate).toLocaleDateString('en-CA', { timeZone: 'Australia/Brisbane' });
       return bookingDate === dateString && (b.status === 'confirmed' || b.status === 'pending');
     });
 
@@ -218,9 +222,11 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
       const slotStart = parseTimeToMinutes(slotTime);
       const slotEnd = slotStart + durationMinutes;
       for (const booked of bookedOnDate) {
-        const bookedStart = parseTimeToMinutes(booked.lesson.startTime);
-        const bookedEnd = bookedStart + (booked.lesson.duration || 1) * 60;
-        if (slotStart < bookedEnd && slotEnd > bookedStart) return false;
+        const startTime = booked.startTime || booked.lesson?.startTime;
+        const dur = booked.duration || booked.lesson?.duration || 1;
+        const bookedStart = parseTimeToMinutes(startTime);
+        const bookedEnd = bookedStart + dur * 60;
+        if (slotStart < (bookedEnd + travelBufferMinutes) && slotEnd > (bookedStart - travelBufferMinutes)) return false;
       }
       return true;
     });
