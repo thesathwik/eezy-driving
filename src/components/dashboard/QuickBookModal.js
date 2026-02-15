@@ -332,17 +332,7 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
       );
     }
 
-    // Guard: no credits
-    if (credits <= 0) {
-      return (
-        <div className="qbm-guard">
-          <p>You have no lesson credits remaining.</p>
-          <Link to="/instructors">Buy More Credits</Link>
-        </div>
-      );
-    }
-
-    // Guard: no instructor
+    // Guard: no instructor — show search form before checking credits
     if (!resolvedInstructorId && !loadingData) {
       return (
         <div className="qbm-guard">
@@ -385,6 +375,16 @@ const QuickBookModal = ({ profile, userId, onClose, onSuccess }) => {
               Search Instructors
             </button>
           </form>
+        </div>
+      );
+    }
+
+    // Guard: no credits
+    if (credits <= 0) {
+      return (
+        <div className="qbm-guard">
+          <p>You have no lesson credits remaining.</p>
+          <Link to="/instructors">Buy More Credits</Link>
         </div>
       );
     }
