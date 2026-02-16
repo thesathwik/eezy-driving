@@ -548,10 +548,45 @@ exports.updateBookingStatus = async (req, res) => {
 
     // Handle cancellation
     if (status === 'cancelled') {
+      const cancelledBy = req.user.role; // 'instructor' or 'learner'
+      let creditsRestored = false;
+
+      // If learner cancels, check 24-hour policy for credit restoration
+      if (cancelledBy === 'learner') {
+        // Parse lesson date + startTime into a full DateTime
+        const lessonDate = new Date(booking.lesson.date);
+        const timeMatch = booking.lesson.startTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (timeMatch) {
+          let hours = parseInt(timeMatch[1]);
+          const minutes = parseInt(timeMatch[2]);
+          const period = timeMatch[3].toUpperCase();
+          if (period === 'PM' && hours !== 12) hours += 12;
+          if (period === 'AM' && hours === 12) hours = 0;
+          lessonDate.setUTCHours(hours, minutes, 0, 0);
+        }
+
+        const now = new Date();
+        const hoursUntilLesson = (lessonDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+        if (hoursUntilLesson >= 24) {
+          // Restore credits
+          const learner = await Learner.findById(booking.learner);
+          if (learner) {
+            learner.progress.lessonCredits = (learner.progress.lessonCredits || 0) + booking.lesson.duration;
+            await learner.save();
+            creditsRestored = true;
+            console.log(`Credits restored: +${booking.lesson.duration} to learner ${booking.learner}. New balance: ${learner.progress.lessonCredits}`);
+          }
+        } else {
+          console.log(`Credits NOT restored: only ${hoursUntilLesson.toFixed(1)}h until lesson (need 24h+)`);
+        }
+      }
+
       booking.cancellation = {
-        cancelledBy: req.user.role, // 'instructor' or 'learner'
+        cancelledBy,
         cancelledAt: new Date(),
-        reason: reason || 'No reason provided'
+        reason: reason || 'No reason provided',
+        creditsRestored
       };
     }
 

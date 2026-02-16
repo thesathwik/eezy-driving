@@ -127,6 +127,10 @@ const bookingSchema = new mongoose.Schema({
     refundIssued: {
       type: Boolean,
       default: false
+    },
+    creditsRestored: {
+      type: Boolean,
+      default: false
     }
   },
 

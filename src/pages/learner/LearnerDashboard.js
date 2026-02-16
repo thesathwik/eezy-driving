@@ -90,11 +90,31 @@ const LearnerDashboard = () => {
     }
   };
 
-  const handleCancelBooking = async (bookingId) => {
-    if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+  const handleCancelBooking = async (booking) => {
+    // Calculate hours until lesson
+    const lessonDate = new Date(booking.lesson.date);
+    const timeMatch = booking.lesson.startTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      let hours = parseInt(timeMatch[1]);
+      const minutes = parseInt(timeMatch[2]);
+      const period = timeMatch[3].toUpperCase();
+      if (period === 'PM' && hours !== 12) hours += 12;
+      if (period === 'AM' && hours === 12) hours = 0;
+      lessonDate.setUTCHours(hours, minutes, 0, 0);
+    }
+
+    const now = new Date();
+    const hoursUntilLesson = (lessonDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const willRestoreCredits = hoursUntilLesson >= 24;
+
+    const creditMessage = willRestoreCredits
+      ? `Your ${booking.lesson.duration} lesson credit(s) will be restored to your account.`
+      : `Your credits will NOT be restored (less than 24 hours before the lesson).`;
+
+    if (!window.confirm(`Are you sure you want to cancel this booking?\n\n${creditMessage}`)) return;
 
     try {
-      const response = await fetch(`${API.bookings}/${bookingId}/status`, {
+      const response = await fetch(`${API.bookings}/${booking._id}/status`, {
         method: 'PUT',
         headers: getHeaders(true),
         body: JSON.stringify({ status: 'cancelled', reason: 'Cancelled by learner' })
@@ -103,6 +123,10 @@ const LearnerDashboard = () => {
       const data = await response.json();
 
       if (data.success) {
+        const successMessage = data.data?.cancellation?.creditsRestored
+          ? 'Booking cancelled. Your credits have been restored.'
+          : 'Booking cancelled. Credits were not restored (less than 24 hours before lesson).';
+        alert(successMessage);
         fetchData();
       } else {
         alert(data.message || 'Failed to cancel booking');
@@ -201,7 +225,7 @@ const LearnerDashboard = () => {
           <div className="booking-actions">
             <button
               className="btn-reject"
-              onClick={() => handleCancelBooking(booking._id)}
+              onClick={() => handleCancelBooking(booking)}
             >
               Cancel Booking
             </button>
